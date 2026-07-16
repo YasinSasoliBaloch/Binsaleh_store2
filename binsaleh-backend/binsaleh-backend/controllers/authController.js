@@ -102,6 +102,49 @@ exports.getMe = async (req, res) => {
   }
 };
 
+// POST /api/newsletter/subscribe
+// Email subscription for the homepage newsletter form
+exports.subscribeNewsletter = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required.' });
+    }
+
+    // Check if user already exists with this email
+    const existing = await User.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      if (existing.newsletter) {
+        return res.json({ message: 'Already subscribed! Thank you.' });
+      }
+      // Update existing user to subscribe to newsletter
+      existing.newsletter = true;
+      await existing.save();
+      return res.json({ message: 'Subscribed successfully!' });
+    }
+
+    // Create a minimal user entry for newsletter only
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(email + process.env.JWT_SECRET, salt);
+
+    await User.create({
+      name: email.split('@')[0],
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      newsletter: true,
+      role: 'customer'
+    });
+
+    res.status(201).json({ message: 'Subscribed successfully! Welcome to BIN SALEH 🎉' });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.json({ message: 'Already subscribed! Thank you.' });
+    }
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // POST /api/auth/register-admin
 // Admin panel se admin registration ke liye.
 // Setup key match karna zaroori hai — JWT_SECRET ya ADMIN_SETUP_KEY env mein.

@@ -316,8 +316,9 @@
     <h3>Be the First to Know</h3>
     <p>Get updates on new collections, exclusive discounts & more</p>
     <div class="newsletter-form">
-      <input type="email" placeholder="Enter your email address"/>
-      <button type="button"><i class="fas fa-paper-plane" style="margin-right:6px"></i> Subscribe</button>
+      <input type="email" id="newsletter-email" placeholder="Enter your email address"/>
+      <button type="button" onclick="subscribeNewsletter()"><i class="fas fa-paper-plane" style="margin-right:6px"></i> Subscribe</button>
+      <p id="newsletter-msg" style="font-size:0.75rem;margin-top:8px;min-height:20px"></p>
     </div>
   </div>
 </div>
@@ -527,6 +528,36 @@
     toast.innerHTML = `<i class="fas fa-check" style="margin-right:8px"></i>${name} added to cart!`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2500);
+  }
+
+  // ===== NEWSLETTER SUBSCRIPTION =====
+  async function subscribeNewsletter() {
+    const email = document.getElementById('newsletter-email').value.trim();
+    const msgEl = document.getElementById('newsletter-msg');
+    
+    if (!email) {
+      msgEl.textContent = '⚠️ Please enter your email address';
+      msgEl.style.color = '#ff6b6b';
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      msgEl.textContent = '⚠️ Please enter a valid email address';
+      msgEl.style.color = '#ff6b6b';
+      return;
+    }
+    
+    msgEl.textContent = '⏳ Subscribing...';
+    msgEl.style.color = '#d4af37';
+    
+    try {
+      const data = await api.post('/newsletter/subscribe', { email: email.toLowerCase() });
+      msgEl.textContent = '✅ Subscribed successfully! Welcome to BIN SALEH 🎉';
+      msgEl.style.color = '#4ade80';
+      document.getElementById('newsletter-email').value = '';
+    } catch (err) {
+      msgEl.textContent = '❌ ' + (err.message || 'Subscription failed. Try again.');
+      msgEl.style.color = '#ff6b6b';
+    }
   }
 
 </script>
