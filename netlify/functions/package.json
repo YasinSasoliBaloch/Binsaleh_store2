@@ -6,8 +6,8 @@
   "dependencies": {
     "express": "^4.21.0",
     "cors": "^2.8.6",
-    "mongoose": "^9.7.4",
-    "bcryptjs": "^3.0.3",
+    "mongoose": "^8.9.0",
+    "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.3",
     "serverless-http": "^3.2.0"
   }

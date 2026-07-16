@@ -20,10 +20,7 @@ const productSchema = new mongoose.Schema({
   care:      { type: String, default: '' },
   size:      { type: String, default: '' },
   shipping:  { type: String, default: '' }
-}, {
-  timestamps: true
-});
+}, { timestamps: true });
 
 productSchema.set('toJSON', { virtuals: true });
-
 module.exports = mongoose.model('Product', productSchema);

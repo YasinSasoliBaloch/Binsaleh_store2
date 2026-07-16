@@ -23,29 +23,14 @@ const orderSchema = new mongoose.Schema({
     postal:   { type: String, default: '' },
     phone:    { type: String, required: true }
   },
-  shippingMethod: {
-    type: String,
-    enum: ['standard', 'express', 'free'],
-    default: 'standard'
-  },
+  shippingMethod: { type: String, enum: ['standard', 'express', 'free'], default: 'standard' },
   shippingCost: { type: Number, default: 0 },
-  paymentMethod: {
-    type: String,
-    enum: ['cod', 'jazzcash', 'bank'],
-    default: 'cod'
-  },
+  paymentMethod: { type: String, enum: ['cod', 'jazzcash', 'bank'], default: 'cod' },
   subtotal: { type: Number, required: true },
   total:    { type: Number, required: true },
   currency: { type: String, default: 'PKR' },
-  status: {
-    type: String,
-    enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
-    default: 'pending'
-  }
-}, {
-  timestamps: true
-});
+  status:   { type: String, enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'], default: 'pending' }
+}, { timestamps: true });
 
 orderSchema.set('toJSON', { virtuals: true });
-
 module.exports = mongoose.model('Order', orderSchema);

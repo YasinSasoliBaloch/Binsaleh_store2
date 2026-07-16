@@ -24,9 +24,7 @@ exports.getProductById = async (req, res) => {
 exports.createProduct = async (req, res) => {
   try {
     const body = req.body;
-    if (!body.img && body.images && body.images.length) {
-      body.img = body.images[0];
-    }
+    if (!body.img && body.images && body.images.length) body.img = body.images[0];
     const product = await Product.create(body);
     res.status(201).json(product);
   } catch (err) {
@@ -37,13 +35,8 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const body = req.body;
-    if (!body.img && body.images && body.images.length) {
-      body.img = body.images[0];
-    }
-    const product = await Product.findByIdAndUpdate(req.params.id, body, {
-      new: true,
-      runValidators: true
-    });
+    if (!body.img && body.images && body.images.length) body.img = body.images[0];
+    const product = await Product.findByIdAndUpdate(req.params.id, body, { new: true, runValidators: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (err) {

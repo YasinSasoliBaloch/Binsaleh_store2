@@ -3,7 +3,7 @@
 
 [build]
   publish = "binsaleh-frontend"  # All static HTML/CSS/JS files are here
-  functions = "binsaleh-frontend/netlify/functions"  # Netlify Functions directory
+  functions = "netlify/functions"  # Netlify Functions directory
 
 # Route ALL /api/* requests to the Netlify Function
 # This replaces the need for a separate backend server (Render, Railway, etc.)

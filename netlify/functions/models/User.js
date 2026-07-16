@@ -6,10 +6,7 @@ const userSchema = new mongoose.Schema({
   password:  { type: String, required: true },
   newsletter:{ type: Boolean, default: false },
   role:      { type: String, enum: ['customer', 'admin'], default: 'customer' }
-}, {
-  timestamps: true
-});
+}, { timestamps: true });
 
 userSchema.set('toJSON', { virtuals: true });
-
 module.exports = mongoose.model('User', userSchema);

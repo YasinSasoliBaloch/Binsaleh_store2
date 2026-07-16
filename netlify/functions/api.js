@@ -1,6 +1,5 @@
 // netlify/functions/api.js
 // BIN SALEH Store — Netlify Function (replaces standalone Express server)
-// This runs the entire backend as a serverless function on Netlify
 
 const express = require('express');
 const cors = require('cors');
@@ -52,11 +51,9 @@ app.use((err, req, res, next) => {
 });
 
 // ---------- Netlify Function Handler ----------
-// serverless-http wraps the Express app and creates a Netlify-compatible handler
 const handler = serverless(app);
 
 exports.handler = async (event, context) => {
-  // Connect to MongoDB on each invocation (uses cached connection)
   await connectDB();
   return await handler(event, context);
 };
