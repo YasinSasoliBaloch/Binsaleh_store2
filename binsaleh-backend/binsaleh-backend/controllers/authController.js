@@ -101,3 +101,50 @@ exports.getMe = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// POST /api/auth/register-admin
+// Admin panel se admin registration ke liye.
+// Setup key match karna zaroori hai — JWT_SECRET ya ADMIN_SETUP_KEY env mein.
+exports.registerAdmin = async (req, res) => {
+  try {
+    const { name, email, password, setupKey } = req.body;
+
+    // Verify setup key
+    const expectedKey = process.env.ADMIN_SETUP_KEY || process.env.JWT_SECRET;
+    if (!setupKey || setupKey !== expectedKey) {
+      return res.status(403).json({ message: 'Invalid admin setup key.' });
+    }
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Please fill in all fields.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+    }
+
+    const existing = await User.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      return res.status(400).json({ message: 'An account with this email already exists.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await User.create({
+      name,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      role: 'admin', // 👈 admin role set
+      newsletter: false
+    });
+
+    const token = generateToken(user);
+
+    res.status(201).json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

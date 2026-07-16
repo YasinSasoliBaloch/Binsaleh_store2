@@ -44,6 +44,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;ove
   color:var(--text);border-radius:10px;font-size:0.9rem;outline:none;transition:border-color 0.2s;
 }
 .form-group input:focus {border-color:var(--accent);}
+.auth-tabs{display:flex;gap:0;margin-bottom:24px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.auth-tab{flex:1;padding:10px;text-align:center;background:var(--bg3);color:var(--muted);font-size:0.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.2s;}
+.auth-tab.active{background:var(--accent);color:#fff;}
+.auth-tab:hover:not(.active){background:var(--accent-light);color:var(--accent);}
 .login-btn {
   width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#fff;border:none;border-radius:10px;font-size:0.9rem;font-weight:700;
@@ -339,20 +343,53 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
+<!-- ===== LOGIN / REGISTER ===== -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">BIN SALEH STORE</div>
     <div class="login-sub">Admin Panel — Secure Access</div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="text" id="login-user" placeholder="admin@binsaleh.com"/>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login-btn" onclick="switchAuthTab('login')">Login</button>
+      <button class="auth-tab" id="tab-register-btn" onclick="switchAuthTab('register')">Register</button>
     </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="login-pass" placeholder="••••••••"/>
+
+    <!-- LOGIN FORM -->
+    <div id="auth-login">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="text" id="login-user" placeholder="admin@binsaleh.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••"/>
+      </div>
+      <button class="login-btn" onclick="doLogin()"><i class="fas fa-lock" style="margin-right:8px"></i>Login to Panel</button>
     </div>
-    <button class="login-btn" onclick="doLogin()"><i class="fas fa-lock" style="margin-right:8px"></i>Login to Panel</button>
+
+    <!-- REGISTER FORM -->
+    <div id="auth-register" style="display:none">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="reg-name" placeholder="Admin Name"/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="text" id="reg-email" placeholder="admin@binsaleh.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-pass" placeholder="Min 6 characters"/>
+      </div>
+      <div class="form-group">
+        <label>Admin Setup Key</label>
+        <input type="password" id="reg-key" placeholder="Enter the admin setup key"/>
+        <p style="font-size:0.68rem;color:var(--muted);margin-top:6px">Use the JWT_SECRET from your .env file</p>
+      </div>
+      <button class="login-btn" onclick="doRegister()"><i class="fas fa-user-plus" style="margin-right:8px"></i>Register as Admin</button>
+    </div>
+
     <p class="login-hint" id="login-hint-text"></p>
   </div>
 </div>
@@ -1511,6 +1548,44 @@ let pixelSettings = JSON.parse(localStorage.getItem('dn_pixel_settings') || 'nul
   fb:{ enabled:false, pixelId:"", token:"", catalogId:"" },
   insta:{ enabled:false, accountId:"" }
 };
+
+// ===== AUTH TABS =====
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab + '-btn').classList.add('active');
+  document.getElementById('auth-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('login-hint-text').textContent = '';
+}
+
+// ===== REGISTER =====
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const setupKey = document.getElementById('reg-key').value;
+  const hint = document.getElementById('login-hint-text');
+
+  if (!name || !email || !pass || !setupKey) {
+    toast('Please fill in all fields', 'error');
+    return;
+  }
+
+  try {
+    const data = await api.post('/auth/register-admin', {
+      name, email, password: pass, setupKey
+    });
+
+    setToken(data.token);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initDashboard();
+    toast('Admin account created! Welcome, ' + data.user.name, 'success');
+  } catch (err) {
+    hint.textContent = err.message;
+    toast(err.message, 'error');
+  }
+}
 
 // ===== LOGIN =====
 async function doLogin() {
