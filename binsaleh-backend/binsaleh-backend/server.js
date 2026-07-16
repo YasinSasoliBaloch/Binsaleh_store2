@@ -9,24 +9,14 @@ const connectDB = require('./config/db');
 const app = express();
 
 // ---------- Middleware ----------
-const allowedOrigins = process.env.CLIENT_URL 
-  ? process.env.CLIENT_URL.split(',').map(s => s.trim())
-  : ['http://localhost:5500', 'http://127.0.0.1:5500'];
-
+// Simple CORS: allow ALL origins so the frontend works from any domain
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow all origins in production for now
-    }
-  },
+  origin: true,
   credentials: true
 }));
-app.use(express.json());               // JSON body parse karne ke liye
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads')); // product images serve karne ke liye
+app.use('/uploads', express.static('uploads'));
 
 // ---------- Test Route ----------
 app.get('/', (req, res) => {
@@ -53,8 +43,16 @@ app.use((err, req, res, next) => {
 // ---------- Start Server ----------
 const PORT = process.env.PORT || 5000;
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🟢 Server running on http://localhost:${PORT}`);
+// Server ko hamesha start karo, chahe DB connect ho ya na ho
+connectDB()
+  .then(() => {
+    console.log('✅ MongoDB connected — all features available');
+  })
+  .catch(err => {
+    console.warn('⚠️ Server started without MongoDB. Some features may not work.');
+  })
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`🟢 Server running on http://localhost:${PORT}`);
+    });
   });
-});
