@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View All – BIN SALEH Store</title>
+   <!-- ===== Meta (Facebook & Instagram) Pixel Code ===== -->
+  <!-- Apna Pixel ID neeche 'YOUR_FACEBOOK_PIXEL_ID' ki jagah daalein. -->
+  <!-- Yeh ek hi pixel Facebook aur Instagram dono ke liye kaam karta hai. -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', 'YOUR_FACEBOOK_PIXEL_ID');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_FACEBOOK_PIXEL_ID&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- ===== End Meta Pixel Code ===== -->
+ 
+  <!-- ===== TikTok Pixel Code ===== -->
+  <!-- Apna Pixel ID neeche 'YOUR_TIKTOK_PIXEL_ID' ki jagah daalein. -->
+  <script>
+  !function (w, d, t) {
+    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<e.methods.length;n++)ttq.setAndDefer(e,e.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=i+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+ 
+    ttq.load('YOUR_TIKTOK_PIXEL_ID');
+    ttq.page();
+  }(window, document, 'ttq');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<!-- ANNOUNCEMENT -->
+<div class="announce">
+  <span class="announce-scroll">
+    🚚 &nbsp; Free Shipping Above Rs. 10,000 &nbsp;&nbsp;|&nbsp;&nbsp; 💰 &nbsp; COD Available Nationwide &nbsp;&nbsp;|&nbsp;&nbsp; 🔄 &nbsp; Easy 30-Day Exchange &nbsp;&nbsp;|&nbsp;&nbsp; ✅ &nbsp; Rs. 250 Advance to Confirm Order
+  </span>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">BIN SALEH STORE</a>
+    <ul class="nav-links">
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="./viewall.html" >View All</a></li>
+      <li><a href="./tops.html">Tops</a></li>
+      <li><a href="./Bottoms.html">Bottoms</a></li>
+      <li><a href="#"  class="active">Tracksuits</a></li>
+      <li><a href="./Footwear.html">Footwear</a></li>
+      <li><a href="./fragrances.html">Fragrances</a></li>
+      <li><a href="./accessories.html">Accessories</a></li>
+      <li class="nav-more">
+        <a href="#">More <i class="fas fa-chevron-down" style="font-size:0.65rem"></i></a>
+        <div class="more-dropdown">
+          <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+          <!-- <a href="my-orders.html"><i class="fas fa-box"></i> My Orders</a> -->
+          <a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a>
+          <a href="faqs.html" ><i class="fas fa-circle-question"></i> FAQs</a>
+          <a href="policies.html" ><i class="fas fa-shield-halved"></i> Policies</a>
+         
+        </div>
+      </li>
+    </ul>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" onclick="toggleSearch()" title="Search"><i class="fas fa-search"></i></button>
+      <a href="profile.html" class="nav-icon-btn" title="Profile"><i class="fas fa-user"></i></a>
+      <button class="nav-icon-btn" onclick="toggleCart()" title="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+      <button class="nav-icon-btn mobile-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars" id="menu-icon"></i></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="./index.html">🏠 Home</a>
+    <a href="./viewall.html">🛍️ View All</a>
+    <a href="./tops.html">👕 Tops</a>
+    <a href="./Bottoms.html">👖 Bottoms</a>
+    <a href="./TrackSuits.html">🧥 Tracksuits</a>
+    <a href="./Footwear.html">👟 Footwear</a>
+    <a href="./fragrances.html">🌸 Fragrances</a>
+    <a href="./accessories.html">⌚ Accessories</a>
+    <a href="profile.html">👤 My Profile</a>
+    <!-- <a href="my-orders.html">📦 My Orders</a> -->
+    <a href="contact.html">📞 Contact Us</a>
+     <a href="policies.html">🛡️ Policies</a>
+    <a href="faqs.html">❓ FAQs</a>
+  </div>
+</nav>
+
+<!-- SEARCH BAR -->
+<div class="search-bar-wrap" id="search-bar">
+  <i class="fas fa-search" style="color:var(--muted)"></i>
+  <input type="text" id="search-input" placeholder="Search products..."/>
+  <button class="search-close" onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <span class="section-label">BIN SALEH Store</span>
+  <h1>Tracksuits</h1>
+  <p>Explore Tracksuits</p>
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <i class="fas fa-chevron-right" style="font-size:0.6rem"></i>
+    <span>View All</span>
+  </div>
+</div>
+
+<!-- SHOP LAYOUT -->
+<div class="shop-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="filter-sidebar" id="filter-sidebar">
+
+    <!-- Availability -->
+    <div class="filter-card">
+      <div class="filter-header" onclick="toggleFilter(this)">
+        <h5><i class="fas fa-circle-check" style="margin-right:8px;color:var(--accent)"></i>Availability</h5>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="filter-body">
+        <div class="filter-option">
+          <input type="checkbox" id="in-stock" checked onchange="applyFilters()"/>
+          <label for="in-stock">In Stock</label>
+          <span class="filter-count" id="in-stock-count">0</span>
+        </div>
+        <div class="filter-option">
+          <input type="checkbox" id="out-stock" onchange="applyFilters()"/>
+          <label for="out-stock">Out of Stock</label>
+          <span class="filter-count" id="out-stock-count">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price Range -->
+    <div class="filter-card">
+      <div class="filter-header" onclick="toggleFilter(this)">
+        <h5><i class="fas fa-tag" style="margin-right:8px;color:var(--accent)"></i>Price Range</h5>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="filter-body">
+        <div class="price-inputs">
+          <input type="number" id="price-min" placeholder="RS Min" min="0"/ style="width: 80px;">
+          <span>to</span>
+          <input type="number" id="price-max" placeholder="RS Max" min="0"/ style="width: 80px;">
+        </div>
+        <button class="price-apply" onclick="applyFilters()"><i class="fas fa-filter" style="margin-right:6px"></i>Apply</button>
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="filter-card">
+      <div class="filter-header" onclick="toggleFilter(this)">
+        <h5><i class="fas fa-layer-group" style="margin-right:8px;color:var(--accent)"></i>Category</h5>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="filter-body">
+        <div class="filter-option"><input type="checkbox" id="cat-tops" onchange="applyFilters()"/><label for="cat-tops">Tops</label></div>
+        <div class="filter-option"><input type="checkbox" id="cat-bottoms" onchange="applyFilters()"/><label for="cat-bottoms">Bottoms</label></div>
+        <div class="filter-option"><input type="checkbox" id="cat-tracksuits" onchange="applyFilters()"/><label for="cat-tracksuits">Tracksuits</label></div>
+        <div class="filter-option"><input type="checkbox" id="cat-footwear" onchange="applyFilters()"/><label for="cat-footwear">Footwear</label></div>
+        <div class="filter-option"><input type="checkbox" id="cat-fragrances" onchange="applyFilters()"/><label for="cat-fragrances">Fragrances</label></div>
+        <div class="filter-option"><input type="checkbox" id="cat-accessories" onchange="applyFilters()"/><label for="cat-accessories">Accessories</label></div>
+      </div>
+    </div>
+
+    <button class="clear-filters" onclick="clearAllFilters()"><i class="fas fa-times" style="margin-right:6px"></i>Clear All Filters</button>
+  </aside>
+
+  <!-- PRODUCTS AREA -->
+  <div class="products-area">
+    <!-- Top bar -->
+    <div class="products-topbar">
+      <p class="results-count">Showing <strong id="showing-count">0</strong> products</p>
+      <div class="topbar-right">
+        <select class="sort-select" id="sort-select" onchange="applyFilters()">
+          <option value="featured">Featured</option>
+          <option value="best-selling">Best Selling</option>
+          <option value="most-relevant">Most Relevant</option>
+          <option value="az">Alphabetically: A to Z</option>
+          <option value="za">Alphabetically: Z to A</option>
+          <option value="low-high">Price: Low to High</option>
+          <option value="high-low">Price: High to Low</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active" onclick="setView('grid')" title="Grid view"><i class="fas fa-grid-2" style="font-size:0.75rem"></i></button>
+          <button class="view-btn" onclick="setView('list')" title="List view"><i class="fas fa-list" style="font-size:0.75rem"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active filter tags -->
+    <div class="active-filters" id="active-filters"></div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" id="products-grid"></div>
+
+    <!-- No results -->
+    <div class="no-results" id="no-results" style="display:none">
+      <i class="fas fa-search"></i>
+      <h3>No products found</h3>
+      <p>Try adjusting your filters or search query</p>
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-wrap" id="load-more-wrap" style="display:none">
+      <button class="load-more" onclick="loadMore()"><i class="fas fa-plus" style="margin-right:8px"></i>Load More Products</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h4><i class="fas fa-shopping-bag" style="margin-right:8px"></i>Your Cart</h4>
+    <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <div class="cart-empty" id="cart-empty">
+      <i class="fas fa-shopping-bag"></i>
+      <p>Your cart is empty</p>
+      <a href="#" style="color:var(--accent);font-size:0.85rem;text-decoration:none" onclick="toggleCart()">Continue Shopping →</a>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Subtotal</span><strong id="cart-total">Rs. 0</strong></div>
+    <button class="checkout-btn">Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo">BIN SALEH STORE</span>
+        <p>UAE's premium fashion destination. Tops, bottoms, footwear, fragrances & accessories — delivered nationwide.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/BINSALEHstore"  class="social-btn" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/binsalehllc946" class="social-btn" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://youtube.com/@binsalehllc946" class="social-btn" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.tiktok.com/@bin.saleh63_" class="social-btn" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="https://wa.me/+9710566551046" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h6>Shop</h6>
+        <ul>
+          <li><a href="./viewall.html">View All</a></li>
+          <li><a href="tops.html">Tops</a></li>
+          <li><a href="bottoms.html">Bottoms</a></li>
+          <li><a href="#">Tracksuits</a></li>
+          <li><a href="footwear.html">Footwear</a></li>
+          <li><a href="accessories.html">Accessories</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h6>Support</h6>
+        <ul>
+          <li><a href="contact.html">Contact Us</a></li>
+          <!-- <li><a href="my-orders.html">Track Order</a></li> -->
+          <li><a href="./faqs.html">FAQs</a></li>
+          <li><a href="./policies.html">Refund Policy</a></li>
+          <li><a href="./policies.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h6>Contact</h6>
+        <ul>
+          <li><a href="tel:+9710566551046"><i class="fas fa-phone" style="margin-right:8px;color:var(--accent)"></i>+9710566551046</a></li>
+          <li><a href="mailto:binsalehllc946@gmail.com"><i class="fas fa-envelope" style="margin-right:8px;color:var(--accent)"></i>binsalehllc946@gmail.com</a></li>
+          <li><a href="https://wa.me/+9710566551046" target="_blank"><i class="fab fa-whatsapp" style="margin-right:8px;color:#25d366"></i>WhatsApp Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BIN SALEH Store — All Rights Reserved</p>
+      <!-- <div class="pay-icons">
+        <div class="pay-icon">COD</div>
+        <div class="pay-icon">Bank</div>
+        <div class="pay-icon">JazzCash</div>
+        <div class="pay-icon">EasyPaisa</div>
+      </div> -->
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===================== DATA =====================
+// const allProducts = [
+//   { id:1, name:"Linen Co-ord Set – Beige", category:"tracksuits", price:5450, oldPrice:8999, badge:"SALE", inStock:true, stars:5, reviews:128, img:"https://dnstore.pk/cdn/shop/files/IMG_7830.jpg?v=1774721492&width=500", bestSelling:true },
+//   { id:2, name:"DN Baggy Tracksuit – Olive", category:"tracksuits", price:6500, oldPrice:9999, badge:"SALE", inStock:true, stars:5, reviews:94, img:"https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=500" },
+//   { id:3, name:"Adidas Samba – White", category:"footwear", price:3550, oldPrice:12000, badge:"SALE", inStock:true, stars:4, reviews:76, img:"https://dnstore.pk/cdn/shop/files/CE97B476-E5CA-4C66-B89B-6E3631B5E368.jpg?v=1767185810&width=500", bestSelling:true },
+//   { id:4, name:"212 MEN NYC Fragrance", category:"fragrances", price:3250, oldPrice:7000, badge:"SALE", inStock:true, stars:5, reviews:212, img:"https://dnstore.pk/cdn/shop/files/B0D9EFD9-DFAD-45BE-AE7D-E622AC0BBD51.jpg?v=1748380643&width=500", bestSelling:true },
+//   { id:5, name:"Arabic AURA Watch", category:"accessories", price:1799, oldPrice:4799, badge:"NEW", inStock:true, stars:4, reviews:58, img:"https://dnstore.pk/cdn/shop/files/00257696-1891-4E6D-8F1B-FE61EC13F218.jpg?v=1752099973&width=500" },
+//   { id:6, name:"Korean Pants – Black", category:"bottoms", price:2200, oldPrice:5500, badge:"SALE", inStock:true, stars:5, reviews:143, img:"https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=500", bestSelling:true },
+//   { id:7, name:"Accessories Bundle Set", category:"accessories", price:2850, oldPrice:6100, badge:"SALE", inStock:false, stars:4, reviews:45, img:"https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=500" },
+//   { id:8, name:"Summer Premium Top", category:"tops", price:1899, oldPrice:3999, badge:"NEW", inStock:true, stars:5, reviews:89, img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500" },
+//   { id:9, name:"Cartier Tank Watch", category:"accessories", price:4500, oldPrice:9999, badge:"NEW", inStock:true, stars:5, reviews:32, img:"https://dnstore.pk/cdn/shop/files/763F2324-5CD9-4056-9009-8878540EFC7E.png?v=1777300230&width=500" },
+//   { id:10, name:"Perception Fragrance by DN", category:"fragrances", price:2800, oldPrice:5500, badge:"SALE", inStock:true, stars:4, reviews:67, img:"https://dnstore.pk/cdn/shop/files/FE0E7953-EE9B-4D22-90AE-692071EBA76A.png?v=1772557488&width=500" },
+//   { id:11, name:"Oversized Box-Fit Tee", category:"tops", price:1499, oldPrice:2999, badge:"SALE", inStock:true, stars:4, reviews:115, img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500", bestSelling:true },
+//   { id:12, name:"Cargo Pants – Khaki", category:"bottoms", price:2600, oldPrice:5200, badge:"SALE", inStock:false, stars:3, reviews:28, img:"https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=500" },
+//   { id:13, name:"Sneaker Trainer – Black", category:"footwear", price:4200, oldPrice:8500, badge:"SALE", inStock:true, stars:4, reviews:53, img:"https://dnstore.pk/cdn/shop/collections/FullSizeRender.jpg?v=1777735717&width=500" },
+//   { id:14, name:"Summer Co-Ord Set – Blue", category:"tracksuits", price:7200, oldPrice:12000, badge:"NEW", inStock:true, stars:5, reviews:41, img:"https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=500" },
+//   { id:15, name:"Bracelet & Sunglasses Pack", category:"accessories", price:1200, oldPrice:2800, badge:"SALE", inStock:true, stars:4, reviews:76, img:"https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=500" },
+//   { id:16, name:"Premium Polo Shirt", category:"tops", price:2100, oldPrice:4200, badge:"NEW", inStock:true, stars:5, reviews:92, img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500" },
+// ];
+let allProducts = [];
+let filteredProducts = [];
+let cart = [];
+let currentView = "grid";
+let visibleCount = 12;
+
+async function loadProducts() {
+  try {
+    allProducts = await api.get("/products");
+    filteredProducts = [...allProducts];
+
+    updateStockCounts();
+    applyFilters();
+
+  } catch (err) {
+    console.error(err);
+    alert("Products load nahi hue.");
+  }
+}
+// let cart = [];
+// let currentView = 'grid';
+// let visibleCount = 12;
+// let filteredProducts = [...allProducts];
+
+// ===================== RENDER =====================
+function renderStars(n) {
+  return Array.from({length:5}, (_,i) => `<i class="fas fa-star" style="opacity:${i<n?1:0.3}"></i>`).join('');
+}
+
+function getDiscount(price, old) {
+  return Math.round(((old - price) / old) * 100);
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('products-grid');
+  const noRes = document.getElementById('no-results');
+  const lmw = document.getElementById('load-more-wrap');
+  const showing = products.slice(0, visibleCount);
+
+  document.getElementById('showing-count').textContent = products.length;
+
+  if (products.length === 0) {
+    grid.innerHTML = '';
+    noRes.style.display = 'block';
+    lmw.style.display = 'none';
+    return;
+  }
+  noRes.style.display = 'none';
+  lmw.style.display = products.length > visibleCount ? 'block' : 'none';
+
+  grid.innerHTML = showing.map(p => {
+    const disc = getDiscount(p.price, p.oldPrice);
+    return `
+    <div class="prod-card" onclick="openProduct(${p.id})">
+      <div class="prod-img-wrap">
+        <img src="${p.img}" alt="${p.name}" loading="lazy"/>
+        ${p.badge ? `<span class="prod-badge ${p.badge==='NEW'?'new':''}${!p.inStock?'out':''}">${p.inStock ? p.badge : 'SOLD OUT'}</span>` : ''}
+        <button class="prod-wishlist" onclick="event.stopPropagation();this.classList.toggle('liked')"><i class="fas fa-heart"></i></button>
+      </div>
+      <div class="prod-body">
+        <div class="prod-category">${p.category}</div>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-prices">
+          <span class="prod-price">Rs. ${p.price.toLocaleString()}</span>
+          <span class="prod-old">Rs. ${p.oldPrice.toLocaleString()}</span>
+          <span class="prod-discount">-${disc}%</span>
+        </div>
+        <div class="prod-stars">${renderStars(p.stars)}<span>(${p.reviews})</span></div>
+        <div class="prod-actions">
+          <button class="prod-add" onclick="event.stopPropagation();addToCart(${p.id})">
+            <i class="fas fa-shopping-bag" style="margin-right:5px"></i>Add to Cart
+          </button>
+          <button class="prod-buy" onclick="event.stopPropagation();buyNow(${p.id})">Buy Now</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===================== FILTERS & SORT =====================
+function applyFilters() {
+  const sortVal = document.getElementById('sort-select').value;
+  const inStockChecked = document.getElementById('in-stock').checked;
+  const outStockChecked = document.getElementById('out-stock').checked;
+  const priceMin = parseFloat(document.getElementById('price-min').value) || 0;
+  const priceMax = parseFloat(document.getElementById('price-max').value) || Infinity;
+
+  const catChecks = ['tops','bottoms','tracksuits','footwear','fragrances','accessories'];
+  const activeCats = catChecks.filter(c => document.getElementById('cat-' + c).checked);
+
+  let filtered = allProducts.filter(p => {
+    // availability
+    if (inStockChecked && !outStockChecked && !p.inStock) return false;
+    if (!inStockChecked && outStockChecked && p.inStock) return false;
+    if (!inStockChecked && !outStockChecked) return false;
+    // price
+    if (p.price < priceMin || p.price > priceMax) return false;
+    // category
+    if (activeCats.length > 0 && !activeCats.includes(p.category)) return false;
+    return true;
+  });
+
+  // sort
+  filtered = sortProducts(filtered, sortVal);
+  filteredProducts = filtered;
+  visibleCount = 12;
+  updateActiveTags();
+  updateStockCounts();
+  renderProducts(filteredProducts);
+}
+loadProducts();
+function sortProducts(arr, method) {
+  const copy = [...arr];
+  switch(method) {
+    case 'az': return copy.sort((a,b) => a.name.localeCompare(b.name));
+    case 'za': return copy.sort((a,b) => b.name.localeCompare(a.name));
+    case 'low-high': return copy.sort((a,b) => a.price - b.price);
+    case 'high-low': return copy.sort((a,b) => b.price - a.price);
+    case 'best-selling': return copy.sort((a,b) => (b.bestSelling?1:0) - (a.bestSelling?1:0) || b.reviews - a.reviews);
+    case 'most-relevant': return copy.sort((a,b) => b.reviews - a.reviews);
+    default: return copy; // featured
+  }
+}
+
+function updateStockCounts() {
+  document.getElementById('in-stock-count').textContent = allProducts.filter(p=>p.inStock).length;
+  document.getElementById('out-stock-count').textContent = allProducts.filter(p=>!p.inStock).length;
+}
+
+function updateActiveTags() {
+  const container = document.getElementById('active-filters');
+  const tags = [];
+  const priceMin = document.getElementById('price-min').value;
+  const priceMax = document.getElementById('price-max').value;
+  if (priceMin || priceMax) tags.push({ label: `Rs.${priceMin||'0'} – Rs.${priceMax||'∞'}`, clear: () => { document.getElementById('price-min').value=''; document.getElementById('price-max').value=''; applyFilters(); } });
+  const catChecks = ['tops','bottoms','tracksuits','footwear','fragrances','accessories'];
+  catChecks.forEach(c => { if(document.getElementById('cat-'+c).checked) tags.push({ label: c.charAt(0).toUpperCase()+c.slice(1), clear: () => { document.getElementById('cat-'+c).checked=false; applyFilters(); } }); });
+  container.innerHTML = tags.map((t,i) => `<span class="filter-tag">${t.label}<button onclick="clearTag(${i})">×</button></span>`).join('');
+  window._filterTagClears = tags.map(t=>t.clear);
+}
+
+function clearTag(i) { window._filterTagClears[i](); }
+
+function clearAllFilters() {
+  document.getElementById('in-stock').checked = true;
+  document.getElementById('out-stock').checked = false;
+  document.getElementById('price-min').value = '';
+  document.getElementById('price-max').value = '';
+  ['tops','bottoms','tracksuits','footwear','fragrances','accessories'].forEach(c => document.getElementById('cat-'+c).checked = false);
+  document.getElementById('sort-select').value = 'featured';
+  applyFilters();
+}
+
+function loadMore() { visibleCount += 8; renderProducts(filteredProducts); }
+
+function toggleFilter(header) {
+  const body = header.nextElementSibling;
+  const icon = header.querySelector('i.fas.fa-chevron-down');
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  header.classList.toggle('collapsed');
+}
+
+// ===================== VIEW =====================
+function setView(v) {
+  currentView = v;
+  const grid = document.getElementById('products-grid');
+  grid.className = 'products-grid' + (v === 'list' ? ' list-view' : '');
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+// ===================== CART =====================
+function addToCart(id) {
+  const p = allProducts.find(x => x.id === id);
+  const existing = cart.find(x => x.id === id);
+  if (existing) { existing.qty++; } else { cart.push({...p, qty:1}); }
+  updateCartUI();
+  showToast(`<i class="fas fa-check" style="margin-right:8px"></i>${p.name} added!`);
+}
+
+function buyNow(id) { addToCart(id); toggleCart(); }
+
+function openProduct(id) { const p = allProducts.find(x=>x.id===id); showToast(`Opening ${p.name}...`); }
+
+function removeFromCart(id) { cart = cart.filter(x=>x.id!==id); updateCartUI(); }
+
+function updateCartUI() {
+  const count = cart.reduce((s,x)=>s+x.qty,0);
+  document.getElementById('cart-count').textContent = count;
+  const total = cart.reduce((s,x)=>s+x.price*x.qty,0);
+  document.getElementById('cart-total').textContent = 'Rs. ' + total.toLocaleString();
+  const body = document.getElementById('cart-body');
+  const empty = document.getElementById('cart-empty');
+  if (cart.length === 0) { empty.style.display = 'block'; body.innerHTML = ''; body.appendChild(empty); return; }
+  empty.style.display = 'none';
+  body.innerHTML = cart.map(x => `
+    <div class="cart-item">
+      <img src="${x.img}" alt="${x.name}"/>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${x.name} ${x.qty>1?'×'+x.qty:''}</div>
+        <div class="cart-item-price">Rs. ${(x.price*x.qty).toLocaleString()}</div>
+      </div>
+      <button class="cart-item-remove" onclick="removeFromCart(${x.id})"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+
+function toggleCart() {
+  document.getElementById('cart-overlay').classList.toggle('open');
+  document.getElementById('cart-drawer').classList.toggle('open');
+}
+
+// ===================== SEARCH =====================
+function toggleSearch() {
+  document.getElementById('search-bar').classList.toggle('open');
+  if (document.getElementById('search-bar').classList.contains('open')) document.getElementById('search-input').focus();
+}
+document.getElementById('search-input').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) { filteredProducts = sortProducts(allProducts, document.getElementById('sort-select').value); }
+  else { filteredProducts = allProducts.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)); }
+  visibleCount = 12;
+  renderProducts(filteredProducts);
+});
+
+// ===================== MOBILE MENU =====================
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-menu');
+  const icon = document.getElementById('menu-icon');
+  m.classList.toggle('open');
+  icon.className = m.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+}
+
+// ===================== TOAST =====================
+function showToast(html) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:12px 24px;border-radius:8px;font-weight:700;font-size:0.82rem;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);white-space:nowrap';
+  t.innerHTML = html;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+// ===================== INIT =====================
+// updateStockCounts();
+// applyFilters();
+loadProducts();
+</script> <script src="./trackin.js"></script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Account – BIN SALEH Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="./style.css">
+
+  <style>
+    /* --- Enhanced Body Background --- */
+    body {
+        background-color: #050505;
+        background-image: radial-gradient(circle at 50% 40%, rgba(212, 175, 55, 0.04) 0%, transparent 60%);
+        min-height: 100vh;
+    }
+
+    /* ===== Auth Page Styles (Enhanced Premium Look) ===== */
+    .auth-section{
+      padding:60px 0 100px;
+      min-height:70vh;
+      display:flex;
+      align-items:center;
+    }
+    .auth-wrap{
+      max-width:460px;
+      margin:0 auto;
+      width:100%;
+    }
+    .auth-eyebrow{
+      text-align:center;
+      font-family:'Bebas Neue', sans-serif;
+      letter-spacing:4px;
+      font-size:0.85rem;
+      color:var(--accent, #d4af37);
+      text-transform:uppercase;
+      margin-bottom:14px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+    .auth-card{
+      background: rgba(15, 15, 15, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius:20px;
+      padding:45px 38px;
+      backdrop-filter:blur(20px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 100px rgba(212, 175, 55, 0.03);
+      transition: all 0.4s ease;
+    }
+    
+    /* Tabs */
+    .auth-tabs{
+      display:flex;
+      gap:6px;
+      margin-bottom:32px;
+      background:rgba(255,255,255,0.03);
+      border-radius:12px;
+      padding:5px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .auth-tab{
+      flex:1;
+      padding:13px;
+      border:none;
+      background:transparent;
+      color:var(--muted, #777);
+      font-family:'DM Sans', sans-serif;
+      font-weight:600;
+      font-size:0.9rem;
+      border-radius:9px;
+      cursor:pointer;
+      transition: all 0.3s ease;
+    }
+    .auth-tab:not(.active):hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: #aaa;
+    }
+    .auth-tab.active{
+      background: linear-gradient(135deg, #d4af37 0%, #f1d95e 100%);
+      color:#050505;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Forms */
+    .auth-form{
+      display:none;
+      flex-direction:column;
+      gap:18px;
+    }
+    .auth-form.active{ display:flex; }
+    .auth-form h2{
+      font-family:'Bebas Neue', sans-serif;
+      font-size:2.4rem;
+      letter-spacing:1px;
+      margin:0;
+      color: #fff;
+      background: linear-gradient(to right, #fff, #d4af37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .auth-form > p.auth-sub{
+      color:var(--muted, #888);
+      font-size:0.88rem;
+      margin:-8px 0 4px;
+    }
+
+    /* Input Fields - The Magic is Here */
+    .field-group{ display:flex; flex-direction:column; gap:8px; }
+    .field-group label{
+      font-size:0.75rem;
+      color:var(--accent, #d4af37);
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:1.5px;
+      padding-left: 2px;
+    }
+    .field-group input{
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius:10px;
+      padding:15px 16px;
+      color:#fff;
+      font-family:'DM Sans', sans-serif;
+      font-size:0.95rem;
+      outline:none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      width:100%;
+      box-sizing:border-box;
+    }
+    .field-group input::placeholder{
+      color:rgba(255,255,255,0.25);
+    }
+    .field-group input:hover{
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(255,255,255,0.05);
+    }
+    .field-group input:focus{
+      border-color:var(--accent, #d4af37);
+      background: rgba(20, 20, 20, 0.8);
+      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15), 0 0 20px rgba(212, 175, 55, 0.1);
+      transform: translateY(-1px);
+    }
+    
+    /* Checkbox */
+    .auth-checkbox{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      font-size:0.82rem;
+      color:var(--muted, #999);
+      line-height:1.5;
+    }
+    .auth-checkbox input { 
+      margin-top:4px; 
+      accent-color:var(--accent, #d4af37); 
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Buttons - Premium Interactive */
+    .auth-btn{
+      margin-top:6px;
+      background: linear-gradient(135deg, #c5a028 0%, #f1d95e 50%, #d4af37 100%);
+      color:#050505;
+      border:none;
+      padding:16px;
+      border-radius:10px;
+      font-family:'DM Sans', sans-serif;
+      font-weight:700;
+      font-size:0.95rem;
+      letter-spacing:.5px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: 0.5s;
+    }
+    .auth-btn:hover::before {
+      left: 100%;
+    }
+    .auth-btn:hover{ 
+      transform:translateY(-3px); 
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+      background: linear-gradient(135deg, #b89520 0%, #f9e547 50%, #d4af37 100%);
+    }
+    .auth-btn:active { 
+      transform:translateY(1px); 
+      box-shadow: 0 2px 10px rgba(212, 175, 55, 0.2);
+    }
+
+    .auth-btn-outline{
+      margin-top:0;
+      background:transparent;
+      color:var(--accent, #d4af37);
+      border:1.5px solid rgba(212, 175, 55, 0.2);
+      padding:15px;
+      border-radius:10px;
+      font-family:'DM Sans', sans-serif;
+      font-weight:600;
+      font-size:0.92rem;
+      letter-spacing:.5px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      text-decoration:none;
+      transition: all 0.3s ease;
+    }
+    .auth-btn-outline:hover{ 
+      border-color:var(--accent, #d4af37); 
+      background: rgba(212, 175, 55, 0.05);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .auth-msg{
+      font-size:0.82rem;
+      text-align:center;
+      min-height:20px;
+      margin:0;
+      font-weight: 500;
+    }
+    .auth-msg.error{ color:#ff6b6b; text-shadow: 0 0 10px rgba(255, 107, 107, 0.2); }
+    .auth-msg.success{ color:#4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
+    .auth-switch{
+      text-align:center;
+      font-size:0.85rem;
+      color:var(--muted, #888);
+      margin-top:6px;
+    }
+    .auth-switch a{
+      color:var(--accent, #d4af37);
+      font-weight:700;
+      text-decoration:none;
+      cursor:pointer;
+      transition: all 0.2s;
+      border-bottom: 1px solid transparent;
+    }
+    .auth-switch a:hover {
+      border-bottom-color: #d4af37;
+    }
+
+    /* Profile View */
+    #auth-profile { text-align:center; }
+    .profile-avatar{
+      width:85px;
+      height:85px;
+      border-radius:50%;
+      background: linear-gradient(135deg, #d4af37, #f1d95e, #d4af37);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2.2rem;
+      color:#050505;
+      margin:0 auto 22px;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+      border: 3px solid rgba(255,255,255,0.1);
+    }
+    #auth-profile h2{
+      font-family:'Bebas Neue', sans-serif;
+      font-size:2.2rem;
+      letter-spacing:1px;
+      margin:0 0 6px;
+      color: #fff;
+    }
+    #auth-profile .profile-email{
+      color:var(--muted, #999);
+      margin:0 0 10px;
+      font-size:0.95rem;
+    }
+    .profile-badge{
+      display:inline-flex;
+      align-items: center;
+      font-size:0.75rem;
+      letter-spacing:1.5px;
+      text-transform:uppercase;
+      color:var(--accent, #d4af37);
+      border:1px solid rgba(212,175,55,0.25);
+      background: rgba(212, 175, 55, 0.05);
+      padding:6px 16px;
+      border-radius:99px;
+      margin-bottom:30px;
+    }
+    .profile-actions{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .signout-btn{
+      background:transparent;
+      border:1.5px solid rgba(255,80,80,0.3);
+      color:#ff6b6b;
+      background: linear-gradient(135deg, #c5a028 0%, #f1d95e 50%, #d4af37 100%); /* Overriding for sign out specifically to match theme but warn user */
+      /* Actually, let's make sign out match theme but distinct */
+      background: rgba(255, 80, 80, 0.05);
+      color: #ff6b6b;
+    }
+    .signout-btn:hover{ 
+      background: rgba(255, 80, 80, 0.1); 
+      border-color: rgba(255, 80, 80, 0.5);
+      box-shadow: 0 0 20px rgba(255, 80, 80, 0.1);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== ANNOUNCEMENT BAR ===== -->
+<div class="announce">
+  <span class="announce-scroll">
+    🚚 &nbsp; Free Shipping on Orders Above Rs. 10,000 &nbsp;&nbsp;|&nbsp;&nbsp; 💰 &nbsp; COD Available Nationwide &nbsp;&nbsp;|&nbsp;&nbsp; 🔄 &nbsp; Easy Exchange Policy &nbsp;&nbsp;|&nbsp;&nbsp; ✅ &nbsp; Rs. 250 Advance Required to Confirm Order &nbsp;&nbsp;|&nbsp;&nbsp; ⭐ &nbsp; Summer Élite '26 Collection is Live!
+  </span>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">BIN SALEH </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="./viewall.html">View All</a></li>
+      <li><a href="./tops.html">Tops</a></li>
+      <li><a href="./Bottoms.html">Bottoms</a></li>
+      <li><a href="./TrackSuits.html">Tracksuits</a></li>
+      <li><a href="./Footwear.html">Footwear</a></li>
+      <li><a href="./fragrances.html">Fragrances</a></li>
+      <li><a href="./accessories.html">Accessories</a></li>
+      <li class="nav-more">
+        <a href="#">More <i class="fas fa-chevron-down" style="font-size:0.65rem"></i></a>
+        <div class="more-dropdown">
+          <a href="profile.html" class="active"><i class="fas fa-user"></i> My Profile</a>
+          <!-- <a href="my-orders.html"><i class="fas fa-box"></i> My Orders</a> -->
+          <a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a>
+        </div>
+      </li>
+    </ul>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" onclick="toggleSearch()" title="Search">
+        <i class="fas fa-search"></i>
+      </button>
+      <a href="profile.html" class="nav-icon-btn" title="Profile">
+        <i class="fas fa-user"></i>
+      </a>
+      <button class="nav-icon-btn" onclick="toggleCart()" title="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+      <button class="nav-icon-btn mobile-toggle" onclick="toggleMobileMenu()" title="Menu">
+        <i class="fas fa-bars" id="menu-icon"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">🏠 Home</a>
+    <a href="./viewall.html">🛍️ View All</a>
+    <a href="./tops.html">👕 Tops</a>
+    <a href="./Bottoms.html">👖 Bottoms</a>
+    <a href="./TrackSuits.html">🧥 Tracksuits / Co-Ord Sets</a>
+    <a href="./Footwear.html">👟 Footwear</a>
+    <a href="./fragrances.html">🌸 Fragrances</a>
+    <a href="./accessories.html">⌚ Accessories</a>
+    <a href="#">👤 My Profile</a>
+    <!-- <a href="my-orders.html">📦 My Orders</a> -->
+    <a href="contact.html">📞 Contact Us</a>
+  </div>
+</nav>
+
+<!-- SEARCH BAR -->
+<div class="search-bar-wrap" id="search-bar">
+  <i class="fas fa-search" style="color:var(--muted);font-size:1rem"></i>
+  <input type="text" placeholder="Search for products, collections..." id="search-input"/>
+  <button class="search-close" onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- ===== ACCOUNT SECTION ===== -->
+<section class="auth-section">
+  <div class="container">
+    <div class="auth-wrap">
+
+      <!-- Logged-out view: Sign In / Sign Up -->
+      <div id="auth-forms">
+        <div class="auth-eyebrow">My Account</div>
+        <div class="auth-card">
+          <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+            <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+          </div>
+
+          <!-- SIGN IN FORM -->
+          <form id="signin-form" class="auth-form active">
+            <h2>Welcome Back</h2>
+            <p class="auth-sub">Sign in to track orders & access exclusive deals</p>
+
+            <div class="field-group">
+              <label>Email Address</label>
+              <input  type="email" id="signin-email" placeholder="you@example.com" required>
+            </div>
+            <div class="field-group">
+              <label>Password</label>
+              <input type="password" id="signin-password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="auth-btn">Sign In <i class="fas fa-arrow-right"></i></button>
+            <p class="auth-msg" id="signin-msg"></p>
+            <p class="auth-switch">Don't have an account? <a onclick="switchTab('signup')">Create one</a></p>
+          </form>
+
+          <!-- SIGN UP FORM -->
+          <form id="signup-form" class="auth-form">
+            <h2>Create Account</h2>
+            <p class="auth-sub">Join BIN SALEH for exclusive offers & faster checkout</p>
+
+            <div class="field-group">
+              <label>Full Name</label>
+              <input type="text" id="signup-name" placeholder="Your name" required>
+            </div>
+            <div class="field-group">
+              <label>Email Address</label>
+              <input type="email" id="signup-email" placeholder="you@example.com" required>
+            </div>
+            <div class="field-group">
+              <label>Password</label>
+              <input type="password" id="signup-password" placeholder="At least 6 characters" required>
+            </div>
+            <div class="field-group">
+              <label>Confirm Password</label>
+              <input type="password" id="signup-confirm" placeholder="••••••••" required>
+            </div>
+
+            <label class="auth-checkbox">
+              <input type="checkbox" id="signup-newsletter" checked>
+              <span>Subscribe me to the BIN SALEH newsletter for exclusive offers & new arrivals</span>
+            </label>
+
+            <button type="submit" class="auth-btn">Create Account <i class="fas fa-user-plus"></i></button>
+            <p class="auth-msg" id="signup-msg"></p>
+            <p class="auth-switch">Already have an account? <a onclick="switchTab('signin')">Sign in</a></p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Logged-in view -->
+      <div id="auth-profile" style="display:none">
+        <div class="auth-eyebrow">My Account</div>
+        <div class="auth-card">
+          <div class="profile-avatar"><i class="fas fa-user"></i></div>
+          <h2 id="profile-name">Welcome!</h2>
+          <p class="profile-email" id="profile-email"></p>
+          <div class="profile-badge"><i class="fas fa-check-circle" style="margin-right:6px"></i>Subscribed to updates</div>
+          <div class="profile-actions">
+            <a href="my-orders.html" class="auth-btn-outline"><i class="fa-solid fa-phone"></i> COntac Us</a>
+            <a href="viewall.html" class="auth-btn-outline"><i class="fas fa-shopping-bag"></i> Continue Shopping</a>
+            <button class="auth-btn signout-btn" onclick="signOutUser()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== CART DRAWER ===== -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h4><i class="fas fa-shopping-bag" style="margin-right:8px"></i>Your Cart</h4>
+    <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-body">
+    <div class="cart-empty">
+      <i class="fas fa-shopping-bag"></i>
+      <p>Your cart is empty</p>
+      <a href="viewall.html" style="color:var(--accent);font-size:0.85rem;text-decoration:none">Continue Shopping →</a>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Subtotal</span><strong>Rs. 0</strong></div>
+    <button class="checkout-btn">Proceed to Checkout</button>
+  </div>
+</div>
+
+<script>
+  // ===== NAV HELPERS (same as index) =====
+  function toggleCart() {
+    document.getElementById('cart-overlay').classList.toggle('open');
+    document.getElementById('cart-drawer').classList.toggle('open');
+  }
+  function toggleSearch() {
+    document.getElementById('search-bar').classList.toggle('open');
+    if (document.getElementById('search-bar').classList.contains('open')) {
+      document.getElementById('search-input').focus();
+    }
+  }
+  function toggleMobileMenu() {
+    const m = document.getElementById('mobile-menu');
+    const icon = document.getElementById('menu-icon');
+    m.classList.toggle('open');
+    icon.className = m.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+  }
+
+  // ============================================================
+  // ACCOUNT SYSTEM (connected to backend via api.js)
+  // ============================================================
+
+  function switchTab(tab) {
+    document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('signin-form').classList.toggle('active', tab === 'signin');
+    document.getElementById('signup-form').classList.toggle('active', tab === 'signup');
+    document.getElementById('signin-msg').textContent = '';
+    document.getElementById('signup-msg').textContent = '';
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'auth-msg ' + type;
+  }
+
+  // ---- SIGN UP ----
+  document.getElementById('signup-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const name = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim().toLowerCase();
+    const password = document.getElementById('signup-password').value;
+    const confirm = document.getElementById('signup-confirm').value;
+    const wantsNewsletter = document.getElementById('signup-newsletter').checked;
+
+    if (!name || !email || !password) {
+      showMsg('signup-msg', 'Please fill in all fields.', 'error');
+      return;
+    }
+    if (password.length < 6) {
+      showMsg('signup-msg', 'Password must be at least 6 characters.', 'error');
+      return;
+    }
+    if (password !== confirm) {
+      showMsg('signup-msg', 'Passwords do not match.', 'error');
+      return;
+    }
+
+    try {
+      const data = await api.post('/auth/register', {
+        name,
+        email,
+        password,
+        newsletter: wantsNewsletter
+      });
+
+      // Save JWT token from backend
+      setToken(data.token);
+      localStorage.setItem('bs_user_data', JSON.stringify(data.user));
+
+      showMsg('signup-msg', 'Account created successfully!', 'success');
+      setTimeout(renderAuthState, 600);
+    } catch (err) {
+      showMsg('signup-msg', err.message, 'error');
+    }
+  });
+
+  // ---- SIGN IN ----
+  document.getElementById('signin-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = document.getElementById('signin-email').value.trim().toLowerCase();
+    const password = document.getElementById('signin-password').value;
+
+    if (!email || !password) {
+      showMsg('signin-msg', 'Please fill in all fields.', 'error');
+      return;
+    }
+
+    try {
+      const data = await api.post('/auth/login', { email, password });
+
+      // Save JWT token from backend
+      setToken(data.token);
+      localStorage.setItem('bs_user_data', JSON.stringify(data.user));
+
+      showMsg('signin-msg', 'Signed in successfully!', 'success');
+      setTimeout(renderAuthState, 500);
+    } catch (err) {
+      showMsg('signin-msg', err.message, 'error');
+    }
+  });
+
+  // ---- SIGN OUT ----
+  function signOutUser() {
+    clearToken();
+    localStorage.removeItem('bs_user_data');
+    renderAuthState();
+  }
+
+  // ---- RENDER CURRENT STATE ----
+  async function renderAuthState() {
+    const token = getToken();
+    const formsEl = document.getElementById('auth-forms');
+    const profileEl = document.getElementById('auth-profile');
+
+    if (token) {
+      try {
+        const user = await api.get('/auth/me');
+
+        document.getElementById('profile-name').textContent = 'Welcome, ' + user.name + '!';
+        document.getElementById('profile-email').textContent = user.email;
+
+        formsEl.style.display = 'none';
+        profileEl.style.display = 'block';
+      } catch (err) {
+        // Token invalid/expired — show login form
+        clearToken();
+        localStorage.removeItem('bs_user_data');
+        formsEl.style.display = 'block';
+        profileEl.style.display = 'none';
+        switchTab('signin');
+      }
+    } else {
+      formsEl.style.display = 'block';
+      profileEl.style.display = 'none';
+      switchTab('signin');
+    }
+  }
+
+  // Init on page load
+  renderAuthState();
+</script>
+<script src="./js/api.js"></script>
+<script src="./js/trackin.js"></script>
+</body>
+</html>

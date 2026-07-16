@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Policies – BIN SALEH Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="./style.css">
+
+  <style>
+    /* ===== Policy Page Styles (matches BIN SALEH FAQ theme) ===== */
+
+    /* --- Tab switcher --- */
+    .policy-tab-bar {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 0 0 44px;
+      flex-wrap: wrap;
+    }
+    .policy-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 24px;
+      border-radius: 50px;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      background: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.87rem;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all .22s;
+    }
+    .policy-tab-btn:hover {
+      border-color: rgba(212,175,55,0.5);
+      color: var(--accent, #d4af37);
+    }
+    .policy-tab-btn.active {
+      background: var(--accent, #d4af37);
+      border-color: var(--accent, #d4af37);
+      color: #0b0b0b;
+    }
+
+    /* --- Page wrapper --- */
+    .policy-section {
+      padding: 50px 0 100px;
+    }
+    .policy-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .policy-eyebrow {
+      text-align: center;
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 3px;
+      font-size: 0.78rem;
+      color: var(--accent, #d4af37);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .policy-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 1px;
+      text-align: center;
+      margin: 0 0 10px;
+      color: #16181d;
+    }
+    .policy-sub {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.92rem;
+      margin: 0 0 36px;
+      line-height: 1.6;
+    }
+
+    /* --- Panel visibility --- */
+    .policy-panel { display: none; }
+    .policy-panel.active { display: block; }
+
+    /* --- Effective date badge --- */
+    .policy-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      margin-bottom: 32px;
+    }
+    .policy-meta i { color: var(--accent, #d4af37); font-size: 0.72rem; }
+
+    /* --- Category headings (same as faq-cat-title) --- */
+    .policy-cat-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      color: var(--accent, #d4af37);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .policy-cat-title i {
+      font-size: 1.05rem;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(212,175,55,0.12);
+    }
+    .policy-category {
+      margin-bottom: 36px;
+    }
+
+    /* --- Content cards (same style as faq-item but static) --- */
+    .policy-card {
+      background: #ffffff;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      padding: 20px 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .policy-card:hover {
+      border-color: rgba(0,0,0,0.16);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+      transform: translateY(-1px);
+    }
+    .policy-card h4 {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #16181d;
+      margin: 0 0 8px;
+    }
+    .policy-card p {
+      margin: 0;
+      color: #5b6472;
+      font-size: 0.88rem;
+      line-height: 1.75;
+    }
+    .policy-card ul {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 0;
+    }
+    .policy-card ul li {
+      color: #5b6472;
+      font-size: 0.88rem;
+      line-height: 1.8;
+      padding: 3px 0 3px 18px;
+      position: relative;
+    }
+    .policy-card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 13px;
+      width: 6px;
+      height: 6px;
+      background: var(--accent, #d4af37);
+      border-radius: 50%;
+    }
+    .policy-card a {
+      color: var(--accent, #d4af37);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* highlight callout */
+    .policy-highlight {
+      background: rgba(212,175,55,0.08);
+      border-left: 3px solid var(--accent, #d4af37);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin-top: 10px;
+      font-size: 0.86rem;
+      color: #16181d;
+      font-weight: 500;
+      line-height: 1.7;
+    }
+
+    /* --- CTA (matches faq-cta) --- */
+    .policy-cta {
+      margin-top: 50px;
+      background: #fbf9f3;
+      border: 1.5px solid rgba(212,175,55,0.25);
+      border-radius: 16px;
+      padding: 36px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+    }
+    .policy-cta h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+      margin: 0 0 8px;
+      color: #16181d;
+    }
+    .policy-cta p {
+      color: #6b7280;
+      font-size: 0.88rem;
+      margin: 0 0 22px;
+    }
+    .policy-cta-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .policy-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 26px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: .5px;
+      text-decoration: none;
+      transition: .25s;
+    }
+    .policy-cta-btn.whatsapp { background: #25d366; color: #0b0b0b; }
+    .policy-cta-btn.whatsapp:hover { opacity: .88; transform: translateY(-1px); }
+    .policy-cta-btn.email {
+      background: #ffffff;
+      border: 1.5px solid rgba(0,0,0,0.14);
+      color: #16181d;
+    }
+    .policy-cta-btn.email:hover {
+      border-color: var(--accent, #d4af37);
+      color: var(--accent, #d4af37);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== ANNOUNCEMENT BAR ===== -->
+<div class="announce">
+  <span class="announce-scroll">
+    🚚 &nbsp; Free Shipping on Orders Above Rs. 10,000 &nbsp;&nbsp;|&nbsp;&nbsp; 💰 &nbsp; COD Available Nationwide &nbsp;&nbsp;|&nbsp;&nbsp; 🔄 &nbsp; Easy Exchange Policy &nbsp;&nbsp;|&nbsp;&nbsp; ✅ &nbsp; Rs. 250 Advance Required to Confirm Order &nbsp;&nbsp;|&nbsp;&nbsp; ⭐ &nbsp; Summer Élite '26 Collection is Live!
+  </span>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">BIN SALEH </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="./viewall.html">View All</a></li>
+      <li><a href="./tops.html">Tops</a></li>
+      <li><a href="./Bottoms.html">Bottoms</a></li>
+      <li><a href="./TrackSuits.html">Tracksuits</a></li>
+      <li><a href="./Footwear.html">Footwear</a></li>
+      <li><a href="./fragrances.html">Fragrances</a></li>
+      <li><a href="./accessories.html">Accessories</a></li>
+      <li class="nav-more">
+        <a href="#">More <i class="fas fa-chevron-down" style="font-size:0.65rem"></i></a>
+        <div class="more-dropdown">
+          <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+          <!-- <a href="my-orders.html"><i class="fas fa-box"></i> My Orders</a> -->
+          <a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a>
+          <a href="faqs.html"><i class="fas fa-circle-question"></i> FAQs</a>
+          <a href="policies.html" class="active"><i class="fas fa-shield-halved"></i> Policies</a>
+        </div>
+      </li>
+    </ul>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" onclick="toggleSearch()" title="Search">
+        <i class="fas fa-search"></i>
+      </button>
+      <a href="profile.html" class="nav-icon-btn" title="Profile">
+        <i class="fas fa-user"></i>
+      </a>
+      <button class="nav-icon-btn" onclick="toggleCart()" title="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+      <button class="nav-icon-btn mobile-toggle" onclick="toggleMobileMenu()" title="Menu">
+        <i class="fas fa-bars" id="menu-icon"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">🏠 Home</a>
+    <a href="./viewall.html">🛍️ View All</a>
+    <a href="./tops.html">👕 Tops</a>
+    <a href="./Bottoms.html">👖 Bottoms</a>
+    <a href="./TrackSuits.html">🧥 Tracksuits / Co-Ord Sets</a>
+    <a href="./Footwear.html">👟 Footwear</a>
+    <a href="./fragrances.html">🌸 Fragrances</a>
+    <a href="./accessories.html">⌚ Accessories</a>
+    <a href="profile.html">👤 My Profile</a>
+    <!-- <a href="my-orders.html">📦 My Orders</a> -->
+    <a href="faqs.html">❓ FAQs</a>
+    <a href="contact.html">📞 Contact Us</a>
+    <a href="policies.html">🛡️ Policies</a>
+  </div>
+</nav>
+
+<!-- SEARCH BAR -->
+<div class="search-bar-wrap" id="search-bar">
+  <i class="fas fa-search" style="color:var(--muted);font-size:1rem"></i>
+  <input type="text" placeholder="Search for products, collections..." id="search-input"/>
+  <button class="search-close" onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- ===== POLICY SECTION ===== -->
+<section class="policy-section">
+  <div class="container">
+    <div class="policy-wrap">
+
+      <div class="policy-eyebrow">Legal &amp; Policies</div>
+      <h1 class="policy-title">Our Policies</h1>
+      <p class="policy-sub">Everything you need to know about your privacy, refunds, and how we handle your data.</p>
+
+      <!-- Tab Switcher -->
+      <div class="policy-tab-bar">
+        <button class="policy-tab-btn active" onclick="switchTab('privacy', this)">
+          <i class="fas fa-shield-halved"></i> Privacy Policy
+        </button>
+        <button class="policy-tab-btn" onclick="switchTab('refund', this)">
+          <i class="fas fa-rotate-left"></i> Refund &amp; Exchange Policy
+        </button>
+      </div>
+
+      <!-- ============================= -->
+      <!-- PANEL: PRIVACY POLICY         -->
+      <!-- ============================= -->
+      <div class="policy-panel active" id="panel-privacy">
+
+        <div class="policy-meta">
+          <i class="fas fa-calendar-alt"></i> Effective: 1 Jan 2026 &nbsp;·&nbsp; Last Updated: June 2026
+        </div>
+
+        <!-- Overview -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-info-circle"></i> Overview</h2>
+          <div class="policy-card">
+            <p>BIN SALEH Store ("we", "us", or "our") is committed to protecting your personal information. This Privacy Policy explains what data we collect, why we collect it, and how it is used when you shop with us or contact us through our website or social media channels.</p>
+            <p style="margin-top:10px;">By placing an order or using our services, you agree to the practices described in this policy.</p>
+          </div>
+        </div>
+
+        <!-- Information We Collect -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-database"></i> Information We Collect</h2>
+          <div class="policy-card">
+            <p>We collect information you provide directly when you place an order, contact our support team, or interact with us on social media:</p>
+            <ul>
+              <li>Full name and contact number</li>
+              <li>Delivery address (city, area, street)</li>
+              <li>Order details and product preferences</li>
+              <li>Messages sent via WhatsApp, Instagram, or our website</li>
+              <li>Payment confirmation details (advance transfer receipts)</li>
+            </ul>
+            <div class="policy-highlight">🔒 We do not collect sensitive financial information such as credit card numbers or bank account details directly.</div>
+          </div>
+        </div>
+
+        <!-- How We Use It -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-bullseye"></i> How We Use Your Information</h2>
+          <div class="policy-card">
+            <p>Your information is used solely to process and deliver your order, and to provide customer support:</p>
+            <ul>
+              <li>To confirm and process your order</li>
+              <li>To coordinate delivery with our courier partners</li>
+              <li>To contact you regarding order updates or exchanges</li>
+              <li>To resolve any disputes or complaints</li>
+              <li>To improve our products and customer experience</li>
+            </ul>
+            <div class="policy-highlight">🚫 We do not sell, trade, or share your personal information with third parties for marketing purposes.</div>
+          </div>
+        </div>
+
+        <!-- Data Sharing -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-share-nodes"></i> Data Sharing</h2>
+          <div class="policy-card">
+            <p>We share your delivery details (name, address, phone number) only with our trusted courier partners responsible for delivering your order. These partners are not permitted to use your data for any other purpose.</p>
+            <p style="margin-top:10px;">We may disclose your information if required by law or in response to valid legal requests.</p>
+          </div>
+        </div>
+
+        <!-- Data Security -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-lock"></i> Data Security</h2>
+          <div class="policy-card">
+            <p>We take reasonable measures to protect your personal data from unauthorized access or disclosure. Order information is handled by our team with strict confidentiality.</p>
+            <p style="margin-top:10px;">While we strive to protect your information, no method of electronic transmission is 100% secure. Please contact us immediately if you suspect any misuse of your data.</p>
+          </div>
+        </div>
+
+        <!-- Your Rights -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-user-check"></i> Your Rights</h2>
+          <div class="policy-card">
+            <p>You have the right to:</p>
+            <ul>
+              <li>Request access to the personal data we hold about you</li>
+              <li>Ask us to correct or update inaccurate information</li>
+              <li>Request deletion of your data after your order is fulfilled</li>
+              <li>Withdraw your consent to be contacted for non-essential communications</li>
+            </ul>
+            <p style="margin-top:10px;">To exercise any of these rights, contact us on WhatsApp at <a href="https://wa.me/+9710566551046" target="_blank">+9710566551046</a> or email <a href="mailto:binsalehllc946@gmail.com">binsalehllc946@gmail.com</a>.</p>
+          </div>
+        </div>
+
+        <!-- Changes -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-pen-to-square"></i> Changes to This Policy</h2>
+          <div class="policy-card">
+            <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated effective date. Continued use of our services after changes are posted constitutes your acceptance of the revised policy.</p>
+          </div>
+        </div>
+
+      </div><!-- /panel-privacy -->
+
+      <!-- ============================= -->
+      <!-- PANEL: REFUND POLICY          -->
+      <!-- ============================= -->
+      <div class="policy-panel" id="panel-refund">
+
+        <div class="policy-meta">
+          <i class="fas fa-calendar-alt"></i> Effective: 1 Jan 2026 &nbsp;·&nbsp; Last Updated: June 2026
+        </div>
+
+        <!-- Overview -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-info-circle"></i> Overview</h2>
+          <div class="policy-card">
+            <p>At BIN SALEH Store, customer satisfaction is our priority. We want you to love what you receive. This policy outlines when and how you may exchange a product, and the conditions under which refunds may be considered.</p>
+            <div class="policy-highlight">📦 Please read this policy carefully before placing your order. By completing a purchase, you agree to these terms.</div>
+          </div>
+        </div>
+
+        <!-- Exchange Policy -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-rotate"></i> Exchange Policy</h2>
+          <div class="policy-card">
+            <p>We offer a straightforward exchange process. Exchanges are accepted within <strong>7 days</strong> of delivery under the following conditions:</p>
+            <ul>
+              <li>The item is unused, unwashed, and in its original condition</li>
+              <li>Tags and packaging are intact</li>
+              <li>The item was not purchased during a sale or promotional event</li>
+              <li>You have your order confirmation or proof of purchase</li>
+            </ul>
+            <p style="margin-top:10px;">To initiate an exchange, contact us on WhatsApp within the 7-day window with your order details and photos of the item.</p>
+          </div>
+        </div>
+
+        <!-- Damaged / Incorrect Items -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-triangle-exclamation"></i> Damaged or Incorrect Items</h2>
+          <div class="policy-card">
+            <p>If you receive a damaged, defective, or incorrect item, please:</p>
+            <ul>
+              <li>Take clear photos of the item and packaging immediately upon receiving</li>
+              <li>Contact us on WhatsApp at <a href="https://wa.me/+9710566551046" target="_blank">+9710566551046</a> within 48 hours of delivery</li>
+              <li>Share your order number and photos with our team</li>
+            </ul>
+            <div class="policy-highlight">✅ Upon verification, we will dispatch a replacement item at no additional cost to you.</div>
+          </div>
+        </div>
+
+        <!-- Refunds -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-money-bill-wave"></i> Refund Policy</h2>
+          <div class="policy-card">
+            <p>We currently operate on an <strong>exchange-first</strong> basis. Cash refunds are only issued in the following circumstances:</p>
+            <ul>
+              <li>The item you ordered is out of stock and no suitable exchange is available</li>
+              <li>A confirmed duplicate payment was made by the customer</li>
+              <li>We are unable to fulfill your order after receiving the advance payment</li>
+            </ul>
+            <div class="policy-highlight">💳 Approved refunds are processed within <strong>3–5 working days</strong> via the same payment method — bank account, EasyPaisa, or JazzCash wallet.</div>
+            <p style="margin-top:12px;">Refunds are <strong>not</strong> issued for: change of mind, incorrect size selected by the customer, or items showing signs of use or washing.</p>
+          </div>
+        </div>
+
+        <!-- Non-Returnable Items -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-ban"></i> Non-Exchangeable Items</h2>
+          <div class="policy-card">
+            <p>The following items are not eligible for exchange or refund under any circumstances:</p>
+            <ul>
+              <li>Fragrances and perfumes (once opened)</li>
+              <li>Innerwear and socks (for hygiene reasons)</li>
+              <li>Items purchased during clearance or final-sale promotions</li>
+              <li>Customised or personalised products</li>
+              <li>Gift cards or vouchers</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Advance & Cancellations -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-truck-ramp-box"></i> Advance Payment &amp; Cancellations</h2>
+          <div class="policy-card">
+            <p>A confirmation advance of <strong>Rs. 250</strong> is required to secure your order. This amount is deducted from your total bill upon delivery.</p>
+            <p style="margin-top:10px;">If you wish to cancel your order <strong>before it has been dispatched</strong>, contact us immediately — the full advance will be refunded.</p>
+            <div class="policy-highlight">⚠️ Cancellations after dispatch are not eligible for advance refund, as courier and handling costs have already been incurred. Repeated cancellations may result in future order restrictions.</div>
+          </div>
+        </div>
+
+        <!-- How to Initiate -->
+        <div class="policy-category">
+          <h2 class="policy-cat-title"><i class="fas fa-headset"></i> How to Initiate a Request</h2>
+          <div class="policy-card">
+            <p>To begin an exchange or refund request:</p>
+            <ul>
+              <li>Contact us on WhatsApp: <a href="https://wa.me/+9710566551046" target="_blank">+9710566551046</a></li>
+              <li>Provide your order number and a brief description of the issue</li>
+              <li>Share clear photos of the item(s) in question</li>
+              <li>Our team will respond within 24 hours to guide you through the next steps</li>
+            </ul>
+          </div>
+        </div>
+
+      </div><!-- /panel-refund -->
+
+      <!-- CTA -->
+      <div class="policy-cta">
+        <h3>Still have a question?</h3>
+        <p>Our team is happy to help you out, every day.</p>
+        <div class="policy-cta-buttons">
+          <a href="https://wa.me/+9710566551046" target="_blank" class="policy-cta-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
+          <a href="mailto:binsalehllc946@gmail.com" class="policy-cta-btn email"><i class="fas fa-envelope"></i> Email Us</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ===== CART DRAWER ===== -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h4><i class="fas fa-shopping-bag" style="margin-right:8px"></i>Your Cart</h4>
+    <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-body">
+    <div class="cart-empty">
+      <i class="fas fa-shopping-bag"></i>
+      <p>Your cart is empty</p>
+      <a href="viewall.html" style="color:var(--accent);font-size:0.85rem;text-decoration:none">Continue Shopping →</a>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Subtotal</span><strong>Rs. 0</strong></div>
+    <button class="checkout-btn">Proceed to Checkout</button>
+  </div>
+</div>
+
+<script>
+  // ===== NAV HELPERS (same as other pages) =====
+  function toggleCart() {
+    document.getElementById('cart-overlay').classList.toggle('open');
+    document.getElementById('cart-drawer').classList.toggle('open');
+  }
+  function toggleSearch() {
+    document.getElementById('search-bar').classList.toggle('open');
+    if (document.getElementById('search-bar').classList.contains('open')) {
+      document.getElementById('search-input').focus();
+    }
+  }
+  function toggleMobileMenu() {
+    const m = document.getElementById('mobile-menu');
+    const icon = document.getElementById('menu-icon');
+    m.classList.toggle('open');
+    icon.className = m.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+  }
+
+  // ===== TAB SWITCHER =====
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.policy-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.policy-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+  }
+
+  // Deep-link support: policies.html?tab=refund
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'refund') {
+      const btn = document.querySelectorAll('.policy-tab-btn')[1];
+      switchTab('refund', btn);
+    }
+  });
+</script>
+<script src="./trackin.js"></script>
+</body>
+</html>

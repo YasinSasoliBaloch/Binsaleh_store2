@@ -1,0 +1,28 @@
+# render.yaml — BIN SALEH Store Backend
+# Render Blueprint (Infrastructure as Code)
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: binsaleh-api
+    runtime: node
+    repo: https://github.com/muhammadYasinBaloch/binsaleh-store
+    branch: main
+    rootDir: binsaleh-backend/binsaleh-backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        value: https://binsaleh-store.netlify.app

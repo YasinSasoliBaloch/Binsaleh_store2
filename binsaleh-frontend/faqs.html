@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQs – BIN SALEH Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="./style.css">
+
+  <style>
+    /* ===== FAQ Page Styles (matches BIN SALEH theme) ===== */
+    .faq-section{
+      padding:50px 0 100px;
+    }
+    .faq-wrap{
+      max-width:760px;
+      margin:0 auto;
+    }
+    .faq-eyebrow{
+      text-align:center;
+      font-family:'Bebas Neue', sans-serif;
+      letter-spacing:3px;
+      font-size:0.78rem;
+      color:var(--accent, #d4af37);
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .faq-title{
+      font-family:'Bebas Neue', sans-serif;
+      font-size:2.6rem;
+      letter-spacing:1px;
+      text-align:center;
+      margin:0 0 10px;
+      color:#16181d;
+    }
+    .faq-sub{
+      text-align:center;
+      color:#6b7280;
+      font-size:0.92rem;
+      margin:0 0 44px;
+      line-height:1.6;
+    }
+    .faq-category{
+      margin-bottom:36px;
+    }
+    .faq-cat-title{
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.3rem;
+      letter-spacing:2px;
+      color:var(--accent, #d4af37);
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:0 0 14px;
+      padding-bottom:12px;
+      border-bottom:1px solid rgba(0,0,0,0.08);
+    }
+    .faq-cat-title i{
+      font-size:1.05rem;
+      width:30px;
+      height:30px;
+      flex-shrink:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:8px;
+      background:rgba(212,175,55,0.12);
+    }
+    .faq-item{
+      background:#ffffff;
+      border:1.5px solid rgba(0,0,0,0.08);
+      border-radius:12px;
+      margin-bottom:10px;
+      overflow:hidden;
+      box-shadow:0 2px 10px rgba(0,0,0,0.04);
+      transition:border-color .2s, background .2s, box-shadow .2s, transform .2s;
+    }
+    .faq-item:hover{
+      border-color:rgba(0,0,0,0.16);
+      box-shadow:0 6px 18px rgba(0,0,0,0.07);
+      transform:translateY(-1px);
+    }
+    .faq-item.open{
+      border-color:rgba(212,175,55,0.45);
+      background:rgba(212,175,55,0.05);
+      box-shadow:0 6px 18px rgba(212,175,55,0.12);
+    }
+    .faq-question{
+      width:100%;
+      background:none;
+      border:none;
+      color:#16181d;
+      text-align:left;
+      padding:18px 20px;
+      font-family:'DM Sans', sans-serif;
+      font-weight:600;
+      font-size:0.92rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      cursor:pointer;
+    }
+    .faq-question .faq-icon{
+      color:var(--accent, #d4af37);
+      font-size:0.85rem;
+      transition:transform .25s;
+      flex-shrink:0;
+    }
+    .faq-item.open .faq-question .faq-icon{
+      transform:rotate(180deg);
+    }
+    .faq-answer{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .3s ease;
+    }
+    .faq-answer-inner{
+      padding:0 20px 18px;
+    }
+    .faq-answer-inner p{
+      margin:0;
+      color:#5b6472;
+      font-size:0.88rem;
+      line-height:1.75;
+    }
+    .faq-answer-inner a{
+      color:var(--accent, #d4af37);
+      font-weight:600;
+      text-decoration:none;
+    }
+    /* CTA */
+    .faq-cta{
+      margin-top:50px;
+      background:#fbf9f3;
+      border:1.5px solid rgba(212,175,55,0.25);
+      border-radius:16px;
+      padding:36px;
+      text-align:center;
+      box-shadow:0 4px 18px rgba(0,0,0,0.04);
+    }
+    .faq-cta h3{
+      font-family:'Bebas Neue', sans-serif;
+      font-size:1.6rem;
+      letter-spacing:1px;
+      margin:0 0 8px;
+      color:#16181d;
+    }
+    .faq-cta p{
+      color:#6b7280;
+      font-size:0.88rem;
+      margin:0 0 22px;
+    }
+    .faq-cta-buttons{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .faq-cta-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:13px 26px;
+      border-radius:8px;
+      font-family:'DM Sans', sans-serif;
+      font-weight:700;
+      font-size:0.88rem;
+      letter-spacing:.5px;
+      text-decoration:none;
+      transition:.25s;
+    }
+    .faq-cta-btn.whatsapp{
+      background:#25d366;
+      color:#0b0b0b;
+    }
+    .faq-cta-btn.whatsapp:hover{
+      opacity:.88;
+      transform:translateY(-1px);
+    }
+    .faq-cta-btn.instagram{
+      background:#ffffff;
+      border:1.5px solid rgba(0,0,0,0.14);
+      color:#16181d;
+    }
+    .faq-cta-btn.instagram:hover{
+      border-color:var(--accent, #d4af37);
+      color:var(--accent, #d4af37);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== ANNOUNCEMENT BAR ===== -->
+<div class="announce">
+  <span class="announce-scroll">
+    🚚 &nbsp; Free Shipping on Orders Above Rs. 10,000 &nbsp;&nbsp;|&nbsp;&nbsp; 💰 &nbsp; COD Available Nationwide &nbsp;&nbsp;|&nbsp;&nbsp; 🔄 &nbsp; Easy Exchange Policy &nbsp;&nbsp;|&nbsp;&nbsp; ✅ &nbsp; Rs. 250 Advance Required to Confirm Order &nbsp;&nbsp;|&nbsp;&nbsp; ⭐ &nbsp; Summer Élite '26 Collection is Live!
+  </span>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">BIN SALEH </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="./viewall.html">View All</a></li>
+      <li><a href="./tops.html">Tops</a></li>
+      <li><a href="./Bottoms.html">Bottoms</a></li>
+      <li><a href="./TrackSuits.html">Tracksuits</a></li>
+      <li><a href="./Footwear.html">Footwear</a></li>
+      <li><a href="./fragrances.html">Fragrances</a></li>
+      <li><a href="./accessories.html">Accessories</a></li>
+      <li class="nav-more">
+        <a href="#">More <i class="fas fa-chevron-down" style="font-size:0.65rem"></i></a>
+        <div class="more-dropdown">
+          <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+          <!-- <a href="my-orders.html"><i class="fas fa-box"></i> My Orders</a> -->
+          <a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a>
+          <a href="faqs.html" class="active"><i class="fas fa-circle-question"></i> FAQs</a>
+          <a href="policies.html" class="active"><i class="fas fa-shield-halved"></i> Policies</a>
+        </div>
+      </li>
+    </ul>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" onclick="toggleSearch()" title="Search">
+        <i class="fas fa-search"></i>
+      </button>
+      <a href="profile.html" class="nav-icon-btn" title="Profile">
+        <i class="fas fa-user"></i>
+      </a>
+      <button class="nav-icon-btn" onclick="toggleCart()" title="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+      <button class="nav-icon-btn mobile-toggle" onclick="toggleMobileMenu()" title="Menu">
+        <i class="fas fa-bars" id="menu-icon"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">🏠 Home</a>
+    <a href="./viewall.html">🛍️ View All</a>
+    <a href="./tops.html">👕 Tops</a>
+    <a href="./Bottoms.html">👖 Bottoms</a>
+    <a href="./TrackSuits.html">🧥 Tracksuits / Co-Ord Sets</a>
+    <a href="./Footwear.html">👟 Footwear</a>
+    <a href="./fragrances.html">🌸 Fragrances</a>
+    <a href="./accessories.html">⌚ Accessories</a>
+    <a href="profile.html">👤 My Profile</a>
+    <!-- <a href="my-orders.html">📦 My Orders</a> -->
+    <a href="contact.html">📞 Contact Us</a>
+     <a href="policies.html">🛡️ Policies</a>
+    <a href="faqs.html">❓ FAQs</a>
+  </div>
+</nav>
+
+<!-- SEARCH BAR -->
+<div class="search-bar-wrap" id="search-bar">
+  <i class="fas fa-search" style="color:var(--muted);font-size:1rem"></i>
+  <input type="text" placeholder="Search for products, collections..." id="search-input"/>
+  <button class="search-close" onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- ===== FAQ SECTION ===== -->
+<section class="faq-section">
+  <div class="container">
+    <div class="faq-wrap">
+      <div class="faq-eyebrow">Help Center</div>
+      <h1 class="faq-title">Frequently Asked Questions</h1>
+      <p class="faq-sub">Got questions about orders, delivery, exchanges or payments? We've got you covered.</p>
+
+      <!-- Orders & Delivery -->
+      <div class="faq-category">
+        <h2 class="faq-cat-title"><i class="fas fa-truck"></i> Orders &amp; Delivery</h2>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Do you offer Cash on Delivery (COD)?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes, we offer Cash on Delivery nationwide across Pakistan.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>How long does delivery take?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Orders are delivered within 2–4 working days, depending on your city.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Is there any delivery charge?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Delivery is free on orders above Rs. 10,000. Standard charges apply below that.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exchange & Returns -->
+      <div class="faq-category">
+        <h2 class="faq-cat-title"><i class="fas fa-rotate"></i> Exchange &amp; Returns</h2>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>What if the size doesn't fit?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>We offer an easy exchange process. You can request a size exchange within 7 days of delivery.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Can I return the product?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>We currently offer exchanges only. If you receive a damaged or incorrect item, we will ensure it is replaced with a new and correct piece.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product & Quality -->
+      <div class="faq-category">
+        <h2 class="faq-cat-title"><i class="fas fa-gem"></i> Product &amp; Quality</h2>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>What is the quality of your products?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>All our products are crafted with premium fabrics, designed for comfort, durability, and a refined look.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Will the product look exactly like the pictures?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes, all product images are captured in-house to ensure accuracy in colour, fit, and detailing.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments & Confirmation -->
+      <div class="faq-category">
+        <h2 class="faq-cat-title"><i class="fas fa-credit-card"></i> Payments &amp; Confirmation</h2>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Why do I need to pay an advance?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>To ensure serious orders and avoid cancellations, a small confirmation amount is required. This helps us maintain fast and reliable delivery for all customers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support -->
+      <div class="faq-category">
+        <h2 class="faq-cat-title"><i class="fas fa-headset"></i> Support</h2>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>How can I contact you?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>For assistance, you can contact us on WhatsApp at <a href="https://wa.me/+9710566551046" target="_blank">0336 1076840</a> or connect with us on <a href="https://www.instagram.com/dnstore.pk" target="_blank">Instagram</a>. We're here to help.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="faq-cta">
+        <h3>Still have a question?</h3>
+        <p>Our team is happy to help you out, every day.</p>
+        <div class="faq-cta-buttons">
+          <a href="https://wa.me/+9710566551046" target="_blank" class="faq-cta-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
+          <a href="https://www.instagram.com/dnstore.pk" target="_blank" class="faq-cta-btn instagram"><i class="fab fa-instagram"></i> Message on Instagram</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ===== CART DRAWER ===== -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h4><i class="fas fa-shopping-bag" style="margin-right:8px"></i>Your Cart</h4>
+    <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-body">
+    <div class="cart-empty">
+      <i class="fas fa-shopping-bag"></i>
+      <p>Your cart is empty</p>
+      <a href="viewall.html" style="color:var(--accent);font-size:0.85rem;text-decoration:none">Continue Shopping →</a>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Subtotal</span><strong>Rs. 0</strong></div>
+    <button class="checkout-btn">Proceed to Checkout</button>
+  </div>
+</div>
+
+<script>
+  // ===== NAV HELPERS (same as other pages) =====
+  function toggleCart() {
+    document.getElementById('cart-overlay').classList.toggle('open');
+    document.getElementById('cart-drawer').classList.toggle('open');
+  }
+  function toggleSearch() {
+    document.getElementById('search-bar').classList.toggle('open');
+    if (document.getElementById('search-bar').classList.contains('open')) {
+      document.getElementById('search-input').focus();
+    }
+  }
+  function toggleMobileMenu() {
+    const m = document.getElementById('mobile-menu');
+    const icon = document.getElementById('menu-icon');
+    m.classList.toggle('open');
+    icon.className = m.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+  }
+
+  // ===== FAQ ACCORDION =====
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-answer');
+    const isOpen = item.classList.contains('open');
+
+    // Close all other open items
+    document.querySelectorAll('.faq-item.open').forEach(openItem => {
+      if (openItem !== item) {
+        openItem.classList.remove('open');
+        openItem.querySelector('.faq-answer').style.maxHeight = null;
+      }
+    });
+
+    if (isOpen) {
+      item.classList.remove('open');
+      answer.style.maxHeight = null;
+    } else {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  }
+</script>
+<script src="./trackin.js"></script>
+</body>
+</html>

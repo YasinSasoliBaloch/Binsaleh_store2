@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title id="page-title-tag">Loading product… – BIN SALEH Store</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<!-- Same stylesheet used across the whole store, untouched, so this page matches index/view/category pages -->
+<link rel="stylesheet" href="./style.css">
+
+<!--
+  ============================================================================
+  RESPONSIVE PATCH LAYER
+  ============================================================================
+  This block does NOT replace style.css. It only ADDS missing mobile rules,
+  using the class names already in the markup below. If style.css already
+  defines some of these for other pages, these rules just reinforce them here.
+  Safe to delete any single rule if it ever fights with a future style.css
+  change — nothing else in this file depends on this block existing.
+-->
+<style>
+  /* ---- Nav: hide desktop links, show hamburger below 900px ---- */
+  @media (max-width: 900px){
+    .nav-links{ display:none !important; }
+    .mobile-toggle{ display:inline-flex !important; }
+    .mobile-menu{ display:none; flex-direction:column; }
+    .mobile-menu.open{ display:flex !important; }
+  }
+  @media (min-width: 901px){
+    .mobile-menu{ display:none !important; }
+  }
+
+  /* ---- Product layout: stack gallery over info on tablets/phones ---- */
+  #ProductInformation.product-page{
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 40px;
+    align-items:flex-start;
+  }
+  @media (max-width: 900px){
+    #ProductInformation.product-page{
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 16px !important;
+    }
+    .main-img-wrap{ aspect-ratio: 1/1; height:auto !important; }
+    .thumb-strip{
+      display:flex; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      gap:8px; padding-bottom:4px;
+    }
+    .thumb-strip .thumb-item{ flex:0 0 64px; width:64px; height:64px; }
+    .zoom-hint{ display:none; }
+    .prod-title{ font-size:1.4rem !important; line-height:1.3 !important; }
+    .prod-price-row{ flex-wrap:wrap; gap:8px !important; }
+  }
+
+  /* ---- Forms / checkout grid collapse on small screens ---- */
+  @media (max-width: 640px){
+    .form-grid{ grid-template-columns: 1fr !important; }
+    .checkout-order-summary{ flex-wrap:wrap; }
+    .checkout-modal{ width:100% !important; max-width:100% !important; height:100%; max-height:100%; border-radius:0 !important; }
+    .modal-body-inner{ padding:16px !important; }
+    .reviews-header{ flex-direction:column; align-items:flex-start !important; gap:14px; }
+    .write-review-btn{ width:100%; justify-content:center; }
+  }
+
+  /* ---- Cart drawer full width on phones ---- */
+  @media (max-width: 480px){
+    .cart-drawer{ width:100% !important; max-width:100% !important; }
+  }
+
+  /* ---- Footer columns stack ---- */
+  @media (max-width: 700px){
+    .footer-grid{ grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 480px){
+    .footer-grid{ grid-template-columns: 1fr !important; }
+  }
+
+  /* ---- Accessibility floor: visible focus state everywhere ---- */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+    outline: 2px solid var(--accent, #b8860b);
+    outline-offset: 2px;
+  }
+
+  /* ---- Small loading / empty states used by the dynamic loader below ---- */
+  .ps-skel{ background:linear-gradient(90deg,#eee,#f6f6f6,#eee); background-size:200% 100%; animation:ps-shimmer 1.2s infinite; border-radius:8px; }
+  @keyframes ps-shimmer{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .ps-notfound{ max-width:560px; margin:80px auto; text-align:center; padding:0 20px; }
+  .ps-notfound i{ font-size:2.4rem; color:var(--accent,#b8860b); margin-bottom:14px; display:block; }
+  /* ============================================================
+   PRODUCT PAGE — FULL RESPONSIVE FIX
+   Add this at the very end of style.css
+   ============================================================ */
+
+/* ---- Base product layout ---- */
+.product-page {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 40px;
+  align-items: flex-start;
+  padding: 32px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ---- Gallery ---- */
+.main-img-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+.main-img-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+.thumb-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.thumb-item {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.thumb-item.active,
+.thumb-item:hover {
+  border-color: var(--accent, #b8860b);
+}
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- Info column ---- */
+.info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.prod-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.prod-price-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.prod-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.prod-reviews-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---- Checkout modal ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay.open {
+  display: flex;
+}
+.checkout-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.modal-body-inner {
+  padding: 24px 28px 32px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-grid.one-col {
+  grid-template-columns: 1fr;
+}
+
+/* ---- Cart drawer ---- */
+.cart-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 998;
+}
+.cart-overlay.open { display: block; }
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 420px;
+  max-width: 100vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 999;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.cart-drawer.open { right: 0; }
+
+/* ---- Reviews ---- */
+.reviews-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px;
+}
+.reviews-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+/* ============================================================
+   TABLET  (max 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+  .product-page {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 20px 16px;
+  }
+
+  .thumb-strip {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .thumb-item {
+    flex: 0 0 64px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .prod-title {
+    font-size: 1.45rem;
+  }
+
+  .reviews-section {
+    padding: 28px 16px;
+  }
+
+  .reviews-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .write-review-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .checkout-modal {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .cart-drawer {
+    width: 360px;
+  }
+}
+
+/* ============================================================
+   MOBILE  (max 640px)
+   ============================================================ */
+@media (max-width: 640px) {
+  .product-page {
+    padding: 14px 12px;
+    gap: 18px;
+  }
+
+  .prod-title {
+    font-size: 1.25rem;
+  }
+
+  .prod-price-row {
+    gap: 8px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .checkout-modal {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-body-inner {
+    padding: 16px 14px 28px;
+  }
+
+  .checkout-order-summary {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .reviews-section {
+    padding: 20px 12px;
+  }
+
+  #related-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+
+  .thumb-item {
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .trust-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .trust-item {
+    flex: 1 1 calc(50% - 10px);
+    font-size: 0.75rem;
+  }
+
+  .qty-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+/* ============================================================
+   SMALL PHONES  (max 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  .prod-title {
+    font-size: 1.1rem;
+  }
+
+  .cart-drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #related-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+  }
+
+  .checkout-modal {
+    border-radius: 16px 16px 0 0;
+    max-height: 95vh;
+  }
+
+  .shipping-options,
+  .payment-options {
+    gap: 8px;
+  }
+
+  .place-order-btn {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 14px;
+  }
+}
+
+/* ============================================================
+   FOOTER RESPONSIVE
+   ============================================================ */
+@media (max-width: 700px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px;
+  }
+}
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .footer-inner {
+    padding: 32px 16px 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCE -->
+<div class="announce">
+  <span class="announce-scroll" id="announce-text">🚚 Free Shipping Above Rs. 10,000 &nbsp;|&nbsp; 💰 COD Available Nationwide &nbsp;|&nbsp; 🔄 Easy 30-Day Exchange</span>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">BIN SALEH STORE</a>
+    <ul class="nav-links">
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="./viewall.html">View All</a></li>
+      <li><a href="./tops.html">Tops</a></li>
+      <li><a href="./Bottoms.html">Bottoms</a></li>
+      <li><a href="./TrackSuits.html">Tracksuits</a></li>
+      <li><a href="./Footwear.html">Footwear</a></li>
+      <li><a href="./fragrances.html">Fragrances</a></li>
+      <li><a href="./accessories.html">Accessories</a></li>
+      <li class="nav-more">
+        <a href="#">More <i class="fas fa-chevron-down" style="font-size:.65rem"></i></a>
+        <div class="more-dropdown">
+          <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+          <a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a>
+          <a href="faqs.html"><i class="fas fa-circle-question"></i> FAQs</a>
+          <a href="policies.html"><i class="fas fa-shield-halved"></i> Policies</a>
+        </div>
+      </li>
+    </ul>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
+      <a href="profile.html" class="nav-icon-btn"><i class="fas fa-user"></i></a>
+      <button class="nav-icon-btn" onclick="toggleCart()">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+      <button class="nav-icon-btn mobile-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars" id="menu-icon"></i></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">🏠 Home</a><a href="./viewall.html">🛍️ View All</a>
+    <a href="top.html">👕 Tops</a><a href="./Bottoms.html">👖 Bottoms</a>
+    <a href="tracksuits.html">🧥 Tracksuits</a><a href="Footwear.html">👟 Footwear</a>
+    <a href="fragrace.html">🌸 Fragrances</a><a href="./accessories.html">⌚ Accessories</a>
+    <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+    <a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a>
+    <a href="faqs.html"><i class="fas fa-circle-question"></i> FAQs</a>
+    <a href="policies.html"><i class="fas fa-shield-halved"></i> Policies</a>
+  </div>
+</nav>
+
+<!-- SEARCH -->
+<div class="search-bar-wrap" id="search-bar">
+  <i class="fas fa-search" style="color:var(--muted)"></i>
+  <input type="text" placeholder="Search products..."/>
+  <button class="search-close" onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a><span class="sep"><i class="fas fa-chevron-right" style="font-size:.6rem"></i></span>
+    <a href="#" id="breadcrumb-cat">Category</a><span class="sep"><i class="fas fa-chevron-right" style="font-size:.6rem"></i></span>
+    <span id="breadcrumb-name">Loading…</span>
+  </div>
+</div>
+
+<!-- PRODUCT PAGE (filled in by renderProduct() once data loads) -->
+<div class="product-page" id="ProductInformation">
+
+  <!-- LEFT: GALLERY -->
+  <div class="gallery-col">
+    <div class="main-img-wrap" id="main-img-wrap">
+      <img id="main-img" src="" alt=""/>
+      <span class="zoom-hint"><i class="fas fa-search-plus"></i> Hover to zoom</span>
+    </div>
+    <div class="thumb-strip" id="thumb-strip"></div>
+  </div>
+
+  <!-- RIGHT: INFO -->
+  <div class="info-col">
+    <div class="prod-badge-row">
+      <span class="badge sale" id="sale-badge" style="display:none">SALE</span>
+      <span class="badge instock" id="stock-badge"><i class="fas fa-circle" style="font-size:.45rem"></i> In Stock</span>
+    </div>
+
+    <div class="prod-title" id="prod-title">Loading product…</div>
+
+    <div class="prod-reviews-row">
+      <div class="stars-display" id="prod-stars-display"></div>
+      <span class="review-count" id="review-count-top" onclick="document.getElementById('reviews-section').scrollIntoView({behavior:'smooth'})">— Reviews</span>
+    </div>
+
+    <div class="prod-price-row">
+      <span class="price-sale" id="price-sale">Rs. 0</span>
+      <span class="price-orig" id="price-orig" style="display:none">Rs. 0</span>
+      <span class="price-disc" id="price-disc" style="display:none">-0% OFF</span>
+    </div>
+
+    <!-- COLOR DROPDOWN (hidden automatically if the product has only one color) -->
+    <div class="option-section" id="color-section">
+      <div class="option-label">Color: <span id="selected-color-label">—</span></div>
+      <select class="color-select" id="color-select" onchange="selectColor(this.value)"></select>
+    </div>
+
+    <!-- QTY -->
+    <div class="option-section">
+      <div class="option-label">Quantity</div>
+      <div class="qty-row">
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty(-1)"><i class="fas fa-minus" style="font-size:.75rem"></i></button>
+          <input class="qty-num" type="text" id="qty-display" value="1" readonly/>
+          <button class="qty-btn" onclick="changeQty(1)"><i class="fas fa-plus" style="font-size:.75rem"></i></button>
+        </div>
+        <span class="qty-label" id="stock-label">In stock</span>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn-add" id="btn-add-cart" onclick="addToCartAction()">
+        <i class="fas fa-shopping-bag"></i> Add to Cart
+      </button>
+      <button class="btn-buy" id="btn-buy-now" onclick="openCheckout()">
+        <i class="fas fa-bolt"></i> Buy it Now
+      </button>
+      <button class="btn-wa" onclick="openWhatsApp()">
+        <i class="fab fa-whatsapp"></i> Order via WhatsApp
+      </button>
+    </div>
+
+    <!-- TRUST BADGES -->
+    <div class="trust-row">
+      <div class="trust-item"><i class="fas fa-shield-alt"></i><span>Secure Payment</span></div>
+      <div class="trust-item"><i class="fas fa-truck"></i><span>Nationwide Delivery</span></div>
+      <div class="trust-item"><i class="fas fa-rotate-left"></i><span>30-Day Exchange</span></div>
+    </div>
+
+    <!-- ACCORDIONS (content injected per-product) -->
+    <div>
+      <div class="accordion-item">
+        <button class="accordion-header" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-plus acc-icon" style="margin-right:10px;font-size:.85rem;color:var(--accent)"></i>Product Details</span>
+          <span class="acc-icon fas fa-plus"></span>
+        </button>
+        <div class="accordion-body" id="acc-details-body"></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-plus acc-icon" style="margin-right:10px;font-size:.85rem;color:var(--accent)"></i>Care &amp; Maintenance</span>
+          <span class="acc-icon fas fa-plus"></span>
+        </button>
+        <div class="accordion-body" id="acc-care-body"></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-plus acc-icon" style="margin-right:10px;font-size:.85rem;color:var(--accent)"></i>Size &amp; Fit</span>
+          <span class="acc-icon fas fa-plus"></span>
+        </button>
+        <div class="accordion-body" id="acc-size-body"></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-truck" style="margin-right:10px;font-size:.85rem;color:var(--accent)"></i>Shipping &amp; Delivery</span>
+          <span class="acc-icon fas fa-plus"></span>
+        </button>
+        <div class="accordion-body" id="acc-shipping-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS SECTION (only this product's reviews) -->
+<div class="reviews-section" id="reviews-section">
+  <div class="reviews-header">
+    <div>
+      <div class="reviews-title">Customer Reviews</div>
+      <div class="reviews-summary" style="margin-top:10px">
+        <div class="avg-score" id="avg-score">0.0</div>
+        <div class="avg-stars">
+          <div class="stars" id="avg-stars-display"></div>
+          <small id="avg-stars-sub">Based on 0 reviews</small>
+        </div>
+      </div>
+    </div>
+    <button class="write-review-btn" onclick="toggleReviewForm()"><i class="fas fa-pen" style="margin-right:6px"></i>Write a Review</button>
+  </div>
+
+  <div class="review-form-wrap" id="review-form">
+    <div class="review-form-title"><i class="fas fa-star" style="margin-right:8px"></i>Write Your Review</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="form-group"><label>Your Name</label><input type="text" id="rev-name" placeholder="e.g. Ahmed Khan"/></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="rev-email" placeholder="ahmed@email.com"/></div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>Your Rating</label>
+      <div class="star-picker" id="star-picker">
+        <span class="star-pick" data-val="1" onclick="setStarRating(1)">★</span>
+        <span class="star-pick" data-val="2" onclick="setStarRating(2)">★</span>
+        <span class="star-pick" data-val="3" onclick="setStarRating(3)">★</span>
+        <span class="star-pick" data-val="4" onclick="setStarRating(4)">★</span>
+        <span class="star-pick" data-val="5" onclick="setStarRating(5)">★</span>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>Your Review</label>
+      <textarea id="rev-text" rows="4" placeholder="Share your experience with this product..." style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:.88rem;color:var(--text);outline:none;resize:vertical;font-family:'DM Sans',sans-serif"></textarea>
+    </div>
+    <div class="review-actions">
+      <button class="submit-review-btn" onclick="submitReview()"><i class="fas fa-check" style="margin-right:6px"></i>Submit Review</button>
+      <button class="cancel-review-btn" onclick="toggleReviewForm()"><i class="fas fa-times" style="margin-right:6px"></i>Cancel</button>
+    </div>
+  </div>
+
+  <div id="reviews-list"></div>
+</div>
+
+<!-- YOU MAY ALSO LIKE -->
+<div class="reviews-section" id="related-section" style="border-top:1px solid var(--border,#eee)">
+  <div class="reviews-title" style="margin-bottom:18px">You May Also Like</div>
+  <div id="related-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px"></div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h4><i class="fas fa-shopping-bag" style="margin-right:8px"></i>Your Cart</h4>
+    <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>Your cart is empty</p></div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Subtotal</span><strong id="cart-total">Rs. 0</strong></div>
+    <button class="checkout-btn" onclick="openCheckout();toggleCart()">Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="checkout-modal">
+    <div class="modal-hdr">
+      <h3><i class="fas fa-lock" style="margin-right:8px;font-size:1rem"></i>Secure Checkout</h3>
+      <button class="modal-close-btn" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body-inner">
+
+      <div class="section-heading">Order Summary</div>
+      <div class="checkout-order-summary">
+        <div class="checkout-img-col">
+          <img class="checkout-main-img" id="checkout-main-img" src="" alt="Product"/>
+          <div class="checkout-thumbs" id="checkout-thumbs"></div>
+        </div>
+        <div class="item-detail">
+          <div class="item-name" id="checkout-name">—</div>
+          <div class="item-sub" id="checkout-meta">—</div>
+        </div>
+        <div class="item-price" id="checkout-price">Rs. 0</div>
+      </div>
+
+      <div class="section-heading">Contact Information</div>
+      <div class="form-grid one-col">
+        <div class="form-group">
+          <label>Mobile Number or Email</label>
+          <input type="text" id="co-contact" placeholder="+92 300 0000000 or email@example.com"/>
+        </div>
+      </div>
+
+      <div class="section-heading">Delivery Address</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Country</label>
+          <select id="co-country">
+            <option>Pakistan</option><option>UAE</option><option>Saudi Arabia</option>
+            <option>United Kingdom</option><option>United States</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1"></div>
+        <div class="form-group"><label>First Name</label><input type="text" id="co-fname" placeholder="Ahmed"/></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="co-lname" placeholder="Khan"/></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Address</label><input type="text" id="co-address" placeholder="House #, Street, Area"/></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Apartment, Suite, etc. <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem">(Optional)</span></label><input type="text" id="co-apt" placeholder="Flat, Floor, Building name"/></div>
+        <div class="form-group"><label>City</label><input type="text" id="co-city" placeholder="Karachi"/></div>
+        <div class="form-group"><label>Postal Code <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem">(Optional)</span></label><input type="text" id="co-postal" placeholder="75500"/></div>
+        <div class="form-group" style="grid-column:1/-1"><label>Phone Number</label><input type="tel" id="co-phone" placeholder="+971566551046"/></div>
+      </div>
+
+      <div class="section-heading">Shipping Method</div>
+      <div class="shipping-options">
+        <label class="shipping-option selected" onclick="selectShipping(this,'standard')">
+          <div class="shipping-option-label"><input type="radio" name="shipping" value="standard" checked/> Standard Delivery (2–5 Working Days)</div>
+          <span class="shipping-option-price" id="ship-standard-price">Rs. 200</span>
+        </label>
+        <label class="shipping-option" onclick="selectShipping(this,'express')">
+          <div class="shipping-option-label"><input type="radio" name="shipping" value="express"/> Express Delivery (1–2 Working Days)</div>
+          <span class="shipping-option-price" id="ship-express-price">Rs. 400</span>
+        </label>
+        <label class="shipping-option" onclick="selectShipping(this,'free')">
+          <div class="shipping-option-label"><input type="radio" name="shipping" value="free"/> <span id="ship-free-label">Free Shipping (Orders above Rs. 10,000)</span></div>
+          <span class="shipping-option-price" style="color:var(--green)">FREE</span>
+        </label>
+      </div>
+
+      <div class="section-heading">Payment</div>
+      <div class="payment-secure-row"><i class="fas fa-lock"></i> All transactions are secure and encrypted — your data is safe with us.</div>
+      <div class="payment-options" style="margin-top:10px">
+        <label class="pay-opt selected" onclick="selectPayment(this,'cod')">
+          <div class="pay-opt-left"><input type="radio" name="payment" value="cod" checked/> Cash on Delivery (COD)</div>
+          <div class="pay-icons-row"><span class="pay-chip">COD</span></div>
+        </label>
+        <label class="pay-opt" onclick="selectPayment(this,'jazzcash')">
+          <div class="pay-opt-left"><input type="radio" name="payment" value="jazzcash"/> JazzCash / EasyPaisa</div>
+          <div class="pay-icons-row"><span class="pay-chip">JC</span><span class="pay-chip">EP</span></div>
+        </label>
+        <label class="pay-opt" onclick="selectPayment(this,'bank')">
+          <div class="pay-opt-left"><input type="radio" name="payment" value="bank"/> Bank Transfer</div>
+          <div class="pay-icons-row"><span class="pay-chip">HBL</span><span class="pay-chip">MCB</span></div>
+        </label>
+      </div>
+
+      <div class="section-heading" style="margin-top:20px">Advance Deposit</div>
+      <div class="deposit-box">
+        <p>To confirm your Cash on Delivery order, a small advance deposit of <strong id="deposit-amount-text">Rs. 250</strong> is required. This is deducted from your final bill at delivery.</p>
+        <div class="deposit-amount"><i class="fas fa-money-bill-wave" style="margin-right:8px;color:var(--accent)"></i>Advance: <span id="deposit-amount-text2">Rs. 250</span></div>
+        <select class="deposit-select" id="deposit-method">
+          <option value="">— Select Deposit Method —</option>
+        </select>
+      </div>
+
+      <div class="order-summary-box" style="margin-top:16px">
+        <div class="order-line"><span>Product</span><span id="co-product-cost">Rs. 0</span></div>
+        <div class="order-line"><span>Shipping</span><span id="co-shipping-cost">Rs. 200</span></div>
+        <div class="order-line"><span>Advance Paid</span><span id="co-advance-line">— Rs. 250</span></div>
+        <div class="order-line total"><span>Total at Delivery</span><span id="co-total-display">Rs. 0</span></div>
+      </div>
+
+      <button class="place-order-btn" onclick="placeOrder()">
+        <i class="fas fa-paper-plane"></i> Complete Order
+      </button>
+      <span class="cancel-link" onclick="closeCheckout()">Cancel and return to cart</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo">BIN SALEH STORE</span>
+        <p>UAE's premium fashion destination. Tops, bottoms, footwear, fragrances & accessories — delivered nationwide.</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/BINSALEHstore" class="social-btn" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/binsalehllc946" class="social-btn" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://youtube.com/@binsalehllc946" class="social-btn" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.tiktok.com/@bin.saleh63_" class="social-btn" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="https://wa.me/9710566551046" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-col"><h6>Shop</h6><ul><li><a href="view.html">View All</a></li><li><a href="top.html">Tops</a></li><li><a href="Botom.html">Bottoms</a></li><li><a href="tracksuits.html">Tracksuits</a></li><li><a href="Footwear.html">Footwear</a></li><li><a href="assesories.html">Accessories</a></li></ul></div>
+      <div class="footer-col"><h6>Support</h6><ul><li><a href="contact.html">Contact Us</a></li><li><a href="./policies.html">Return Policy</a></li><li><a href="./faqs.html">FAQs</a></li></ul></div>
+      <div class="footer-col"><h6>Contact</h6><ul>
+        <li><a href="tel:+9710566551046"><i class="fas fa-phone" style="margin-right:8px;color:var(--accent)"></i>+9710566551046</a></li>
+        <li><a href="mailto:binsalehllc946@gmail.com"><i class="fas fa-envelope" style="margin-right:8px;color:var(--accent)"></i>binsalehllc946@gmail.com</a></li>
+        <li><a href="https://wa.me/+9710566551046" target="_blank"><i class="fab fa-whatsapp" style="margin-right:8px;color:#25d366"></i>WhatsApp Us</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BIN SALEH Store — All Rights Reserved</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================================
+   DYNAMIC DATA LAYER
+   ----------------------------------------------------------------------------
+   This page is now a TEMPLATE, not a single product. Every product page
+   should link here as:  product.html?id=3
+   It reads everything (price, colors, images, description, reviews, bank
+   details, shipping fees) from localStorage, which the admin panel writes to.
+   Until the admin panel is updated to write these keys, this file safely
+   falls back to sensible defaults so nothing breaks.
+
+   Keys this page reads:
+     dn_products            -> array of product objects (written by admin)
+     dn_bank_settings       -> { advanceAmount, whatsapp, deposit:[{label,value}] }
+     dn_shipping_settings   -> { standardFee, expressFee, freeThreshold }
+     dn_pixel_settings      -> { tiktok:{enabled,pixelId}, fb:{enabled,pixelId}, insta:{...} }
+     dn_reviews_<productId> -> array of reviews submitted on THIS page for that product
+   ============================================================================ */
+
+const FALLBACK_IMG = "https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=1024";
+
+const DEFAULT_BANK_SETTINGS = {
+  advanceAmount: 250,
+  whatsapp: "9710566551046",
+  deposit: [
+    { label:"JazzCash: 0300-0000000", value:"jazzcash" },
+    { label:"EasyPaisa: 0300-0000000", value:"easypaisa" },
+    { label:"HBL Bank Transfer: A/C 0123456789", value:"hbl" },
+    { label:"Meezan Bank Transfer: A/C 9876543210", value:"meezan" }
+  ]
+};
+
+const DEFAULT_SHIPPING_SETTINGS = { standardFee:200, expressFee:400, freeThreshold:10000 };
+
+// Used ONLY if localStorage has no products yet (first run / preview).
+const DEMO_PRODUCTS = [
+  { id:1, name:"Linen Co-ord Set – Beige", category:"tracksuits", price:5450, oldPrice:8999, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/IMG_7830.jpg?v=1774721492&width=1024"],
+    colors:[{name:"beige",label:"Beige",inStock:true},{name:"olive",label:"Olive",inStock:true}],
+    rating:4.8 },
+  { id:2, name:"Adidas Samba – White", category:"footwear", price:3550, oldPrice:12000, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/CE97B476-E5CA-4C66-B89B-6E3631B5E368.jpg?v=1767185810&width=1024"],
+    colors:[{name:"white",label:"White",inStock:true}],
+    rating:4.7 }
+];
+
+function safeParse(key, fallback){
+  try{ const raw = localStorage.getItem(key); if(!raw) return fallback; const val = JSON.parse(raw); return val ?? fallback; }
+  catch(e){ return fallback; }
+}
+
+function getAllProducts(){
+  const arr = safeParse('dn_products', null);
+  return (Array.isArray(arr) && arr.length) ? arr : DEMO_PRODUCTS;
+}
+function getBankSettings(){ return { ...DEFAULT_BANK_SETTINGS, ...safeParse('dn_bank_settings', {}) }; }
+// wa.me needs digits only (no +, spaces or dashes) — admin might save the number in any format
+function sanitizePhone(num){ return (num || '').replace(/\D/g, ''); }
+function getShippingSettings(){ return { ...DEFAULT_SHIPPING_SETTINGS, ...safeParse('dn_shipping_settings', {}) }; }
+function getProductReviews(id){ return safeParse('dn_reviews_'+id, null); }
+function saveProductReviews(id, reviews){ localStorage.setItem('dn_reviews_'+id, JSON.stringify(reviews)); }
+
+function getRequestedProduct(){
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id') || params.get('pid');
+  const all = getAllProducts();
+  let found = id ? all.find(p => String(p.id) === String(id)) : null;
+  if(!found) found = all[0]; // graceful fallback so the page never shows blank
+  return found || null;
+}
+
+// Fills in any missing field with a tasteful generic default so old/simple
+// products saved before this update still render a complete page.
+function normalizeProduct(p){
+  const images = (p.images && p.images.length) ? p.images : (p.img ? [p.img] : [FALLBACK_IMG]);
+  const colors = (p.colors && p.colors.length) ? p.colors : [{ name:"default", label:"Standard", inStock: p.inStock !== false }];
+  const reviews = getProductReviews(p.id) ?? (p.reviews || []);
+  return {
+    id: p.id, name: p.name || "Unnamed Product", category: p.category || "products",
+    price: Number(p.price)||0, oldPrice: Number(p.oldPrice)|| Number(p.price)||0,
+    currency: p.currency || "PKR", badge: p.badge || "", inStock: p.inStock !== false,
+    images, colors, rating: p.rating || (reviews.length ? (reviews.reduce((s,r)=>s+r.stars,0)/reviews.length) : 4.8),
+    description: p.description && p.description.bullets ? p.description : {
+      intro: `${p.name || "This product"} is made with quality materials and finished with attention to detail, built for everyday comfort and style.`,
+      bullets: ["Premium quality materials", "Carefully inspected before shipping", "Trusted by hundreds of customers nationwide"]
+    },
+    care: (p.care && p.care.length) ? p.care : ["Hand wash or gentle machine wash recommended.", "Avoid prolonged exposure to direct sunlight.", "Store in a cool, dry place when not in use."],
+    sizeFit: (p.sizeFit && p.sizeFit.length) ? p.sizeFit : ["True to size — order your usual size.", "Contact us on WhatsApp for a detailed size chart."],
+    shippingInfo: (p.shippingInfo && p.shippingInfo.length) ? p.shippingInfo : null,
+    reviews
+  };
+}
+
+// ---- STATE ----
+let product = null;
+let qty = 1, selectedColor = "", selectedShipping = 200, selectedPayment = "cod";
+let activeImgIndex = 0, checkoutActiveImgIdx = 0, currentStarRating = 0;
+let cartItems = [];
+
+const CUR_SYMBOL = { PKR:"Rs.", AED:"AED ", USD:"$" };
+function formatPrice(amount){
+  const sym = CUR_SYMBOL[product.currency] || "Rs.";
+  return product.currency === "USD" ? sym + Number(amount).toFixed(2) : sym + " " + Math.round(amount).toLocaleString();
+}
+
+// ============================================================================
+// INIT
+// ============================================================================
+function init(){
+  const raw = getRequestedProduct();
+  if(!raw){
+    showNotFound();
+    return;
+  }
+  product = normalizeProduct(raw);
+  selectedColor = (product.colors.find(c=>c.inStock) || product.colors[0]).label;
+
+  renderGallery();
+  renderInfo();
+  renderAccordions();
+  renderReviews();
+  buildShippingOptions();
+  buildDepositOptions();
+  buildCheckoutThumbs();
+  renderRelated();
+  initPixels();
+}
+
+function showNotFound(){
+  document.getElementById('ProductInformation').innerHTML = `
+    <div class="ps-notfound" style="grid-column:1/-1">
+      <i class="fas fa-box-open"></i>
+      <h2 style="font-family:'Bebas Neue';letter-spacing:1px;margin-bottom:10px">Product Not Found</h2>
+      <p style="color:var(--muted,#888);margin-bottom:18px">This product may have been removed or the link is incorrect.</p>
+      <a href="view.html" class="btn-buy" style="display:inline-block;text-decoration:none;padding:12px 24px">Browse All Products</a>
+    </div>`;
+}
+
+// ============================================================================
+// GALLERY
+// ============================================================================
+function renderGallery(){
+  document.getElementById('main-img').src = product.images[0];
+  document.getElementById('main-img').alt = product.name;
+  const strip = document.getElementById('thumb-strip');
+  strip.innerHTML = product.images.map((img,i)=>`
+    <div class="thumb-item${i===0?' active':''}" onclick="setThumb(this,'${img.replace(/'/g,"\\'")}',${i})">
+      <img src="${img}" alt="${product.name} view ${i+1}" loading="lazy"/>
+    </div>`).join('');
+  activeImgIndex = 0;
+}
+function setThumb(el, src, idx){
+  document.querySelectorAll('.thumb-item').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('main-img').src = src;
+  activeImgIndex = idx;
+}
+
+// ============================================================================
+// INFO COLUMN
+// ============================================================================
+function renderInfo(){
+  document.getElementById('page-title-tag').textContent = product.name + " – BIN SALEH Store";
+  document.title = product.name + " – BIN SALEH Store";
+
+  document.getElementById('prod-title').innerHTML = product.name;
+  document.getElementById('breadcrumb-cat').textContent = capitalize(product.category);
+  document.getElementById('breadcrumb-cat').href = "./" + product.category + ".html";
+  document.getElementById('breadcrumb-name').textContent = product.name;
+
+  document.getElementById('sale-badge').style.display = product.badge ? 'inline-flex' : 'none';
+  document.getElementById('sale-badge').textContent = product.badge;
+
+  const stockBadge = document.getElementById('stock-badge');
+  stockBadge.innerHTML = product.inStock
+    ? '<i class="fas fa-circle" style="font-size:.45rem"></i> In Stock'
+    : '<i class="fas fa-circle" style="font-size:.45rem"></i> Out of Stock';
+  document.getElementById('stock-label').textContent = product.inStock ? 'In stock — ready to ship' : 'Currently unavailable';
+  document.getElementById('btn-add-cart').disabled = !product.inStock;
+  document.getElementById('btn-buy-now').disabled = !product.inStock;
+  if(!product.inStock){
+    document.getElementById('btn-add-cart').style.opacity = '0.5';
+    document.getElementById('btn-buy-now').style.opacity = '0.5';
+  }
+
+  document.getElementById('price-sale').textContent = formatPrice(product.price);
+  if(product.oldPrice > product.price){
+    document.getElementById('price-orig').style.display = 'inline';
+    document.getElementById('price-orig').textContent = formatPrice(product.oldPrice);
+    document.getElementById('price-disc').style.display = 'inline';
+    document.getElementById('price-disc').textContent = '-' + Math.round((1 - product.price/product.oldPrice)*100) + '% OFF';
+  } else {
+    document.getElementById('price-orig').style.display = 'none';
+    document.getElementById('price-disc').style.display = 'none';
+  }
+
+  // Colors — hide the whole selector if there's nothing to choose
+  const colorSection = document.getElementById('color-section');
+  if(product.colors.length <= 1){
+    colorSection.style.display = 'none';
+  } else {
+    colorSection.style.display = '';
+    document.getElementById('color-select').innerHTML = product.colors.map(c=>
+      `<option value="${c.label}" ${!c.inStock?'disabled':''}>${c.label}${!c.inStock?' — Sold Out':''}</option>`
+    ).join('');
+    document.getElementById('color-select').value = selectedColor;
+  }
+  document.getElementById('selected-color-label').textContent = selectedColor;
+}
+function selectColor(val){ selectedColor = val; document.getElementById('selected-color-label').textContent = val; }
+function capitalize(s){ return (s||'').charAt(0).toUpperCase() + (s||'').slice(1); }
+
+// ============================================================================
+// ACCORDIONS (Product Details / Care / Size & Fit / Shipping)
+// ============================================================================
+function renderAccordions(){
+  document.getElementById('acc-details-body').innerHTML =
+    `<p style="margin-bottom:10px">${product.description.intro}</p>
+     <ul>${product.description.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+
+  document.getElementById('acc-care-body').innerHTML =
+    `<ul>${product.care.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+
+  document.getElementById('acc-size-body').innerHTML =
+    `<ul>${product.sizeFit.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+
+  const shipping = getShippingSettings();
+  const bank = getBankSettings();
+  const shipBullets = product.shippingInfo || [
+    "Nationwide delivery — 2 to 5 working days.",
+    `Free shipping on orders above Rs. ${shipping.freeThreshold.toLocaleString()}.`,
+    `Rs. ${bank.advanceAmount} advance required to confirm COD orders.`,
+    "Express delivery available — contact us on WhatsApp."
+  ];
+  document.getElementById('acc-shipping-body').innerHTML = `<ul>${shipBullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+}
+
+// ============================================================================
+// REVIEWS (scoped to this product only)
+// ============================================================================
+function renderStarsDisplay(id, rating, full){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.innerHTML = Array.from({length:5},(_,i)=>{
+    const filled = i < Math.floor(rating);
+    const half = !filled && (i < rating);
+    return `<i class="fas fa-star" style="opacity:${filled?1:half?.5:.2}"></i>`;
+  }).join('');
+}
+
+function renderReviews(){
+  const r = product.reviews;
+  document.getElementById('avg-score').textContent = product.rating.toFixed(1);
+  document.getElementById('avg-stars-sub').textContent = `Based on ${r.length} review${r.length===1?'':'s'}`;
+  document.getElementById('review-count-top').textContent = `${product.rating.toFixed(1)} · ${r.length} Review${r.length===1?'':'s'}`;
+  renderStarsDisplay('avg-stars-display', product.rating, false);
+  renderStarsDisplay('prod-stars-display', product.rating, true);
+
+  const list = document.getElementById('reviews-list');
+  if(!r.length){
+    list.innerHTML = `<p style="text-align:center;color:var(--muted,#888);padding:30px 0">No reviews yet for this product — be the first to share your experience!</p>`;
+    return;
+  }
+  list.innerHTML = r.map(rv => `
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="reviewer-info">
+          <div class="name">${rv.name}</div>
+          <div class="date">${rv.date}</div>
+          ${rv.verified ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified Purchase</span>' : ''}
+        </div>
+        <div class="review-stars">${Array.from({length:5},(_,i)=>`<i class="fas fa-star" style="opacity:${i<rv.stars?1:.2}"></i>`).join('')}</div>
+      </div>
+      <div class="review-text">${rv.text}</div>
+    </div>`).join('');
+}
+
+function toggleReviewForm(){
+  const f = document.getElementById('review-form');
+  f.classList.toggle('open');
+  if(f.classList.contains('open')) f.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function setStarRating(val){
+  currentStarRating = val;
+  document.querySelectorAll('.star-pick').forEach((s,i)=>s.classList.toggle('active', i<val));
+}
+function submitReview(){
+  const name = document.getElementById('rev-name').value.trim();
+  const email = document.getElementById('rev-email').value.trim();
+  const text = document.getElementById('rev-text').value.trim();
+  if(!name || !email || !text || !currentStarRating){
+    showToast('<i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Please fill all fields and select a rating!');
+    return;
+  }
+  product.reviews.unshift({ name, date:'Just now', stars: currentStarRating, text, verified:false });
+  product.rating = product.reviews.reduce((s,r)=>s+r.stars,0) / product.reviews.length;
+  saveProductReviews(product.id, product.reviews);
+  renderReviews();
+  toggleReviewForm();
+  document.getElementById('rev-name').value = '';
+  document.getElementById('rev-email').value = '';
+  document.getElementById('rev-text').value = '';
+  currentStarRating = 0;
+  document.querySelectorAll('.star-pick').forEach(s=>s.classList.remove('active'));
+  showToast('<i class="fas fa-star" style="margin-right:8px"></i>Review submitted! Thank you.');
+}
+
+// ============================================================================
+// RELATED PRODUCTS (same category, excluding current)
+// ============================================================================
+function renderRelated(){
+  const all = getAllProducts().filter(p => p.category === product.category && String(p.id) !== String(product.id)).slice(0,4);
+  const grid = document.getElementById('related-grid');
+  if(!all.length){ document.getElementById('related-section').style.display = 'none'; return; }
+  grid.innerHTML = all.map(p => {
+    const img = (p.images && p.images[0]) || p.img || FALLBACK_IMG;
+    return `
+    <a href="product.html?id=${p.id}" style="text-decoration:none;color:inherit;display:block;border:1px solid var(--border,#eee);border-radius:10px;overflow:hidden">
+      <img src="${img}" alt="${p.name}" style="width:100%;aspect-ratio:1/1.1;object-fit:cover;display:block"/>
+      <div style="padding:10px">
+        <div style="font-size:.82rem;font-weight:600;color:#111;line-height:1.3;margin-bottom:4px">${p.name}</div>
+        <div style="font-size:.82rem;color:var(--accent,#b8860b);font-weight:700">Rs. ${Number(p.price).toLocaleString()}</div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+// ============================================================================
+// QTY / CART
+// ============================================================================
+function changeQty(d){ qty = Math.max(1, qty + d); document.getElementById('qty-display').value = qty; }
+
+function addToCartAction(){
+  if(!product.inStock){ showToast('<i class="fas fa-ban" style="margin-right:8px"></i>This product is out of stock.'); return; }
+  const activeImg = product.images[activeImgIndex] || product.images[0];
+  const existing = cartItems.find(x => x.id === product.id && x.color === selectedColor);
+  if(existing){
+    existing.qty += qty;
+    existing.img = activeImg;
+  } else {
+    cartItems.push({
+      id: product.id, name: product.name, color: selectedColor, qty, price: product.price,
+      currency: product.currency, img: activeImg, imgs: product.images, activeIdx: activeImgIndex
+    });
+  }
+  updateCartUI();
+  toggleCart();
+  showToast('<i class="fas fa-check" style="margin-right:8px"></i>Added to cart!');
+  fireEvent('AddToCart');
+}
+function removeCartItem(i){ cartItems.splice(i,1); updateCartUI(); }
+function switchCartImg(itemIdx, imgIdx){
+  cartItems[itemIdx].img = cartItems[itemIdx].imgs[imgIdx];
+  cartItems[itemIdx].activeIdx = imgIdx;
+  updateCartUI();
+}
+function updateCartUI(){
+  const total = cartItems.reduce((s,x)=>s + x.price*x.qty, 0);
+  const count = cartItems.reduce((s,x)=>s + x.qty, 0);
+  document.getElementById('cart-count').textContent = count;
+  document.getElementById('cart-total').textContent = 'Rs. ' + total.toLocaleString();
+  const body = document.getElementById('cart-body');
+  if(!cartItems.length){
+    body.innerHTML = '<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>Your cart is empty</p></div>';
+    return;
+  }
+  body.innerHTML = cartItems.map((x,i)=>`
+    <div class="cart-item">
+      <div class="cart-item-img-wrap">
+        <img src="${x.img}" alt="${x.name}" id="cart-main-img-${i}"/>
+        <div class="cart-item-thumbs">
+          ${(x.imgs||[]).slice(0,6).map((im,j)=>`
+            <div class="cart-thumb-dot${j===x.activeIdx?' active':''}" onclick="switchCartImg(${i},${j})">
+              <img src="${im}" alt="view ${j+1}" loading="lazy"/>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${x.name}</div>
+        <div class="cart-item-meta">Color: ${x.color} · Qty: ${x.qty}</div>
+        <div class="cart-item-price">Rs. ${(x.price*x.qty).toLocaleString()}</div>
+      </div>
+      <button class="cart-item-remove" onclick="removeCartItem(${i})"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+function toggleCart(){
+  document.getElementById('cart-overlay').classList.toggle('open');
+  document.getElementById('cart-drawer').classList.toggle('open');
+}
+
+// ============================================================================
+// CHECKOUT
+// ============================================================================
+function buildCheckoutThumbs(){
+  const strip = document.getElementById('checkout-thumbs');
+  strip.innerHTML = product.images.slice(0,8).map((img,i)=>`
+    <div class="checkout-thumb${i===0?' active':''}" onclick="switchCheckoutImg(${i})">
+      <img src="${img}" alt="view ${i+1}" loading="lazy"/>
+    </div>`).join('');
+}
+function switchCheckoutImg(idx){
+  checkoutActiveImgIdx = idx;
+  document.getElementById('checkout-main-img').src = product.images[idx];
+  document.querySelectorAll('.checkout-thumb').forEach((t,i)=>t.classList.toggle('active', i===idx));
+}
+
+function buildShippingOptions(){
+  const s = getShippingSettings();
+  document.getElementById('ship-standard-price').textContent = 'Rs. ' + s.standardFee;
+  document.getElementById('ship-express-price').textContent = 'Rs. ' + s.expressFee;
+  document.getElementById('ship-free-label').textContent = `Free Shipping (Orders above Rs. ${s.freeThreshold.toLocaleString()})`;
+  selectedShipping = s.standardFee;
+}
+function buildDepositOptions(){
+  const bank = getBankSettings();
+  const sel = document.getElementById('deposit-method');
+  sel.innerHTML = '<option value="">— Select Deposit Method —</option>' +
+    bank.deposit.map(d => `<option value="${d.value}">${d.label}</option>`).join('');
+  document.getElementById('deposit-amount-text').textContent = 'Rs. ' + bank.advanceAmount;
+  document.getElementById('deposit-amount-text2').textContent = 'Rs. ' + bank.advanceAmount;
+  document.getElementById('co-advance-line').textContent = '— Rs. ' + bank.advanceAmount;
+}
+
+function openCheckout(){
+  if(!product.inStock){ showToast('<i class="fas fa-ban" style="margin-right:8px"></i>This product is out of stock.'); return; }
+  checkoutActiveImgIdx = activeImgIndex;
+  document.getElementById('checkout-main-img').src = product.images[activeImgIndex] || product.images[0];
+  document.querySelectorAll('.checkout-thumb').forEach((t,i)=>t.classList.toggle('active', i===activeImgIndex));
+  document.getElementById('checkout-name').textContent = product.name;
+  document.getElementById('checkout-meta').textContent = `Color: ${selectedColor} · Qty: ${qty}`;
+  document.getElementById('checkout-price').textContent = formatPrice(product.price*qty);
+  updateOrderTotals();
+  document.getElementById('checkout-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  fireEvent('InitiateCheckout');
+}
+function closeCheckout(){
+  document.getElementById('checkout-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function selectShipping(el, type){
+  document.querySelectorAll('.shipping-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+  const s = getShippingSettings();
+  selectedShipping = type === 'express' ? s.expressFee : type === 'free' ? 0 : s.standardFee;
+  updateOrderTotals();
+}
+function selectPayment(el, method){
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+  selectedPayment = method;
+}
+function updateOrderTotals(){
+  const bank = getBankSettings();
+  const subtotal = product.price * qty;
+  document.getElementById('co-product-cost').textContent = formatPrice(subtotal);
+  document.getElementById('ship-standard-price'); // no-op guard
+  document.getElementById('co-shipping-cost').textContent = selectedShipping === 0 ? 'FREE' : 'Rs. ' + selectedShipping;
+  document.getElementById('co-total-display').textContent = formatPrice(subtotal + selectedShipping - bank.advanceAmount);
+}
+
+function placeOrder(){
+  const contact = document.getElementById('co-contact').value.trim();
+  const fname = document.getElementById('co-fname').value.trim();
+  const lname = document.getElementById('co-lname').value.trim();
+  const address = document.getElementById('co-address').value.trim();
+  const city = document.getElementById('co-city').value.trim();
+  const phone = document.getElementById('co-phone').value.trim();
+  if(!contact || !fname || !lname || !address || !city || !phone){
+    showToast('<i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Please fill all required fields!');
+    return;
+  }
+  const bank = getBankSettings();
+  const waNumber = sanitizePhone(bank.whatsapp);
+  if(!waNumber){
+    showToast('<i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Store WhatsApp number not configured.');
+    return;
+  }
+  const msg = `🛍️ *NEW ORDER — BIN SALEH Store*\n\n*Product:* ${product.name}\n*Color:* ${selectedColor}\n*Qty:* ${qty}\n*Subtotal:* ${formatPrice(product.price*qty)}\n*Shipping:* Rs. ${selectedShipping}\n*Payment:* ${selectedPayment.toUpperCase()}\n\n*Customer Details*\n*Name:* ${fname} ${lname}\n*Contact:* ${contact}\n*Phone:* ${phone}\n*Address:* ${address}, ${city}\n*Country:* ${document.getElementById('co-country').value}`;
+  window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(msg), '_blank');
+  closeCheckout();
+  showToast('<i class="fas fa-check-circle" style="margin-right:8px"></i>Order placed! We\'ll confirm shortly.');
+  fireEvent('Purchase');
+}
+
+function openWhatsApp(){
+  const bank = getBankSettings();
+  const waNumber = sanitizePhone(bank.whatsapp);
+  if(!waNumber){
+    showToast('<i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Store WhatsApp number not configured.');
+    return;
+  }
+  const msg = `🛍️ *Order Enquiry — BIN SALEH Store*\n\n*Product:* ${product.name}\n*Color:* ${selectedColor}\n*Qty:* ${qty}\n*Price:* ${formatPrice(product.price*qty)}\n\nI'd like to place an order!`;
+  window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ============================================================================
+// ACCORDION TOGGLE
+// ============================================================================
+function toggleAccordion(btn){
+  const body = btn.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.accordion-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.accordion-header').forEach(b=>b.classList.remove('open'));
+  if(!isOpen){ body.classList.add('open'); btn.classList.add('open'); }
+}
+
+// ============================================================================
+// NAV / SEARCH / MOBILE MENU
+// ============================================================================
+function toggleSearch(){ document.getElementById('search-bar').classList.toggle('open'); }
+function toggleMobileMenu(){
+  const m = document.getElementById('mobile-menu');
+  const icon = document.getElementById('menu-icon');
+  m.classList.toggle('open');
+  icon.className = m.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+}
+
+// ============================================================================
+// TOAST
+// ============================================================================
+function showToast(html){
+  const old = document.querySelector('.toast'); if(old) old.remove();
+  const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = html;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2800);
+}
+
+// ============================================================================
+// PIXELS — reads the SAME settings the admin panel's "Pixels & Ads" page saves,
+// so connecting a pixel in admin actually activates it here automatically.
+// ============================================================================
+let _fbReady = false, _ttqReady = false;
+function initPixels(){
+  const ps = safeParse('dn_pixel_settings', null);
+  if(!ps) return;
+  try{
+    if(ps.fb && ps.fb.enabled && ps.fb.pixelId){
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', ps.fb.pixelId);
+      fbq('track','PageView');
+      fbq('track','ViewContent',{content_name:product.name, value:product.price, currency:product.currency});
+      _fbReady = true;
+    }
+    if(ps.tiktok && ps.tiktok.enabled && ps.tiktok.pixelId){
+      !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src=i+"?sdkid="+e+"&lib="+t;var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(n,s)}}(window,document,'ttq');
+      ttq.load(ps.tiktok.pixelId);
+      ttq.page();
+      _ttqReady = true;
+    }
+  }catch(e){ console.warn('Pixel init skipped:', e); }
+}
+function fireEvent(name){
+  try{
+    if(_fbReady) fbq('track', name, { content_name:product.name, value:product.price*qty, currency:product.currency });
+    if(_ttqReady) ttq.track(name === 'AddToCart' ? 'AddToCart' : name === 'InitiateCheckout' ? 'InitiateCheckout' : 'CompletePayment', { content_name:product.name, value:product.price*qty, currency:product.currency });
+  }catch(e){ /* pixel not loaded — ignore */ }
+}
+
+// ============================================================================
+init();
+
+</script>
+<script src="./trackin.js"></script>
+</body>
+</html>

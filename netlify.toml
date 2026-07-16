@@ -1,0 +1,8 @@
+# netlify.toml — BIN SALEH Store Frontend
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  publish = "binsaleh-frontend"  # All static HTML/CSS/JS files are here
+
+# No redirect rules needed — this is a multi-page static site with real .html files
+# Netlify serves the correct file automatically for each URL

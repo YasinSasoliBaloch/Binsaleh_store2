@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BIN SALEH Store – Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root {
+  --accent: #b8860b;
+  --accent2: #d4a017;
+  --accent-light: rgba(184,134,11,0.12);
+  --bg: #0f1117;
+  --bg2: #161b26;
+  --bg3: #1e2535;
+  --border: rgba(255,255,255,0.08);
+  --text: #f0f0f0;
+  --muted: #8892a4;
+  --red: #ef4444;
+  --green: #22c55e;
+  --blue: #3b82f6;
+  --purple: #a855f7;
+  --sidebar-w: 240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+/* ===== LOGIN ===== */
+#login-screen {
+  position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;
+}
+.login-box {
+  background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:48px;width:100%;max-width:420px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+}
+.login-logo {font-family:'Bebas Neue';font-size:2.4rem;letter-spacing:4px;color:var(--accent);text-align:center;margin-bottom:8px;}
+.login-sub {text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:36px;}
+.form-group {margin-bottom:18px;}
+.form-group label {display:block;font-size:0.78rem;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.form-group input {
+  width:100%;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);border-radius:10px;font-size:0.9rem;outline:none;transition:border-color 0.2s;
+}
+.form-group input:focus {border-color:var(--accent);}
+.login-btn {
+  width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;border-radius:10px;font-size:0.9rem;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all 0.25s;margin-top:8px;
+}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(184,134,11,0.4);}
+.login-hint {text-align:center;color:var(--muted);font-size:0.75rem;margin-top:16px;}
+.login-hint span{color:var(--accent);}
+
+/* ===== LAYOUT ===== */
+#app{display:none;}
+.layout{display:flex;min-height:100vh;}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width:var(--sidebar-w);flex-shrink:0;background:var(--bg2);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform 0.3s;overflow-y:auto;
+}
+.sidebar-logo {
+  padding:24px 20px;border-bottom:1px solid var(--border);
+  font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:4px;color:var(--accent);
+}
+.sidebar-logo small{display:block;font-family:'DM Sans';font-size:0.65rem;color:var(--muted);letter-spacing:2px;font-weight:500;text-transform:uppercase;margin-top:2px;}
+.sidebar-nav{flex:1;padding:16px 12px;}
+.nav-section{margin-bottom:24px;}
+.nav-section-title{font-size:0.62rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:0 8px;margin-bottom:8px;}
+.nav-item {
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+  cursor:pointer;transition:all 0.2s;color:var(--muted);font-size:0.84rem;font-weight:500;
+  margin-bottom:2px;text-decoration:none;
+}
+.nav-item:hover{background:var(--accent-light);color:var(--accent);}
+.nav-item.active{background:var(--accent-light);color:var(--accent);font-weight:600;}
+.nav-item i{width:18px;text-align:center;font-size:0.9rem;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:0.58rem;font-weight:700;padding:2px 7px;border-radius:10px;}
+.sidebar-bottom{padding:16px 12px;border-top:1px solid var(--border);}
+.admin-profile{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;}
+.admin-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.9rem;flex-shrink:0;}
+.admin-name{font-size:0.82rem;font-weight:600;color:var(--text);}
+.admin-role{font-size:0.68rem;color:var(--muted);}
+
+/* ===== MAIN ===== */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  height:64px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+  position:sticky;top:0;z-index:50;gap:16px;
+}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.page-title{font-family:'Bebas Neue';font-size:1.5rem;letter-spacing:2px;color:var(--text);}
+.breadcrumb-trail{font-size:0.75rem;color:var(--muted);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.tb-btn{
+  width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+  background:var(--bg3);border:1px solid var(--border);color:var(--muted);
+  border-radius:8px;cursor:pointer;font-size:0.9rem;transition:all 0.2s;position:relative;
+}
+.tb-btn:hover{color:var(--accent);border-color:var(--accent);}
+.tb-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--bg2);}
+.topbar-search{
+  display:flex;align-items:center;gap:8px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:8px;padding:0 14px;height:38px;
+}
+.topbar-search input{background:none;border:none;color:var(--text);font-size:0.84rem;outline:none;width:180px;}
+.topbar-search input::placeholder{color:var(--muted);}
+
+/* ===== CONTENT PAGES ===== */
+.page{display:none;padding:28px;}
+.page.active{display:block;}
+
+/* ===== STATS GRID ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;
+  transition:transform 0.2s;cursor:default;
+}
+.stat-card:hover{transform:translateY(-3px);}
+.stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.stat-icon.gold{background:rgba(184,134,11,0.15);color:var(--accent);}
+.stat-icon.green{background:rgba(34,197,94,0.15);color:var(--green);}
+.stat-icon.blue{background:rgba(59,130,246,0.15);color:var(--blue);}
+.stat-icon.purple{background:rgba(168,85,247,0.15);color:var(--purple);}
+.stat-badge{font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:6px;}
+.stat-badge.up{background:rgba(34,197,94,0.15);color:var(--green);}
+.stat-badge.down{background:rgba(239,68,68,0.15);color:var(--red);}
+.stat-value{font-family:'Bebas Neue';font-size:2rem;letter-spacing:2px;color:var(--text);line-height:1;}
+.stat-label{font-size:0.75rem;color:var(--muted);margin-top:4px;}
+
+/* ===== CARDS ===== */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.card-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.card-title{font-size:0.88rem;font-weight:700;color:var(--text);}
+.card-body{padding:22px;}
+
+/* ===== TABLE ===== */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:0.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:12px 14px;font-size:0.83rem;border-bottom:1px solid rgba(255,255,255,0.04);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.td-img{width:42px;height:52px;object-fit:cover;border-radius:6px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;}
+.badge-pending{background:rgba(234,179,8,0.15);color:#eab308;}
+.badge-processing{background:rgba(59,130,246,0.15);color:var(--blue);}
+.badge-shipped{background:rgba(168,85,247,0.15);color:var(--purple);}
+.badge-delivered{background:rgba(34,197,94,0.15);color:var(--green);}
+.badge-cancelled{background:rgba(239,68,68,0.15);color:var(--red);}
+.badge-sale{background:rgba(239,68,68,0.15);color:var(--red);}
+.badge-new{background:rgba(184,134,11,0.15);color:var(--accent);}
+.badge-active{background:rgba(34,197,94,0.15);color:var(--green);}
+.badge-inactive{background:rgba(239,68,68,0.15);color:var(--red);}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;letter-spacing:0.5px;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:6px 12px;font-size:0.73rem;}
+.btn-danger{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-success{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+.btn-success:hover{background:var(--green);color:#fff;}
+.icon-btn{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:none;color:var(--muted);font-size:0.8rem;}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+.icon-btn.del:hover{border-color:var(--red);color:var(--red);}
+
+/* ===== FORMS ===== */
+.form-grid{display:grid;gap:18px;}
+.form-grid-2{grid-template-columns:1fr 1fr;}
+.form-grid-3{grid-template-columns:1fr 1fr 1fr;}
+.field label{display:block;font-size:0.72rem;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);border-radius:9px;font-size:0.85rem;outline:none;transition:border-color 0.2s;font-family:'DM Sans',sans-serif;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);}
+.field textarea{resize:vertical;min-height:100px;}
+.field select option{background:var(--bg3);}
+
+/* ===== IMAGE UPLOAD ===== */
+.img-upload-area {
+  border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;
+  cursor:pointer;transition:all 0.2s;background:var(--bg3);
+}
+.img-upload-area:hover{border-color:var(--accent);background:var(--accent-light);}
+.img-upload-area i{font-size:2rem;color:var(--muted);display:block;margin-bottom:10px;}
+.img-upload-area p{font-size:0.82rem;color:var(--muted);}
+.img-upload-area span{color:var(--accent);font-weight:600;}
+#file-input{display:none;}
+.img-preview-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+.img-preview-item{position:relative;width:80px;height:80px;}
+.img-preview-item img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border);}
+.img-preview-item .rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.55rem;color:#fff;}
+
+/* URL input for product images */
+.url-input-wrap{display:flex;gap:8px;margin-top:10px;}
+.url-input-wrap input{flex:1;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:0.82rem;outline:none;}
+.url-input-wrap input:focus{border-color:var(--accent);}
+
+/* ===== MODAL ===== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:18px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,0.5);}
+.modal.modal-lg{max-width:780px;}
+.modal-header{padding:22px 26px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:5;}
+.modal-title{font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:2px;color:var(--accent);}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+.modal-body{padding:26px;}
+.modal-footer{padding:18px 26px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--bg2);}
+
+/* ===== CHART PLACEHOLDER ===== */
+.chart-area{background:var(--bg3);border-radius:10px;height:200px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:160px;padding:0 16px;}
+.chart-bar{flex:1;background:linear-gradient(to top,var(--accent),var(--accent2));border-radius:4px 4px 0 0;transition:height 0.5s;cursor:pointer;position:relative;}
+.chart-bar:hover::after{content:attr(data-val);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--bg2);color:var(--text);font-size:0.65rem;padding:2px 6px;border-radius:4px;white-space:nowrap;}
+
+/* ===== GRID LAYOUTS ===== */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.col-span-2{grid-column:span 2;}
+
+/* ===== PAGINATION ===== */
+.pagination{display:flex;align-items:center;gap:6px;padding:16px 0 0;}
+.page-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;font-size:0.8rem;border:1px solid var(--border);background:none;color:var(--muted);transition:all 0.2s;}
+.page-btn.active,.page-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* ===== TOAST ===== */
+#toast{position:fixed;bottom:24px;right:24px;z-index:9999;}
+.toast-msg{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:10px;font-size:0.83rem;margin-top:8px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:slideUp 0.3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.toast-msg.success i{color:var(--green);}
+.toast-msg.error i{color:var(--red);}
+.toast-msg.info i{color:var(--blue);}
+
+/* ===== SETTINGS ===== */
+.settings-section{margin-bottom:28px;}
+.settings-section h4{font-size:0.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+/* ===== TOGGLE ===== */
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--border);border-radius:24px;cursor:pointer;transition:0.3s;}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:0.3s;}
+.toggle input:checked + .toggle-slider{background:var(--accent);border-color:var(--accent);}
+.toggle input:checked + .toggle-slider::before{transform:translateX(20px);background:#fff;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .form-grid-2,.form-grid-3{grid-template-columns:1fr;}
+  .col-span-2{grid-column:span 1;}
+}
+@media(max-width:640px){
+  .stats-grid{grid-template-columns:1fr;}
+  .page{padding:16px;}
+}
+
+/* ===== ACTIVITY LOG ===== */
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.activity-dot.green{background:var(--green);}
+.activity-dot.blue{background:var(--blue);}
+.activity-dot.red{background:var(--red);}
+.activity-dot.gold{background:var(--accent);}
+.activity-text{font-size:0.82rem;color:var(--text);}
+.activity-time{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+
+/* ===== PRODUCT IMAGE URL PREVIEW ===== */
+.url-img-preview{width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:none;}
+
+/* ===== SIDEBAR MOBILE TOGGLE ===== */
+.mobile-menu-btn{display:none;width:38px;height:38px;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--muted);}
+@media(max-width:900px){.mobile-menu-btn{display:flex;}}
+
+/* ===== CURRENCY CHIP ===== */
+.currency-chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:0.7rem;color:var(--muted);margin-left:6px;}
+
+/* ===== SUBSCRIBER / PIXEL UI ===== */
+.pixel-card{display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg3);border-radius:12px;margin-bottom:12px;}
+.pixel-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.pixel-icon.tiktok{background:rgba(255,255,255,0.08);color:#fff;}
+.pixel-icon.meta{background:rgba(59,89,152,0.18);color:#3b5998;}
+.pixel-icon.insta{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);color:#fff;}
+.pixel-status{font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:6px;}
+.pixel-status.on{background:rgba(34,197,94,0.15);color:var(--green);}
+.pixel-status.off{background:rgba(239,68,68,0.15);color:var(--red);}
+
+/* ===== NEW: MULTI-IMAGE GALLERY MANAGER ===== */
+.gallery-manager{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+.gallery-thumb{position:relative;width:84px;height:84px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;}
+.gallery-thumb .rm{position:absolute;top:3px;right:3px;width:18px;height:18px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.55rem;color:#fff;}
+.gallery-thumb .primary-tag{position:absolute;bottom:0;left:0;right:0;background:rgba(184,134,11,0.9);color:#fff;font-size:0.55rem;text-align:center;padding:1px 0;font-weight:700;}
+.gallery-add-box{width:84px;height:84px;border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;flex-shrink:0;font-size:1.2rem;transition:all .2s;}
+.gallery-add-box:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ===== NEW: COLOR VARIANT MANAGER ===== */
+.color-row{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:10px;margin-bottom:8px;}
+.color-row input[type="text"]{flex:1;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:7px;font-size:0.82rem;outline:none;}
+.color-row select{padding:8px 12px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:7px;font-size:0.82rem;outline:none;}
+.color-swatch-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;cursor:pointer;}
+
+/* ===== NEW: PRODUCT DETAILS TABS (accordion content editing) ===== */
+.detail-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.detail-tab-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:0.76rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.detail-tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.detail-tab-pane{display:none;}
+.detail-tab-pane.active{display:block;}
+
+/* ===== NEW: REVIEW LIST IN MODAL ===== */
+.mini-review{background:var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+.mini-review-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.mini-review-name{font-size:0.82rem;font-weight:600;}
+.mini-review-stars{color:var(--accent);font-size:0.75rem;}
+.mini-review-text{font-size:0.78rem;color:var(--muted);line-height:1.5;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">BIN SALEH STORE</div>
+    <div class="login-sub">Admin Panel — Secure Access</div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="text" id="login-user" placeholder="admin@binsaleh.com"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()"><i class="fas fa-lock" style="margin-right:8px"></i>Login to Panel</button>
+    <p class="login-hint" id="login-hint-text"></p>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    BIN SALEH STORE
+    <small>Admin Panel</small>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><i class="fas fa-gauge-high"></i> Dashboard</div>
+      <div class="nav-item" onclick="showPage('orders',this)"><i class="fas fa-shopping-cart"></i> Orders <span class="nav-badge">5</span></div>
+      <div class="nav-item" onclick="showPage('products',this)"><i class="fas fa-box"></i> Products</div>
+      <div class="nav-item" onclick="showPage('categories',this)"><i class="fas fa-layer-group"></i> Categories</div>
+      <div class="nav-item" onclick="showPage('customers',this)"><i class="fas fa-users"></i> Customers</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Finance</div>
+      <div class="nav-item" onclick="showPage('payments',this)"><i class="fas fa-credit-card"></i> Payments</div>
+      <div class="nav-item" onclick="showPage('coupons',this)"><i class="fas fa-ticket"></i> Coupons</div>
+      <div class="nav-item" onclick="showPage('reports',this)"><i class="fas fa-chart-bar"></i> Reports</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Content</div>
+      <div class="nav-item" onclick="showPage('cms',this)"><i class="fas fa-image"></i> Banners / CMS</div>
+      <div class="nav-item" onclick="showPage('reviews',this)"><i class="fas fa-star"></i> Reviews</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Marketing</div>
+      <div class="nav-item" onclick="showPage('emailmkt',this)"><i class="fas fa-envelope-open-text"></i> Email Marketing <span class="nav-badge" id="subs-badge">0</span></div>
+      <div class="nav-item" onclick="showPage('pixels',this)"><i class="fas fa-bullseye"></i> Pixels &amp; Ads</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">System</div>
+      <div class="nav-item" onclick="showPage('settings',this)"><i class="fas fa-gear"></i> Settings</div>
+      <div class="nav-item" onclick="showPage('activity',this)"><i class="fas fa-list-check"></i> Activity Log</div>
+    </div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="admin-profile">
+      <div class="admin-avatar">A</div>
+      <div>
+        <div class="admin-name">Admin</div>
+        <div class="admin-role">Super Admin</div>
+      </div>
+      <i class="fas fa-right-from-bracket" style="margin-left:auto;color:var(--muted);cursor:pointer;font-size:0.85rem" onclick="doLogout()" title="Logout"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+      <div>
+        <div class="page-title" id="page-title">Dashboard</div>
+        <div class="breadcrumb-trail" id="breadcrumb">Admin &rsaquo; Dashboard</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <i class="fas fa-search" style="color:var(--muted);font-size:0.85rem"></i>
+        <input type="text" placeholder="Search..."/>
+      </div>
+      <div class="tb-btn" title="Notifications"><i class="fas fa-bell"></i><span class="tb-dot"></span></div>
+      <div class="tb-btn" title="Profile" onclick="showPage('settings',null)"><i class="fas fa-user"></i></div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="page active" id="page-dashboard">
+    <div style="padding:4px 0 20px"><span style="font-size:0.85rem;color:var(--muted)">Welcome back, <strong style="color:var(--accent)">Admin</strong> 👋 Here's what's happening today.</span></div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon gold"><i class="fas fa-bag-shopping"></i></div><span class="stat-badge up">↑ 12%</span></div>
+        <div class="stat-value">Rs. 1,24,500</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon green"><i class="fas fa-shopping-cart"></i></div><span class="stat-badge up">↑ 8%</span></div>
+        <div class="stat-value">238</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon blue"><i class="fas fa-users"></i></div><span class="stat-badge up">↑ 5%</span></div>
+        <div class="stat-value">1,842</div>
+        <div class="stat-label">Customers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon purple"><i class="fas fa-box"></i></div><span class="stat-badge down">↓ 2%</span></div>
+        <div class="stat-value" id="dash-product-count">16</div>
+        <div class="stat-label">Products</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Sales — Last 7 Days</div></div>
+        <div class="card-body">
+          <div class="chart-area">
+            <div class="chart-bars" id="chart-bars"></div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:24px;margin-top:10px">
+            <span style="font-size:0.72rem;color:var(--muted)">Mon–Sun</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Recent Activity</div></div>
+        <div class="card-body" style="padding:16px 22px">
+          <div class="activity-item"><div class="activity-dot green"></div><div><div class="activity-text">New order #238 placed — Rs. 5,450</div><div class="activity-time">2 mins ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot blue"></div><div><div class="activity-text">Product "Linen Co-ord Set" updated</div><div class="activity-time">14 mins ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot gold"></div><div><div class="activity-text">New customer registered: Sara H.</div><div class="activity-time">1 hour ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot red"></div><div><div class="activity-text">Order #231 cancelled by customer</div><div class="activity-time">2 hours ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot green"></div><div><div class="activity-text">Payment received: Rs. 3,250 (JazzCash)</div><div class="activity-time">3 hours ago</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Recent Orders</div>
+        <button class="btn btn-outline btn-sm" onclick="showPage('orders',null)">View All</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Customer</th><th>Products</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody id="dash-orders-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ORDERS ===== -->
+  <div class="page" id="page-orders">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm order-filter active" onclick="filterOrders('all',this)">All</button>
+        <button class="btn btn-outline btn-sm order-filter" onclick="filterOrders('pending',this)">Pending</button>
+        <button class="btn btn-outline btn-sm order-filter" onclick="filterOrders('processing',this)">Processing</button>
+        <button class="btn btn-outline btn-sm order-filter" onclick="filterOrders('shipped',this)">Shipped</button>
+        <button class="btn btn-outline btn-sm order-filter" onclick="filterOrders('delivered',this)">Delivered</button>
+        <button class="btn btn-outline btn-sm order-filter" onclick="filterOrders('cancelled',this)">Cancelled</button>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="exportOrders()"><i class="fas fa-file-export"></i> Export</button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="orders-body"></tbody>
+          </table>
+        </div>
+        <div style="padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <span style="font-size:0.78rem;color:var(--muted)">Showing 10 of 238 orders</span>
+          <div class="pagination"><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">3</div><div class="page-btn"><i class="fas fa-chevron-right" style="font-size:0.7rem"></i></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PRODUCTS ===== -->
+  <div class="page" id="page-products">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div style="font-size:0.85rem;color:var(--muted)"><strong style="color:var(--text)" id="products-count-text">16</strong> products total <span class="currency-chip" id="products-currency-chip"><i class="fas fa-coins"></i> Display: PKR</span></div>
+      <button class="btn btn-primary" onclick="openAddProductModal()"><i class="fas fa-plus"></i> Add Product</button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Old Price</th><th>Stock</th><th>Badge</th><th>Actions</th></tr></thead>
+            <tbody id="products-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CATEGORIES ===== -->
+  <div class="page" id="page-categories">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div></div>
+      <button class="btn btn-primary" onclick="openModal('cat-modal')"><i class="fas fa-plus"></i> Add Category</button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Image</th><th>Name</th><th>Slug</th><th>Products</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+          <!-- <tbody>
+            <tr><td><img class="td-img" src="https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=80" onerror="this.style.display='none'"/></td><td>Tops</td><td>tops</td><td>4</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><img class="td-img" src="https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=80" onerror="this.style.display='none'"/></td><td>Bottoms</td><td>bottoms</td><td>2</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><img class="td-img" src="https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=80" onerror="this.style.display='none'"/></td><td>Tracksuits</td><td>tracksuits</td><td>4</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><img class="td-img" src="https://dnstore.pk/cdn/shop/collections/FullSizeRender.jpg?v=1777735717&width=80" onerror="this.style.display='none'"/></td><td>Footwear</td><td>footwear</td><td>2</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td></td><td>Fragrances</td><td>fragrances</td><td>2</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td></td><td>Accessories</td><td>accessories</td><td>3</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody> -->
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CUSTOMERS ===== -->
+  <div class="page" id="page-customers">
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Total Spent</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="customers-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAYMENTS ===== -->
+  <div class="page" id="page-payments">
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon gold"><i class="fas fa-money-bill-wave"></i></div></div><div class="stat-value">Rs. 89,200</div><div class="stat-label">Total Received</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon blue"><i class="fas fa-clock"></i></div></div><div class="stat-value">Rs. 12,400</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon red"><div class="stat-icon" style="background:none;color:var(--red)"><i class="fas fa-rotate-left"></i></div></div></div><div class="stat-value">Rs. 2,800</div><div class="stat-label">Refunded</div></div>
+    </div>
+
+    <!-- ====== BANK / DEPOSIT DETAILS MANAGER (matches product.html: dn_bank_settings.deposit[{label,value}]) ====== -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header">
+        <div class="card-title">Advance Deposit / Bank Accounts</div>
+        <button class="btn btn-primary btn-sm" onclick="addBankMethodRow()"><i class="fas fa-plus"></i> Add Bank Account / Method</button>
+      </div>
+      <div class="card-body">
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:16px">Add your JazzCash, EasyPaisa, or Bank Transfer accounts here (account holder name + account number). These appear in the "Select Deposit Method" dropdown at checkout on every product page — no coding needed, just add/edit/delete below and Save.</p>
+        <div id="bank-methods-list"></div>
+        <div class="form-grid form-grid-2" style="margin-top:18px">
+          <div class="field"><label>Advance Deposit Amount (Rs.)</label><input type="number" id="bank-advance-amount" placeholder="250"/></div>
+          <div class="field"><label>WhatsApp Number (for orders)</label><input type="text" id="bank-whatsapp" placeholder="923000000000"/></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="saveBankSettings()"><i class="fas fa-floppy-disk"></i> Save Bank Details</button>
+      </div>
+    </div>
+
+    <!-- ====== SHIPPING FEES (matches product.html: dn_shipping_settings) ====== -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title">Shipping Fees</div></div>
+      <div class="card-body">
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:16px">These fees automatically show on every product page's checkout — Standard / Express / Free shipping options.</p>
+        <div class="form-grid form-grid-3">
+          <div class="field"><label>Standard Delivery Fee (Rs.)</label><input type="number" id="ship-standard-fee" placeholder="200"/></div>
+          <div class="field"><label>Express Delivery Fee (Rs.)</label><input type="number" id="ship-express-fee" placeholder="400"/></div>
+          <div class="field"><label>Free Shipping Threshold (Rs.)</label><input type="number" id="ship-free-threshold" placeholder="10000"/></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="saveShippingSettings()"><i class="fas fa-floppy-disk"></i> Save Shipping Fees</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Transaction History</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Txn ID</th><th>Customer</th><th>Method</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td>#TXN-001</td><td>Ahmed K.</td><td>JazzCash</td><td style="color:var(--green)">Rs. 5,450</td><td><span class="badge badge-delivered">Paid</span></td><td>Jun 8, 2026</td></tr>
+            <tr><td>#TXN-002</td><td>Sara H.</td><td>COD</td><td style="color:var(--green)">Rs. 3,250</td><td><span class="badge badge-delivered">Paid</span></td><td>Jun 7, 2026</td></tr>
+            <tr><td>#TXN-003</td><td>Mohsin F.</td><td>EasyPaisa</td><td style="color:var(--green)">Rs. 6,500</td><td><span class="badge badge-delivered">Paid</span></td><td>Jun 7, 2026</td></tr>
+            <tr><td>#TXN-004</td><td>Zara M.</td><td>Bank Transfer</td><td style="color:#eab308">Rs. 4,200</td><td><span class="badge badge-pending">Pending</span></td><td>Jun 6, 2026</td></tr>
+            <tr><td>#TXN-005</td><td>Ali R.</td><td>COD</td><td style="color:var(--red)">Rs. 2,800</td><td><span class="badge badge-cancelled">Refunded</span></td><td>Jun 5, 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== COUPONS ===== -->
+  <div class="page" id="page-coupons">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+      <button class="btn btn-primary" onclick="openModal('coupon-modal')"><i class="fas fa-plus"></i> Create Coupon</button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Code</th><th>Type</th><th>Discount</th><th>Min Order</th><th>Uses</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+          <!-- <tbody>
+            <tr><td><strong>SUMMER26</strong></td><td>Percentage</td><td>20%</td><td>Rs. 2,000</td><td>45 / 100</td><td>Jun 30, 2026</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><strong>DN250</strong></td><td>Flat</td><td>Rs. 250</td><td>Rs. 1,500</td><td>128 / 500</td><td>Jul 15, 2026</td><td><span class="badge badge-active">Active</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><strong>ELITE10</strong></td><td>Percentage</td><td>10%</td><td>Rs. 5,000</td><td>22 / 50</td><td>Jun 20, 2026</td><td><span class="badge badge-inactive">Expired</span></td><td style="display:flex;gap:6px"><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn del"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody> -->
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REPORTS ===== -->
+  <div class="page" id="page-reports">
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon gold"><i class="fas fa-chart-line"></i></div><span class="stat-badge up">↑ 18%</span></div><div class="stat-value">Rs. 1,24,500</div><div class="stat-label">This Month Revenue</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon green"><i class="fas fa-shopping-bag"></i></div><span class="stat-badge up">↑ 9%</span></div><div class="stat-value">238</div><div class="stat-label">This Month Orders</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon blue"><i class="fas fa-users"></i></div></div><div class="stat-value">52</div><div class="stat-label">New Customers</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon purple"><i class="fas fa-rotate"></i></div></div><div class="stat-value">Rs. 2,800</div><div class="stat-label">Refunds</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Top Selling Products</div></div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead><tr><th>Product</th><th>Sold</th><th>Revenue</th></tr></thead>
+            <tbody>
+              <tr><td>212 MEN NYC Fragrance</td><td>212</td><td style="color:var(--green)">Rs. 68,900</td></tr>
+              <tr><td>Korean Pants – Black</td><td>143</td><td style="color:var(--green)">Rs. 31,460</td></tr>
+              <tr><td>Linen Co-ord Set</td><td>128</td><td style="color:var(--green)">Rs. 69,760</td></tr>
+              <tr><td>Oversized Box-Fit Tee</td><td>115</td><td style="color:var(--green)">Rs. 17,235</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Sales by Category</div></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:0.8rem">Tracksuits</span><span style="font-size:0.8rem;color:var(--accent)">38%</span></div><div style="height:6px;background:var(--bg3);border-radius:3px"><div style="height:100%;width:38%;background:linear-gradient(to right,var(--accent),var(--accent2));border-radius:3px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:0.8rem">Fragrances</span><span style="font-size:0.8rem;color:var(--blue)">24%</span></div><div style="height:6px;background:var(--bg3);border-radius:3px"><div style="height:100%;width:24%;background:var(--blue);border-radius:3px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:0.8rem">Tops</span><span style="font-size:0.8rem;color:var(--green)">18%</span></div><div style="height:6px;background:var(--bg3);border-radius:3px"><div style="height:100%;width:18%;background:var(--green);border-radius:3px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:0.8rem">Footwear</span><span style="font-size:0.8rem;color:var(--purple)">12%</span></div><div style="height:6px;background:var(--bg3);border-radius:3px"><div style="height:100%;width:12%;background:var(--purple);border-radius:3px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:0.8rem">Others</span><span style="font-size:0.8rem;color:var(--muted)">8%</span></div><div style="height:6px;background:var(--bg3);border-radius:3px"><div style="height:100%;width:8%;background:var(--muted);border-radius:3px"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="exportReportPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+     
+     <button class="btn btn-outline" onclick="exportReportExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
+    </div>
+  </div>
+
+  <!-- ===== CMS ===== -->
+  <div class="page" id="page-cms">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title">Homepage Hero Slider</div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('slide-modal')"><i class="fas fa-plus"></i> Add Slide</button></div>
+      <div class="card-body">
+
+        <!-- <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border-radius:10px;">
+            <div style="width:80px;height:50px;background:var(--bg);border-radius:6px;overflow:hidden"><img src="https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=200" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div style="flex:1"><div style="font-size:0.85rem;font-weight:600">Summer Élite '26</div><div style="font-size:0.72rem;color:var(--muted)">Link: ./view.html</div></div>
+            <span class="badge badge-active">Active</span>
+            <button class="icon-btn"><i class="fas fa-pen"></i></button>
+            <button class="icon-btn del"><i class="fas fa-trash"></i></button>
+          </div> -->
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border-radius:10px;">
+    <div style="width:80px;height:50px;background:var(--bg);border-radius:6px;overflow:hidden"><img src="https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=200" style="width:100%;height:100%;object-fit:cover"/></div>
+    <div style="flex:1"><div style="font-size:0.85rem;font-weight:600">Summer Élite '26</div><div style="font-size:0.72rem;color:var(--muted)">Link: ./view.html</div></div>
+    <span class="badge badge-active">Active</span>
+   <button class="icon-btn" onclick="editSlide(this)"><i class="fas fa-pen"></i></button>   <!-- ❌ no onclick -->
+    <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>  <!-- ❌ no onclick -->
+  </div>
+  ...
+          <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border-radius:10px;">
+            <div style="width:80px;height:50px;background:var(--bg);border-radius:6px;overflow:hidden"><img src="https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=200" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div style="flex:1"><div style="font-size:0.85rem;font-weight:600">Tracksuits Collection</div><div style="font-size:0.72rem;color:var(--muted)">Link: ./TrackSuits.html</div></div>
+            <span class="badge badge-active">Active</span>
+            <button class="icon-btn" onclick="editSlide(this)"><i class="fas fa-pen"></i></button>
+          <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Announcement Bar Text</div></div>
+      <div class="card-body">
+        <div class="field" style="margin-bottom:14px">
+          <label>Announcement Text</label>
+          <textarea>🚚 Free Shipping on Orders Above Rs. 10,000 | 💰 COD Available Nationwide | 🔄 Easy Exchange Policy | ✅ Rs. 250 Advance Required to Confirm Order | ⭐ Summer Élite '26 Collection is Live!</textarea>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Store Name (Logo Text)</label>
+          <input type="text" value="IK STORE"/>
+        </div>
+        <button class="btn btn-primary" onclick="toast('Changes saved!','success')"><i class="fas fa-floppy-disk"></i> Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REVIEWS ===== -->
+  <div class="page" id="page-reviews">
+    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Reviews submitted by customers on each product page appear here for moderation.</div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="all-reviews-body">
+            <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No reviews yet. Reviews submitted on product pages will appear here.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EMAIL MARKETING ===== -->
+  <div class="page" id="page-emailmkt">
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon gold"><i class="fas fa-users"></i></div></div><div class="stat-value" id="subs-total">0</div><div class="stat-label">Subscribed Users</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon green"><i class="fas fa-paper-plane"></i></div></div><div class="stat-value" id="emails-sent">0</div><div class="stat-label">Emails Sent</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-icon blue"><i class="fas fa-bullhorn"></i></div></div><div class="stat-value" id="last-campaign">—</div><div class="stat-label">Last Campaign</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Send Announcement Email</div></div>
+        <div class="card-body">
+          <div class="form-grid" style="gap:14px">
+            <div class="field"><label>Subject</label><input type="text" id="email-subject" placeholder="e.g. Summer Élite '26 — Flat 20% Off Today!"/></div>
+            <div class="field"><label>Message</label><textarea id="email-body" placeholder="Write your announcement / promo message here..."></textarea></div>
+            <div class="field"><label>Send To</label>
+              <select id="email-audience">
+                <option value="all">All Subscribed Users</option>
+                <option value="customers">Customers Only</option>
+                <option value="newsletter">Newsletter Signups Only</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:18px" onclick="sendAnnouncementEmail()"><i class="fas fa-paper-plane"></i> Send Email to All Subscribers</button>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:10px"><i class="fas fa-circle-info"></i> Email goes to every user who signed up / subscribed to the newsletter on the store.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Subscribed Users List</div><button class="btn btn-outline btn-sm" onclick="exportSubscribers()"><i class="fas fa-file-export"></i> Export CSV</button></div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap" style="max-height:340px;overflow-y:auto">
+            <table>
+              <thead><tr><th>Email</th><th>Source</th><th>Date Joined</th><th>Status</th></tr></thead>
+              <tbody id="subscribers-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><div class="card-title">Email Campaign History</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Subject</th><th>Audience</th><th>Recipients</th><th>Date Sent</th><th>Status</th></tr></thead>
+          <tbody id="campaign-history-body">
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No campaigns sent yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PIXELS & ADS ===== -->
+  <div class="page" id="page-pixels">
+    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:18px">Connect your ad platforms below. Once connected, every <strong style="color:var(--text)">new product</strong> you add and every <strong style="color:var(--text)">order/purchase event</strong> will automatically be sent to these pixels for catalog sync &amp; conversion tracking.</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">TikTok Pixel</div></div>
+        <div class="card-body">
+          <div class="pixel-card">
+            <div class="pixel-icon tiktok"><i class="fab fa-tiktok"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:0.88rem">TikTok Ads Pixel</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Used for TikTok Seller Center & Ads catalog sync</div>
+            </div>
+            <span class="pixel-status off" id="tiktok-status">Disconnected</span>
+          </div>
+          <div class="form-grid" style="gap:14px">
+            <div class="field"><label>TikTok Pixel ID</label><input type="text" id="tiktok-pixel-id" placeholder="e.g. C4XXXXXXXXXXXXXXXXXX"/></div>
+            <div class="field"><label>TikTok Access Token (Events API)</label><input type="password" id="tiktok-token" placeholder="••••••••••••••••"/></div>
+            <div class="field"><label>TikTok Seller / Catalog ID (optional)</label><input type="text" id="tiktok-catalog-id" placeholder="e.g. 7XXXXXXXXXXXXXXXXX"/></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+            <label class="toggle"><input type="checkbox" id="tiktok-enabled" onchange="updatePixelStatus()"/><div class="toggle-slider"></div></label>
+            <span style="font-size:0.84rem">Send new products & purchase events to TikTok</span>
+          </div>
+          <button class="btn btn-primary" style="margin-top:18px" onclick="savePixelSettings('tiktok')"><i class="fas fa-floppy-disk"></i> Save TikTok Settings</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Meta Pixel (Facebook & Instagram)</div></div>
+        <div class="card-body">
+          <div class="pixel-card">
+            <div class="pixel-icon meta"><i class="fab fa-facebook"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:0.88rem">Facebook Pixel</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Used for Facebook Ads & Commerce Catalog</div>
+            </div>
+            <span class="pixel-status off" id="fb-status">Disconnected</span>
+          </div>
+          <div class="form-grid" style="gap:14px;margin-bottom:14px">
+            <div class="field"><label>Facebook Pixel ID</label><input type="text" id="fb-pixel-id" placeholder="e.g. 1234567890123456"/></div>
+            <div class="field"><label>Conversions API Access Token</label><input type="password" id="fb-token" placeholder="••••••••••••••••"/></div>
+            <div class="field"><label>Facebook Catalog ID (optional)</label><input type="text" id="fb-catalog-id" placeholder="e.g. 9876543210"/></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+            <label class="toggle"><input type="checkbox" id="fb-enabled" onchange="updatePixelStatus()"/><div class="toggle-slider"></div></label>
+            <span style="font-size:0.84rem">Send new products & purchase events to Facebook</span>
+          </div>
+
+          <div class="pixel-card">
+            <div class="pixel-icon insta"><i class="fab fa-instagram"></i></div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:0.88rem">Instagram Shopping</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Synced via the same Meta Pixel & Catalog</div>
+            </div>
+            <span class="pixel-status off" id="insta-status">Disconnected</span>
+          </div>
+          <div class="form-grid" style="gap:14px">
+            <div class="field"><label>Instagram Business Account ID (optional)</label><input type="text" id="insta-account-id" placeholder="e.g. 17841400000000000"/></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+            <label class="toggle"><input type="checkbox" id="insta-enabled" onchange="updatePixelStatus()"/><div class="toggle-slider"></div></label>
+            <span style="font-size:0.84rem">Sync new products to Instagram Shop</span>
+          </div>
+
+          <button class="btn btn-primary" style="margin-top:18px" onclick="savePixelSettings('meta')"><i class="fas fa-floppy-disk"></i> Save Meta Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><div class="card-title">Pixel Sync Log</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Event</th><th>Product / Order</th><th>Platform</th><th>Status</th><th>Time</th></tr></thead>
+          <tbody id="pixel-log-body">
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No sync events yet. Connect a pixel above and add a product to see activity here.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div class="page" id="page-settings">
+    <div class="grid-2">
+      <div>
+        <div class="settings-section">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-store" style="margin-right:8px;color:var(--accent)"></i>Store Settings</div></div>
+            <div class="card-body">
+              <div class="form-grid" style="gap:14px">
+                <div class="field"><label>Store Name</label><input type="text" value="DN Store"/></div>
+                <div class="field"><label>Store Email</label><input type="text" value="support@dnstore.pk"/></div>
+                <div class="field"><label>Phone</label><input type="text" value="+92 300 0000000"/></div>
+                <div class="field"><label>WhatsApp</label><input type="text" value="+92 300 0000000"/></div>
+                <div class="field"><label>Default Display Currency</label>
+                  <select id="default-currency" onchange="updateCurrencyDisplays()">
+                    <option value="PKR" selected>PKR – Pakistani Rupee (Rs.)</option>
+                    <option value="AED">AED – UAE Dirham (د.إ)</option>
+                    <option value="USD">USD – US Dollar ($)</option>
+                  </select>
+                </div>
+                <div class="field"><label>Advance Amount Required</label><input type="text" value="Rs. 250"/></div>
+              </div>
+              <button class="btn btn-primary" style="margin-top:18px" onclick="toast('Store settings saved!','success')"><i class="fas fa-floppy-disk"></i> Save</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title"><i class="fas fa-coins" style="margin-right:8px;color:var(--accent)"></i>Currency & Exchange Rates</div></div>
+          <div class="card-body">
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:14px">Set conversion rates from PKR. Used to show product prices in AED / USD on the storefront and admin panel.</p>
+            <div class="form-grid form-grid-2" style="gap:14px">
+              <div class="field"><label>1 PKR = ? AED</label><input type="number" step="0.0001" id="rate-pkr-aed" value="0.0132"/></div>
+              <div class="field"><label>1 PKR = ? USD</label><input type="number" step="0.0001" id="rate-pkr-usd" value="0.0036"/></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+              <label class="toggle"><input type="checkbox" id="show-multi-currency" checked onchange="updateCurrencyDisplays()"/><div class="toggle-slider"></div></label>
+              <span style="font-size:0.84rem">Show prices in multiple currencies (PKR / AED / USD) on storefront</span>
+            </div>
+            <button class="btn btn-primary" style="margin-top:18px" onclick="saveCurrencyRates()"><i class="fas fa-floppy-disk"></i> Save Rates</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-shield-alt" style="margin-right:8px;color:var(--accent)"></i>Admin Password</div></div>
+          <div class="card-body">
+            <div class="form-grid" style="gap:14px">
+              <div class="field"><label>Current Password</label><input type="password" placeholder="••••••••"/></div>
+              <div class="field"><label>New Password</label><input type="password" placeholder="••••••••"/></div>
+              <div class="field"><label>Confirm Password</label><input type="password" placeholder="••••••••"/></div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:18px" onclick="toast('Password updated!','success')"><i class="fas fa-lock"></i> Update</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title"><i class="fas fa-truck" style="margin-right:8px;color:var(--accent)"></i>Shipping</div></div>
+          <div class="card-body">
+            <div class="form-grid" style="gap:14px">
+              <div class="field"><label>Free Shipping Above</label><input type="text" value="Rs. 10,000"/></div>
+              <div class="field"><label>Standard Shipping Fee</label><input type="text" value="Rs. 200"/></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+              <label class="toggle"><input type="checkbox" checked/><div class="toggle-slider"></div></label>
+              <span style="font-size:0.84rem">Nationwide Delivery Enabled</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+              <label class="toggle"><input type="checkbox" checked/><div class="toggle-slider"></div></label>
+              <span style="font-size:0.84rem">Cash on Delivery (COD)</span>
+            </div>
+            <button class="btn btn-primary" style="margin-top:18px" onclick="toast('Shipping saved!','success')"><i class="fas fa-floppy-disk"></i> Save</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title"><i class="fas fa-sliders" style="margin-right:8px;color:var(--accent)"></i>Feature Toggles</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem">Maintenance Mode</span><label class="toggle"><input type="checkbox"/><div class="toggle-slider"></div></label></div>
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem">Customer Reviews</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-slider"></div></label></div>
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem">Newsletter Signup</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-slider"></div></label></div>
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem">Language Selector</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-slider"></div></label></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-bullseye" style="margin-right:8px;color:var(--accent)"></i>Marketing Quick Status</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem"><i class="fab fa-tiktok" style="margin-right:8px"></i>TikTok Pixel</span><span class="pixel-status off" id="settings-tiktok-status">Disconnected</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem"><i class="fab fa-facebook" style="margin-right:8px;color:var(--blue)"></i>Facebook Pixel</span><span class="pixel-status off" id="settings-fb-status">Disconnected</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem"><i class="fab fa-instagram" style="margin-right:8px"></i>Instagram Shop</span><span class="pixel-status off" id="settings-insta-status">Disconnected</span></div>
+            </div>
+            <button class="btn btn-outline" style="margin-top:16px;width:100%" onclick="showPage('pixels',null)"><i class="fas fa-arrow-right"></i> Go to Pixels & Ads</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ACTIVITY ===== -->
+  <div class="page" id="page-activity">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Full Activity Log</div><button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Clear Log</button></div>
+      <div class="card-body" style="padding:16px 22px" id="full-activity"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+</div><!-- /app -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Product Modal (EXPANDED: multi-image gallery, colors, details/care/size/shipping, reviews) -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="product-modal-title">Add / Edit Product</div>
+      <button class="modal-close" onclick="closeModal('product-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+
+      <input type="hidden" id="p-edit-id" value=""/>
+
+      <div class="form-grid form-grid-2" style="margin-bottom:16px">
+        <div class="field"><label>Product Name</label><input type="text" id="p-name" placeholder="e.g. Linen Co-ord Set – Beige"/></div>
+        <div class="field"><label>Category</label>
+          <select id="p-cat">
+            <option value="tops">Tops</option>
+            <option value="bottoms">Bottoms</option>
+            <option value="tracksuits">Tracksuits</option>
+            <option value="footwear">Footwear</option>
+            <option value="fragrances">Fragrances</option>
+            <option value="accessories">Accessories</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Price + Currency -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Pricing</div>
+        <div class="form-grid form-grid-3">
+          <div class="field"><label>Price Currency</label>
+            <select id="p-currency" onchange="convertPriceCurrency()">
+              <option value="PKR">PKR – Rs.</option>
+              <option value="AED">AED – د.إ</option>
+              <option value="USD">USD – $</option>
+            </select>
+          </div>
+          <div class="field"><label>Sale Price</label><input type="number" id="p-price" placeholder="5450" oninput="convertPriceCurrency()"/></div>
+          <div class="field"><label>Original Price</label><input type="number" id="p-old" placeholder="8999" oninput="convertPriceCurrency()"/></div>
+        </div>
+        <div style="display:flex;gap:14px;margin-top:10px;font-size:0.74rem;color:var(--muted);flex-wrap:wrap">
+          <span class="currency-chip"><i class="fas fa-coins"></i> PKR: <strong id="conv-pkr" style="color:var(--text)">—</strong></span>
+          <span class="currency-chip"><i class="fas fa-coins"></i> AED: <strong id="conv-aed" style="color:var(--text)">—</strong></span>
+          <span class="currency-chip"><i class="fas fa-coins"></i> USD: <strong id="conv-usd" style="color:var(--text)">—</strong></span>
+        </div>
+      </div>
+
+      <div class="form-grid form-grid-2" style="margin-bottom:16px">
+        <div class="field"><label>Badge</label>
+          <select id="p-badge"><option value="SALE">SALE</option><option value="NEW">NEW</option><option value="ÉLITE">ÉLITE</option><option value="">None</option></select>
+        </div>
+        <div class="field"><label>Stock Status</label>
+          <select id="p-stock"><option value="true">In Stock</option><option value="false">Out of Stock</option></select>
+        </div>
+      </div>
+
+      <!-- ===== NEW: MULTI-IMAGE GALLERY ===== -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Product Image Gallery (multiple images)</div>
+        <p style="font-size:0.74rem;color:var(--muted);margin-bottom:10px">First image is the primary/cover image shown on listing pages. Add more for the product page gallery.</p>
+
+        <div class="url-input-wrap">
+          <input type="text" id="p-img-url-new" placeholder="Paste image URL and click Add..."/>
+          <button class="btn btn-outline btn-sm" onclick="addGalleryImageFromUrl()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+
+        <div class="gallery-manager" id="gallery-manager">
+          <div class="gallery-add-box" onclick="document.getElementById('gallery-file-input').click()"><i class="fas fa-cloud-arrow-up"></i></div>
+        </div>
+        <input type="file" id="gallery-file-input" multiple accept="image/*" style="display:none" onchange="handleGalleryUpload(this)"/>
+      </div>
+
+      <!-- ===== NEW: COLOR VARIANTS ===== -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Color Variants</div>
+        <div id="color-variant-list"></div>
+        <button class="btn btn-outline btn-sm" onclick="addColorVariantRow()"><i class="fas fa-plus"></i> Add Color</button>
+      </div>
+
+      <!-- ===== NEW: PRODUCT DETAILS / CARE / SIZE / SHIPPING (the 4 accordions) ===== -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Product Page Accordion Content</div>
+        <p style="font-size:0.74rem;color:var(--muted);margin-bottom:12px">This text appears in the 4 expandable sections on this specific product's page. Use line breaks for bullet points.</p>
+        <div class="detail-tabs">
+          <button type="button" class="detail-tab-btn active" onclick="switchDetailTab('details',this)">Product Details</button>
+          <button type="button" class="detail-tab-btn" onclick="switchDetailTab('care',this)">Care & Maintenance</button>
+          <button type="button" class="detail-tab-btn" onclick="switchDetailTab('size',this)">Size & Fit</button>
+          <button type="button" class="detail-tab-btn" onclick="switchDetailTab('shipping',this)">Shipping & Delivery</button>
+        </div>
+        <div class="detail-tab-pane active" id="pane-details">
+          <textarea id="p-detail-details" rows="6" placeholder="One point per line, e.g.&#10;Premium Quality | Heavyweight Build&#10;Automatic Movement | Transparent Back"></textarea>
+        </div>
+        <div class="detail-tab-pane" id="pane-care">
+          <textarea id="p-detail-care" rows="6" placeholder="One point per line, e.g.&#10;Avoid prolonged exposure to water&#10;Wipe with a soft microfibre cloth"></textarea>
+        </div>
+        <div class="detail-tab-pane" id="pane-size">
+          <textarea id="p-detail-size" rows="6" placeholder="One point per line, e.g.&#10;Case Diameter: 41mm&#10;Strap Length: Adjustable"></textarea>
+        </div>
+        <div class="detail-tab-pane" id="pane-shipping">
+          <textarea id="p-detail-shipping" rows="6" placeholder="One point per line, e.g.&#10;Nationwide delivery — 2 to 5 working days&#10;Free shipping on orders above Rs. 10,000"></textarea>
+        </div>
+      </div>
+
+      <!-- ===== NEW: PER-PRODUCT REVIEWS ===== -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Reviews for this Product</div>
+        <div id="product-reviews-list"></div>
+        <div class="form-grid form-grid-3" style="margin-top:10px">
+          <div class="field"><label>Name</label><input type="text" id="rev-add-name" placeholder="Customer name"/></div>
+          <div class="field"><label>Rating</label>
+            <select id="rev-add-stars"><option value="5">5 Stars</option><option value="4">4 Stars</option><option value="3">3 Stars</option><option value="2">2 Stars</option><option value="1">1 Star</option></select>
+          </div>
+          <div class="field"><label>Verified?</label>
+            <select id="rev-add-verified"><option value="true">Yes</option><option value="false">No</option></select>
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px"><label>Review Text</label><textarea id="rev-add-text" rows="3" placeholder="Write the review text..."></textarea></div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="addProductReview()"><i class="fas fa-plus"></i> Add Review</button>
+      </div>
+
+      <!-- Marketing sync -->
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Sync to Ad Platforms</div>
+        <div style="display:flex;flex-direction:column;gap:10px;background:var(--bg3);border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem"><i class="fab fa-tiktok" style="margin-right:8px"></i>Send to TikTok Catalog</span><label class="toggle"><input type="checkbox" id="p-sync-tiktok" checked/><div class="toggle-slider"></div></label></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem"><i class="fab fa-facebook" style="margin-right:8px;color:var(--blue)"></i>Send to Facebook Catalog</span><label class="toggle"><input type="checkbox" id="p-sync-fb" checked/><div class="toggle-slider"></div></label></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:0.84rem"><i class="fab fa-instagram" style="margin-right:8px"></i>Send to Instagram Shop</span><label class="toggle"><input type="checkbox" id="p-sync-insta" checked/><div class="toggle-slider"></div></label></div>
+        </div>
+        <p style="font-size:0.7rem;color:var(--muted);margin-top:8px"><i class="fas fa-circle-info"></i> Only platforms connected in Pixels & Ads will actually receive the product.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('product-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()"><i class="fas fa-floppy-disk"></i> Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add Category</div><button class="modal-close" onclick="closeModal('cat-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid form-grid-2">
+        <div class="field"><label>Category Name</label><input type="text" placeholder="e.g. Tops"/></div>
+        <div class="field"><label>Slug</label><input type="text" placeholder="tops"/></div>
+        <div class="field col-span-2">
+          <label>Category Image URL or Upload</label>
+          <input type="text" placeholder="Paste image URL..."/>
+          <div style="margin-top:8px"><button class="btn btn-outline btn-sm" onclick="document.getElementById('cat-file').click()"><i class="fas fa-upload"></i> Upload Image</button></div>
+          <input type="file" id="cat-file" accept="image/*" style="display:none"/>
+        </div>
+        <div class="field"><label>Status</label><select><option>Active</option><option>Inactive</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('cat-modal')">Cancel</button>
+     <button class="btn btn-primary" onclick="saveCategory()"><i class="fas fa-floppy-disk"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coupon Modal -->
+<div class="modal-overlay" id="coupon-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Create Coupon</div><button class="modal-close" onclick="closeModal('coupon-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid form-grid-2">
+        <div class="field"><label>Coupon Code</label><input type="text" placeholder="SUMMER26"/></div>
+        <div class="field"><label>Type</label><select><option>Percentage</option><option>Flat Amount</option></select></div>
+        <div class="field"><label>Discount Value</label><input type="text" placeholder="20 (%) or 250 (Rs.)"/></div>
+        <div class="field"><label>Min Order Value</label><input type="text" placeholder="Rs. 2000"/></div>
+        <div class="field"><label>Usage Limit</label><input type="number" placeholder="100"/></div>
+        <div class="field"><label>Expiry Date</label><input type="date"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('coupon-modal')">Cancel</button>
+   <button class="btn btn-primary" onclick="saveCoupon()"><i class="fas fa-floppy-disk"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="order-modal-title">Order #000</div><button class="modal-close" onclick="closeModal('order-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body" id="order-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('order-modal')">Close</button>
+      <button class="btn btn-primary" onclick="closeModal('order-modal');toast('Order updated!','success')"><i class="fas fa-floppy-disk"></i> Update Status</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Slide Modal -->
+<div class="modal-overlay" id="slide-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Banner Slide</div>
+      <button class="modal-close" onclick="closeModal('slide-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="gap:14px">
+        <div class="field"><label>Slide Title</label><input type="text" id="slide-title" placeholder="e.g. Summer Élite '26"/></div>
+        <div class="field"><label>Link URL</label><input type="text" id="slide-link" placeholder="e.g. ./view.html"/></div>
+        <div class="field">
+          <label>Image URL</label>
+          <div class="url-input-wrap">
+            <input type="text" id="slide-img-url" placeholder="https://... or paste image URL"/>
+            <button class="btn btn-outline btn-sm" onclick="previewSlideImg()"><i class="fas fa-eye"></i> Preview</button>
+          </div>
+          <img id="slide-img-preview" class="url-img-preview" style="margin-top:10px"/>
+        </div>
+        <div class="field">
+          <label>Or Upload Image</label>
+          <div class="img-upload-area" onclick="document.getElementById('slide-file-input').click()">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p>Click to upload<br/><span>JPG, PNG, WEBP</span></p>
+          </div>
+          <input type="file" id="slide-file-input" accept="image/*" style="display:none" onchange="handleSlideUpload(this)"/>
+        </div>
+        <div class="field"><label>Status</label><select id="slide-status"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('slide-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSlide()"><i class="fas fa-floppy-disk"></i> Save Slide</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="./js/api.js"></script>
+<script>
+// ===== STORAGE KEYS =====
+const LS_PRODUCTS = 'dn_products';
+const LS_BANK     = 'dn_bank_settings';
+// Reviews are now stored per-product as dn_reviews_<productId>, matching product.html's getProductReviews()/saveProductReviews()
+
+// ===== DEFAULT DATA (used only if localStorage is empty, i.e. first run) =====
+const defaultProducts = [
+  { id:1, name:"Linen Co-ord Set – Beige", category:"tracksuits", price:5450, oldPrice:8999, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/IMG_7830.jpg?v=1774721492&width=800"],
+    colors:[{name:"beige", label:"Beige", inStock:true}],
+    details:"Premium Quality | Lightweight Linen Build\nBreathable fabric perfect for summer\nComes with matching top and bottom",
+    care:"Hand wash cold or dry clean only\nDo not bleach\nIron on low heat if needed",
+    size:"Available in S, M, L, XL\nRelaxed fit — true to size\nModel is wearing size M",
+    shipping:"Nationwide delivery — 2 to 5 working days\nFree shipping on orders above Rs. 10,000\nRs. 250 advance required to confirm COD orders",
+    img:"https://dnstore.pk/cdn/shop/files/IMG_7830.jpg?v=1774721492&width=200" },
+  { id:2, name:"DN Baggy Tracksuit – Olive", category:"tracksuits", price:6500, oldPrice:9999, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=800"],
+    colors:[{name:"olive", label:"Olive", inStock:true}],
+    details:"Premium heavyweight fleece\nBaggy relaxed fit\nRibbed cuffs and hem",
+    care:"Machine wash cold, inside out\nDo not tumble dry on high heat",
+    size:"Available in M, L, XL, XXL\nOversized fit",
+    shipping:"Nationwide delivery — 2 to 5 working days\nFree shipping on orders above Rs. 10,000",
+    img:"https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=200" },
+  { id:3, name:"Adidas Samba – White", category:"footwear", price:3550, oldPrice:12000, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/CE97B476-E5CA-4C66-B89B-6E3631B5E368.jpg?v=1767185810&width=800"],
+    colors:[{name:"white", label:"White", inStock:true},{name:"black", label:"Black", inStock:true}],
+    details:"Premium Master Copy — dot perfect\nGenuine leather upper\nGum rubber sole",
+    care:"Wipe clean with a damp cloth\nAvoid direct sunlight for long periods",
+    size:"True to size — order your normal shoe size\nAvailable EU 39–45",
+    shipping:"Nationwide delivery — 2 to 5 working days\nRs. 250 advance required to confirm COD orders",
+    img:"https://dnstore.pk/cdn/shop/files/CE97B476-E5CA-4C66-B89B-6E3631B5E368.jpg?v=1767185810&width=200" },
+  { id:4, name:"212 MEN NYC Fragrance", category:"fragrances", price:3250, oldPrice:7000, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/B0D9EFD9-DFAD-45BE-AE7D-E622AC0BBD51.jpg?v=1748380643&width=800"],
+    colors:[{name:"standard", label:"Standard", inStock:true}],
+    details:"100ml Eau de Toilette\nLong lasting fragrance — 8+ hours\nOriginal scent replica",
+    care:"Store in a cool, dry place away from sunlight\nKeep cap tightly closed when not in use",
+    size:"100ml bottle",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/files/B0D9EFD9-DFAD-45BE-AE7D-E622AC0BBD51.jpg?v=1748380643&width=200" },
+  { id:5, name:"Arabic AURA Watch", category:"accessories", price:1799, oldPrice:4799, currency:"PKR", badge:"NEW", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/00257696-1891-4E6D-8F1B-FE61EC13F218.jpg?v=1752099973&width=800"],
+    colors:[{name:"gold", label:"Gold", inStock:true},{name:"silver", label:"Silver", inStock:true}],
+    details:"Premium Quality | Heavyweight Build\nQuartz movement\nWater resistant splash-proof",
+    care:"Avoid prolonged exposure to water\nWipe with soft microfibre cloth",
+    size:"Case Diameter: 40mm\nStrap adjustable, fits most wrists",
+    shipping:"Nationwide delivery — 2 to 5 working days\nFree shipping on orders above Rs. 10,000",
+    img:"https://dnstore.pk/cdn/shop/files/00257696-1891-4E6D-8F1B-FE61EC13F218.jpg?v=1752099973&width=200" },
+  { id:6, name:"Korean Pants – Black", category:"bottoms", price:2200, oldPrice:5500, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=800"],
+    colors:[{name:"black", label:"Black", inStock:true}],
+    details:"Slim tapered fit\nStretchable fabric for comfort",
+    care:"Machine wash cold\nDo not bleach",
+    size:"Available 28–36 waist sizes",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=200" },
+  { id:7, name:"Accessories Bundle Set", category:"accessories", price:2850, oldPrice:6100, currency:"PKR", badge:"SALE", inStock:false,
+    images:["https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=800"],
+    colors:[{name:"mixed", label:"Mixed", inStock:true}],
+    details:"Includes bracelet, sunglasses & wallet\nPremium gift packaging",
+    care:"Wipe clean with soft cloth",
+    size:"One size fits all",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=200" },
+  { id:8, name:"Summer Premium Top", category:"tops", price:1899, oldPrice:3999, currency:"PKR", badge:"NEW", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=800"],
+    colors:[{name:"white", label:"White", inStock:true},{name:"beige", label:"Beige", inStock:true}],
+    details:"Breathable cotton blend\nRelaxed everyday fit",
+    care:"Machine wash cold",
+    size:"S, M, L, XL available",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=200" },
+  { id:9, name:"Cartier Tank Watch", category:"accessories", price:4500, oldPrice:9999, currency:"PKR", badge:"NEW", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/763F2324-5CD9-4056-9009-8878540EFC7E.png?v=1777300230&width=800"],
+    colors:[{name:"gold", label:"Gold", inStock:true}],
+    details:"Master AAA copy — dot perfect\nLeather strap, stainless case",
+    care:"Avoid water exposure\nStore in provided box",
+    size:"Case 25mm x 34mm",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/files/763F2324-5CD9-4056-9009-8878540EFC7E.png?v=1777300230&width=200" },
+  { id:10, name:"Perception Fragrance by DN", category:"fragrances", price:2800, oldPrice:5500, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/files/FE0E7953-EE9B-4D22-90AE-692071EBA76A.png?v=1772557488&width=800"],
+    colors:[{name:"standard", label:"Standard", inStock:true}],
+    details:"100ml Eau de Parfum\nLong lasting 8+ hours",
+    care:"Store away from sunlight",
+    size:"100ml bottle",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/files/FE0E7953-EE9B-4D22-90AE-692071EBA76A.png?v=1772557488&width=200" },
+  { id:11, name:"Oversized Box-Fit Tee", category:"tops", price:1499, oldPrice:2999, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=800"],
+    colors:[{name:"black", label:"Black", inStock:true},{name:"white", label:"White", inStock:true}],
+    details:"Boxy oversized fit\n240 GSM heavyweight cotton",
+    care:"Machine wash cold, inside out",
+    size:"S–XXL available, fits oversized",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=200" },
+  { id:12, name:"Cargo Pants – Khaki", category:"bottoms", price:2600, oldPrice:5200, currency:"PKR", badge:"SALE", inStock:false,
+    images:["https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=800"],
+    colors:[{name:"khaki", label:"Khaki", inStock:true}],
+    details:"Multi-pocket cargo design\nStretch fabric",
+    care:"Machine wash cold",
+    size:"28–38 waist sizes",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=200" },
+  { id:13, name:"Sneaker Trainer – Black", category:"footwear", price:4200, oldPrice:8500, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/FullSizeRender.jpg?v=1777735717&width=800"],
+    colors:[{name:"black", label:"Black", inStock:true}],
+    details:"Premium synthetic leather\nCushioned sole for comfort",
+    care:"Wipe clean with damp cloth",
+    size:"EU 39–45 available",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/FullSizeRender.jpg?v=1777735717&width=200" },
+  { id:14, name:"Summer Co-Ord Set – Blue", category:"tracksuits", price:7200, oldPrice:12000, currency:"PKR", badge:"NEW", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=800"],
+    colors:[{name:"blue", label:"Blue", inStock:true}],
+    details:"Lightweight summer fabric\nMatching top and bottom set",
+    care:"Hand wash cold",
+    size:"S, M, L, XL available",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=200" },
+  { id:15, name:"Bracelet & Sunglasses Pack", category:"accessories", price:1200, oldPrice:2800, currency:"PKR", badge:"SALE", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=800"],
+    colors:[{name:"mixed", label:"Mixed", inStock:true}],
+    details:"Includes bracelet & sunglasses\nUV protection lenses",
+    care:"Wipe clean with soft cloth",
+    size:"One size fits all",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=200" },
+  { id:16, name:"Premium Polo Shirt", category:"tops", price:2100, oldPrice:4200, currency:"PKR", badge:"NEW", inStock:true,
+    images:["https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=800"],
+    colors:[{name:"navy", label:"Navy", inStock:true},{name:"white", label:"White", inStock:true}],
+    details:"Premium pique cotton\nRibbed collar and cuffs",
+    care:"Machine wash cold",
+    size:"S–XXL available",
+    shipping:"Nationwide delivery — 2 to 5 working days",
+    img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=200" },
+];
+
+const defaultBankSettings = {
+  advanceAmount: 250,
+  whatsapp: "923000000000",
+  deposit: [
+    { label:"JazzCash: 0300-0000000 (Account: Bin Saleh Store)", value:"jazzcash" },
+    { label:"EasyPaisa: 0300-0000000 (Account: Bin Saleh Store)", value:"easypaisa" },
+    { label:"HBL Bank Transfer: A/C 0123456789 (Bin Saleh Store)", value:"hbl" },
+    { label:"Meezan Bank Transfer: A/C 9876543210 (Bin Saleh Store)", value:"meezan" },
+  ]
+};
+
+const defaultShippingSettings = { standardFee:200, expressFee:400, freeThreshold:10000 };
+
+// Per-product review helpers (matches product.html: dn_reviews_<id> key per product)
+function getProductReviews(productId) {
+  return JSON.parse(localStorage.getItem('dn_reviews_' + productId) || '[]');
+}
+function saveProductReviews(productId, reviews) {
+  localStorage.setItem('dn_reviews_' + productId, JSON.stringify(reviews));
+}
+function getAllReviewsFlat() {
+  let all = [];
+  products.forEach(p => {
+    getProductReviews(p.id).forEach(r => all.push({ ...r, productId: p.id }));
+  });
+  return all;
+}
+
+// Seed demo reviews for first-run only (if no review keys exist anywhere yet)
+function seedDemoReviewsIfEmpty() {
+  const hasAny = products.some(p => localStorage.getItem('dn_reviews_' + p.id));
+  if(hasAny) return;
+  const demo = {
+    1: [{ name:"Hamza Ali", date:"12 May 2026", stars:5, text:"Absolutely stunning quality. The fabric feels heavy and premium. Came in beautiful packaging. 100% recommend!", verified:true }],
+    3: [{ name:"Usman Tariq", date:"04 May 2026", stars:5, text:"Ordered the White variant. The colour is perfect, exactly like the pictures. Fast delivery. Very impressed!", verified:true }],
+    4: [{ name:"Zara Malik", date:"28 Apr 2026", stars:4, text:"Bought it as a gift for my brother. He loved the scent! Only minor issue was slight delay in delivery.", verified:false }],
+    5: [{ name:"Ahmed Farooqi", date:"15 Apr 2026", stars:5, text:"The watch design is mesmerizing. Couldn't believe it costs this little. Worth every rupee.", verified:true }]
+  };
+  Object.keys(demo).forEach(pid => saveProductReviews(pid, demo[pid]));
+}
+
+// ===== LOAD FROM LOCALSTORAGE (or seed with defaults on first run) =====
+// Products ab backend se aate hain (localStorage ki jagah)
+let products = [];
+
+async function loadProductsFromAPI() {
+  try {
+    products = await api.get('/products');
+    renderProducts();
+    renderAllReviewsTable();
+  } catch (err) {
+    toast('Failed to load products: ' + err.message, 'error');
+  }
+}
+
+let bankSettings = JSON.parse(localStorage.getItem(LS_BANK) || 'null');
+if(!bankSettings) {
+  bankSettings = defaultBankSettings;
+  localStorage.setItem(LS_BANK, JSON.stringify(bankSettings));
+}
+
+const LS_SHIPPING = 'dn_shipping_settings';
+let shippingSettings = JSON.parse(localStorage.getItem(LS_SHIPPING) || 'null');
+if(!shippingSettings) {
+  shippingSettings = defaultShippingSettings;
+  localStorage.setItem(LS_SHIPPING, JSON.stringify(shippingSettings));
+}
+
+seedDemoReviewsIfEmpty();
+
+// persistProducts ab zaroori nahi — har product change seedhe backend API se hota hai
+function persistProducts() {}
+function persistBank()     { localStorage.setItem(LS_BANK, JSON.stringify(bankSettings)); }
+function persistShipping() { localStorage.setItem(LS_SHIPPING, JSON.stringify(shippingSettings)); }
+
+// ===== OTHER DEMO DATA (unchanged) =====
+const orders = [
+  { id:"#238", customer:"Ahmed K.", phone:"+92 311 0000001", items:"Linen Co-ord Set", total:5450, payment:"JazzCash", status:"pending", date:"Jun 8, 2026" },
+  { id:"#237", customer:"Sara H.", phone:"+92 333 0000002", items:"Adidas Samba", total:3550, payment:"COD", status:"shipped", date:"Jun 7, 2026" },
+  { id:"#236", customer:"Mohsin F.", phone:"+92 300 0000003", items:"212 MEN Fragrance", total:3250, payment:"EasyPaisa", status:"delivered", date:"Jun 7, 2026" },
+  { id:"#235", customer:"Zara M.", phone:"+92 322 0000004", items:"Korean Pants", total:2200, payment:"Bank", status:"processing", date:"Jun 6, 2026" },
+  { id:"#234", customer:"Ali R.", phone:"+92 344 0000005", items:"Arabic Watch", total:1799, payment:"COD", status:"cancelled", date:"Jun 5, 2026" },
+  { id:"#233", customer:"Hamza K.", phone:"+92 311 0000006", items:"Premium Polo Shirt", total:2100, payment:"JazzCash", status:"delivered", date:"Jun 4, 2026" },
+  { id:"#232", customer:"Nida S.", phone:"+92 300 0000007", items:"Cargo Pants", total:2600, payment:"COD", status:"pending", date:"Jun 4, 2026" },
+  { id:"#231", customer:"Usman A.", phone:"+92 333 0000008", items:"Summer Co-Ord Set", total:7200, payment:"Bank", status:"shipped", date:"Jun 3, 2026" },
+  { id:"#230", customer:"Fatima B.", phone:"+92 322 0000009", items:"Bracelet Pack", total:1200, payment:"EasyPaisa", status:"delivered", date:"Jun 2, 2026" },
+  { id:"#229", customer:"Omer J.", phone:"+92 344 0000010", items:"Oversized Tee", total:1499, payment:"COD", status:"processing", date:"Jun 1, 2026" },
+];
+
+const customers = [
+  { id:1, name:"Ahmed K.", email:"ahmed.k@gmail.com", phone:"+92 311 0000001", orders:5, spent:18450, status:"active" },
+  { id:2, name:"Sara H.", email:"sara.h@gmail.com", phone:"+92 333 0000002", orders:3, spent:9800, status:"active" },
+  { id:3, name:"Mohsin F.", email:"mohsin.f@gmail.com", phone:"+92 300 0000003", orders:8, spent:24100, status:"active" },
+  { id:4, name:"Zara M.", email:"zara.m@gmail.com", phone:"+92 322 0000004", orders:2, spent:4400, status:"active" },
+  { id:5, name:"Ali R.", email:"ali.r@gmail.com", phone:"+92 344 0000005", orders:1, spent:1799, status:"blocked" },
+];
+
+let subscribers = JSON.parse(localStorage.getItem('dn_subscribers') || 'null') || [
+  { email:"ahmed.k@gmail.com", source:"Signup", date:"Jun 1, 2026", status:"subscribed" },
+  { email:"sara.h@gmail.com", source:"Newsletter", date:"Jun 2, 2026", status:"subscribed" },
+  { email:"mohsin.f@gmail.com", source:"Signup", date:"Jun 3, 2026", status:"subscribed" },
+  { email:"zara.m@gmail.com", source:"Newsletter", date:"Jun 4, 2026", status:"subscribed" },
+  { email:"ali.r@gmail.com", source:"Signup", date:"Jun 5, 2026", status:"unsubscribed" },
+  { email:"hamza.k@gmail.com", source:"Signup", date:"Jun 6, 2026", status:"subscribed" },
+  { email:"nida.s@gmail.com", source:"Newsletter", date:"Jun 7, 2026", status:"subscribed" },
+];
+
+let campaignHistory = JSON.parse(localStorage.getItem('dn_campaigns') || 'null') || [];
+let pixelLog = JSON.parse(localStorage.getItem('dn_pixel_log') || 'null') || [];
+let currencyRates = JSON.parse(localStorage.getItem('dn_currency_rates') || 'null') || { AED: 0.0132, USD: 0.0036 };
+let pixelSettings = JSON.parse(localStorage.getItem('dn_pixel_settings') || 'null') || {
+  tiktok:{ enabled:false, pixelId:"", token:"", catalogId:"" },
+  fb:{ enabled:false, pixelId:"", token:"", catalogId:"" },
+  insta:{ enabled:false, accountId:"" }
+};
+
+// ===== LOGIN =====
+async function doLogin() {
+  const email = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const hint = document.getElementById('login-hint-text');
+
+  if (!email || !pass) {
+    toast('Please enter email and password', 'error');
+    return;
+  }
+
+  try {
+    const data = await api.post('/auth/login', { email, password: pass });
+
+    if (data.user.role !== 'admin') {
+      toast('This account does not have admin access', 'error');
+      return;
+    }
+
+    setToken(data.token);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initDashboard();
+  } catch (err) {
+    hint.textContent = err.message;
+    toast(err.message, 'error');
+  }
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+
+// Agar valid admin token pehle se saved hai (browser refresh ke baad),
+// to dobara login form dikhane ki zarurat nahi
+async function checkExistingLogin() {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const user = await api.get('/auth/me');
+    if (user.role === 'admin') {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      initDashboard();
+    }
+  } catch (err) {
+    clearToken(); // token expire ho gaya ya invalid hai
+  }
+}
+checkExistingLogin();
+
+function doLogout() {
+  clearToken();
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+// ===== NAVIGATION =====
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  const titles = {dashboard:'Dashboard',orders:'Orders',products:'Products',categories:'Categories',customers:'Customers',payments:'Payments',coupons:'Coupons',reports:'Reports',cms:'Banners / CMS',reviews:'Reviews',emailmkt:'Email Marketing',pixels:'Pixels & Ads',settings:'Settings',activity:'Activity Log'};
+  document.getElementById('page-title').textContent = titles[id]||id;
+  document.getElementById('breadcrumb').textContent = 'Admin › '+(titles[id]||id);
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+// ===== DASHBOARD INIT =====
+function initDashboard() {
+  renderChart();
+  renderDashOrders();
+  loadProductsFromAPI(); // products + reviews table render khud hi ho jayenge
+  renderOrders('all');
+  renderCustomers();
+  renderActivity();
+  renderSubscribers();
+  renderCampaignHistory();
+  renderPixelLog();
+  loadPixelSettings();
+  loadCurrencyRates();
+  updatePixelStatus();
+  renderBankMethods();
+  renderCategories();
+  renderCoupons();
+  renderShippingSettings();
+  document.getElementById('dash-product-count').textContent = products.length;
+}
+
+function renderChart() {
+  const vals=[62,85,48,120,95,140,110];
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const max=Math.max(...vals);
+  const c=document.getElementById('chart-bars');
+  c.innerHTML=vals.map((v,i)=>`<div class="chart-bar" style="height:${(v/max)*140}px" data-val="Rs.${v*100}" title="${days[i]}: Rs.${v*100}"></div>`).join('');
+}
+
+function renderDashOrders() {
+  const b=document.getElementById('dash-orders-body');
+  b.innerHTML=orders.slice(0,5).map(o=>`
+    <tr>
+      <td style="font-weight:700;color:var(--accent)">${o.id}</td>
+      <td>${o.customer}</td>
+      <td>${o.items}</td>
+      <td style="color:var(--green)">Rs. ${o.total.toLocaleString()}</td>
+      <td><span class="badge badge-${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
+      <td style="color:var(--muted)">${o.date}</td>
+      <td><button class="icon-btn" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i></button></td>
+    </tr>`).join('');
+}
+
+// ===== CURRENCY HELPERS =====
+const CUR_SYMBOL = { PKR:'Rs.', AED:'AED ', USD:'$' };
+
+function toPKR(amount, fromCur) {
+  if(fromCur==='PKR' || !fromCur) return amount;
+  const rate = currencyRates[fromCur];
+  if(!rate) return amount;
+  return amount / rate;
+}
+
+function fromPKR(amountPKR, toCur) {
+  if(toCur==='PKR' || !toCur) return amountPKR;
+  const rate = currencyRates[toCur];
+  if(!rate) return amountPKR;
+  return amountPKR * rate;
+}
+
+function formatMoney(amount, cur) {
+  const sym = CUR_SYMBOL[cur] || '';
+  if(cur==='USD') return sym + amount.toFixed(2);
+  return sym + ' ' + Math.round(amount).toLocaleString();
+}
+
+function formatProductPrice(p) {
+  const pkr = toPKR(p.price, p.currency);
+  const showMulti = document.getElementById('show-multi-currency') ? document.getElementById('show-multi-currency').checked : true;
+  if(!showMulti) {
+    const displayCur = document.getElementById('default-currency') ? document.getElementById('default-currency').value : 'PKR';
+    return formatMoney(fromPKR(pkr, displayCur), displayCur);
+  }
+  const aed = fromPKR(pkr,'AED');
+  const usd = fromPKR(pkr,'USD');
+  return `${formatMoney(pkr,'PKR')}<br/><span style="font-size:0.7rem;color:var(--muted)">${formatMoney(aed,'AED')} · ${formatMoney(usd,'USD')}</span>`;
+}
+
+function loadCurrencyRates() {
+  document.getElementById('rate-pkr-aed').value = currencyRates.AED;
+  document.getElementById('rate-pkr-usd').value = currencyRates.USD;
+}
+
+function saveCurrencyRates() {
+  currencyRates.AED = parseFloat(document.getElementById('rate-pkr-aed').value) || currencyRates.AED;
+  currencyRates.USD = parseFloat(document.getElementById('rate-pkr-usd').value) || currencyRates.USD;
+  localStorage.setItem('dn_currency_rates', JSON.stringify(currencyRates));
+  toast('Currency rates saved!','success');
+  renderProducts();
+}
+
+function updateCurrencyDisplays() {
+  const cur = document.getElementById('default-currency').value;
+  const chip = document.getElementById('products-currency-chip');
+  if(chip) chip.innerHTML = `<i class="fas fa-coins"></i> Display: ${cur}`;
+  renderProducts();
+}
+
+function convertPriceCurrency() {
+  const cur = document.getElementById('p-currency').value;
+  const price = parseFloat(document.getElementById('p-price').value) || 0;
+  const pkr = toPKR(price, cur);
+  document.getElementById('conv-pkr').textContent = formatMoney(pkr,'PKR');
+  document.getElementById('conv-aed').textContent = formatMoney(fromPKR(pkr,'AED'),'AED');
+  document.getElementById('conv-usd').textContent = formatMoney(fromPKR(pkr,'USD'),'USD');
+}
+
+// ===== PRODUCTS TABLE =====
+function renderProducts() {
+  const b=document.getElementById('products-body');
+  b.innerHTML=products.map(p=>`
+    <tr>
+      <td><img class="td-img" src="${(p.images&&p.images[0])||p.img}" onerror="this.src=''" loading="lazy"/></td>
+      <td style="font-weight:600">${p.name}</td>
+      <td style="text-transform:capitalize">${p.category}</td>
+      <td style="color:var(--green)">${formatProductPrice(p)}</td>
+      <td style="color:var(--muted);text-decoration:line-through">${formatMoney(fromPKR(toPKR(p.oldPrice,p.currency),'PKR'),'PKR')}</td>
+      <td><span class="badge ${p.inStock?'badge-active':'badge-inactive'}">${p.inStock?'In Stock':'Out'}</span></td>
+      <td><span class="badge ${p.badge==='NEW'?'badge-new':'badge-sale'}">${p.badge}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="icon-btn" onclick="copyProductLink('${p._id}')" title="Copy Product Link"><i class="fas fa-link"></i></button>
+        <button class="icon-btn" onclick="editProduct('${p._id}')" title="Edit"><i class="fas fa-pen"></i></button>
+        <button class="icon-btn del" onclick="deleteProduct('${p._id}')" title="Delete"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('products-count-text').textContent = products.length;
+  document.getElementById('dash-product-count').textContent = products.length;
+}
+
+function copyProductLink(id) {
+  const url = window.location.origin + window.location.pathname.replace(/admin[^\/]*$/,'') + 'product.html?id=' + id;
+  navigator.clipboard.writeText(url).then(()=>{
+    toast('Product link copied: product.html?id='+id,'success');
+  }).catch(()=>{
+    toast('Link: product.html?id='+id,'info');
+  });
+}
+
+function renderOrders(filter) {
+  const filtered = filter==='all' ? orders : orders.filter(o=>o.status===filter);
+  const b=document.getElementById('orders-body');
+  b.innerHTML=filtered.map(o=>`
+    <tr>
+      <td style="font-weight:700;color:var(--accent)">${o.id}</td>
+      <td>${o.customer}<br/><span style="font-size:0.7rem;color:var(--muted)">${o.phone}</span></td>
+      <td>${o.items}</td>
+      <td style="color:var(--green)">Rs. ${o.total.toLocaleString()}</td>
+      <td>${o.payment}</td>
+      <td>
+        <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-size:0.75rem;cursor:pointer" onchange="updateOrderStatus('${o.id}',this.value)">
+          ${['pending','processing','shipped','delivered','cancelled'].map(s=>`<option ${o.status===s?'selected':''} value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+        </select>
+      </td>
+      <td style="color:var(--muted)">${o.date}</td>
+      <td style="display:flex;gap:6px">
+        <button class="icon-btn" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i></button>
+      <button class="icon-btn" title="Print Invoice" onclick="printInvoice('${o.id}')"><i class="fas fa-print"></i></button>
+        
+      </td>
+    </tr>`).join('');
+}
+
+function filterOrders(filter, btn) {
+  document.querySelectorAll('.order-filter').forEach(b=>b.classList.remove('active','btn-primary'));
+  btn.classList.add('active');
+  renderOrders(filter);
+}
+
+function updateOrderStatus(id, status) {
+  const o=orders.find(x=>x.id===id);
+  if(o) {
+    o.status=status;
+    toast(`Order ${id} → ${status}`,'info');
+    if(status==='delivered' || status==='shipped') {
+      firePixelPurchaseEvent(o);
+    }
+  }
+}
+
+function renderCustomers() {
+  const b=document.getElementById('customers-body');
+  b.innerHTML=customers.map(c=>`
+    <tr>
+      <td>${c.id}</td>
+      <td style="font-weight:600">${c.name}</td>
+      <td style="color:var(--muted)">${c.email}</td>
+      <td>${c.phone}</td>
+      <td>${c.orders}</td>
+      <td style="color:var(--green)">Rs. ${c.spent.toLocaleString()}</td>
+      <td><span class="badge ${c.status==='active'?'badge-active':'badge-inactive'}">${c.status}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="icon-btn"><i class="fas fa-eye"></i></button>
+        <button class="icon-btn del" onclick="toast('Customer blocked','info')"><i class="fas fa-ban"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function renderActivity() {
+  const acts=[
+    {dot:'green',text:'Order #238 placed — Rs. 5,450 (JazzCash)',time:'2 mins ago'},
+    {dot:'blue',text:'Product "Linen Co-ord Set" price updated to Rs. 5,450',time:'14 mins ago'},
+    {dot:'gold',text:'New customer registered: Sara H. (Lahore)',time:'1 hour ago'},
+    {dot:'red',text:'Order #231 cancelled by customer',time:'2 hours ago'},
+    {dot:'green',text:'Payment received: Rs. 3,250 (EasyPaisa)',time:'3 hours ago'},
+    {dot:'blue',text:'New review submitted for Adidas Samba — 5 stars',time:'4 hours ago'},
+    {dot:'gold',text:'Coupon SUMMER26 used — 20% off on Rs. 5,450 order',time:'5 hours ago'},
+    {dot:'red',text:'Low stock alert: Cargo Pants – Khaki (Out of Stock)',time:'6 hours ago'},
+    {dot:'green',text:'Order #236 delivered — Ahmed K.',time:'7 hours ago'},
+    {dot:'blue',text:'Banner "Summer Élite 26" updated in CMS',time:'Yesterday'},
+  ];
+  document.getElementById('full-activity').innerHTML=acts.map(a=>`
+    <div class="activity-item">
+      <div class="activity-dot ${a.dot}"></div>
+      <div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div>
+    </div>`).join('');
+}
+
+// ===== EMAIL MARKETING =====
+function renderSubscribers() {
+  const b=document.getElementById('subscribers-body');
+  b.innerHTML=subscribers.map(s=>`
+    <tr>
+      <td>${s.email}</td>
+      <td>${s.source}</td>
+      <td style="color:var(--muted)">${s.date}</td>
+      <td><span class="badge ${s.status==='subscribed'?'badge-active':'badge-inactive'}">${s.status}</span></td>
+    </tr>`).join('');
+  const total = subscribers.filter(s=>s.status==='subscribed').length;
+  document.getElementById('subs-total').textContent = total;
+  document.getElementById('subs-badge').textContent = total;
+}
+
+function renderCampaignHistory() {
+  const b=document.getElementById('campaign-history-body');
+  if(campaignHistory.length===0) {
+    b.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No campaigns sent yet.</td></tr>`;
+  } else {
+    b.innerHTML = campaignHistory.map(c=>`
+      <tr>
+        <td style="font-weight:600">${c.subject}</td>
+        <td style="text-transform:capitalize">${c.audience}</td>
+        <td>${c.recipients}</td>
+        <td style="color:var(--muted)">${c.date}</td>
+        <td><span class="badge badge-active">Sent</span></td>
+      </tr>`).join('');
+  }
+  document.getElementById('emails-sent').textContent = campaignHistory.reduce((sum,c)=>sum+c.recipients,0);
+  document.getElementById('last-campaign').textContent = campaignHistory.length ? campaignHistory[0].date : '—';
+}
+
+function getAudienceList(audience) {
+  if(audience==='customers') return subscribers.filter(s=>s.status==='subscribed' && s.source==='Signup');
+  if(audience==='newsletter') return subscribers.filter(s=>s.status==='subscribed' && s.source==='Newsletter');
+  return subscribers.filter(s=>s.status==='subscribed');
+}
+
+function sendAnnouncementEmail() {
+  const subject = document.getElementById('email-subject').value.trim();
+  const body = document.getElementById('email-body').value.trim();
+  const audience = document.getElementById('email-audience').value;
+  if(!subject || !body) { toast('Please enter subject & message','error'); return; }
+  const recipients = getAudienceList(audience);
+  if(recipients.length===0) { toast('No subscribers in this audience','error'); return; }
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  campaignHistory.unshift({ subject, body, audience, recipients: recipients.length, date: dateStr });
+  localStorage.setItem('dn_campaigns', JSON.stringify(campaignHistory));
+  renderCampaignHistory();
+  toast(`Email sent to ${recipients.length} subscriber(s)!`,'success');
+  document.getElementById('email-subject').value='';
+  document.getElementById('email-body').value='';
+}
+
+function exportSubscribers() {
+  let csv = 'Email,Source,Date Joined,Status\n';
+  subscribers.forEach(s=>{ csv += `${s.email},${s.source},${s.date},${s.status}\n`; });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'dn-store-subscribers.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Subscribers exported!','success');
+}
+
+// ===== PIXELS & ADS =====
+function loadPixelSettings() {
+  document.getElementById('tiktok-pixel-id').value = pixelSettings.tiktok.pixelId;
+  document.getElementById('tiktok-token').value = pixelSettings.tiktok.token;
+  document.getElementById('tiktok-catalog-id').value = pixelSettings.tiktok.catalogId;
+  document.getElementById('tiktok-enabled').checked = pixelSettings.tiktok.enabled;
+  document.getElementById('fb-pixel-id').value = pixelSettings.fb.pixelId;
+  document.getElementById('fb-token').value = pixelSettings.fb.token;
+  document.getElementById('fb-catalog-id').value = pixelSettings.fb.catalogId;
+  document.getElementById('fb-enabled').checked = pixelSettings.fb.enabled;
+  document.getElementById('insta-account-id').value = pixelSettings.insta.accountId;
+  document.getElementById('insta-enabled').checked = pixelSettings.insta.enabled;
+}
+
+function savePixelSettings(platform) {
+  if(platform==='tiktok') {
+    pixelSettings.tiktok = {
+      enabled: document.getElementById('tiktok-enabled').checked,
+      pixelId: document.getElementById('tiktok-pixel-id').value.trim(),
+      token: document.getElementById('tiktok-token').value.trim(),
+      catalogId: document.getElementById('tiktok-catalog-id').value.trim()
+    };
+    toast('TikTok pixel settings saved!','success');
+  } else if(platform==='meta') {
+    pixelSettings.fb = {
+      enabled: document.getElementById('fb-enabled').checked,
+      pixelId: document.getElementById('fb-pixel-id').value.trim(),
+      token: document.getElementById('fb-token').value.trim(),
+      catalogId: document.getElementById('fb-catalog-id').value.trim()
+    };
+    pixelSettings.insta = {
+      enabled: document.getElementById('insta-enabled').checked,
+      accountId: document.getElementById('insta-account-id').value.trim()
+    };
+    toast('Meta (Facebook & Instagram) settings saved!','success');
+  }
+  localStorage.setItem('dn_pixel_settings', JSON.stringify(pixelSettings));
+  updatePixelStatus();
+}
+
+function updatePixelStatus() {
+  const tiktokOn = document.getElementById('tiktok-enabled').checked;
+  const fbOn = document.getElementById('fb-enabled').checked;
+  const instaOn = document.getElementById('insta-enabled').checked;
+  setStatus('tiktok-status', tiktokOn);
+  setStatus('fb-status', fbOn);
+  setStatus('insta-status', instaOn);
+  setStatus('settings-tiktok-status', tiktokOn);
+  setStatus('settings-fb-status', fbOn);
+  setStatus('settings-insta-status', instaOn);
+}
+
+function setStatus(elId, isOn) {
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.textContent = isOn ? 'Connected' : 'Disconnected';
+  el.classList.toggle('on', isOn);
+  el.classList.toggle('off', !isOn);
+}
+
+function renderPixelLog() {
+  const b=document.getElementById('pixel-log-body');
+  if(pixelLog.length===0) {
+    b.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No sync events yet. Connect a pixel above and add a product to see activity here.</td></tr>`;
+  } else {
+    b.innerHTML = pixelLog.slice(0,30).map(l=>`
+      <tr>
+        <td>${l.event}</td>
+        <td>${l.item}</td>
+        <td>${l.platform}</td>
+        <td><span class="badge badge-active">${l.status}</span></td>
+        <td style="color:var(--muted)">${l.time}</td>
+      </tr>`).join('');
+  }
+}
+
+function addPixelLog(event, item, platform, status) {
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) + ' · ' + now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  pixelLog.unshift({event, item, platform, status, time});
+  localStorage.setItem('dn_pixel_log', JSON.stringify(pixelLog));
+  renderPixelLog();
+}
+
+function syncProductToPixels(product, syncFlags) {
+  if(pixelSettings.tiktok.enabled && syncFlags.tiktok) addPixelLog('New Product', product.name, 'TikTok Catalog', 'Synced');
+  if(pixelSettings.fb.enabled && syncFlags.fb) addPixelLog('New Product', product.name, 'Facebook Catalog', 'Synced');
+  if(pixelSettings.insta.enabled && syncFlags.insta) addPixelLog('New Product', product.name, 'Instagram Shop', 'Synced');
+}
+
+function firePixelPurchaseEvent(order) {
+  if(pixelSettings.tiktok.enabled) addPixelLog('Purchase Event', order.id+' — '+order.items, 'TikTok Pixel', 'Sent');
+  if(pixelSettings.fb.enabled) addPixelLog('Purchase Event', order.id+' — '+order.items, 'Facebook Pixel', 'Sent');
+}
+
+// ===== NEW: BANK / DEPOSIT DETAILS (matches product.html structure: deposit[{label,value}]) =====
+function renderBankMethods() {
+  const list = document.getElementById('bank-methods-list');
+  list.innerHTML = bankSettings.deposit.map((m,idx)=>`
+    <div class="color-row" data-idx="${idx}">
+      <input type="text" placeholder="e.g. JazzCash" style="max-width:140px" value="${escapeAttr(m.value)}" onchange="bankSettings.deposit[${idx}].value=this.value"/>
+      <input type="text" placeholder="Shown to customer, e.g. JazzCash: 0300-1234567 (Account: Your Name)" value="${escapeAttr(m.label)}" onchange="bankSettings.deposit[${idx}].label=this.value"/>
+      <button class="icon-btn del" onclick="removeBankMethod(${idx})" title="Remove"><i class="fas fa-trash"></i></button>
+    </div>`).join('');
+  document.getElementById('bank-advance-amount').value = bankSettings.advanceAmount;
+  document.getElementById('bank-whatsapp').value = bankSettings.whatsapp;
+}
+
+function addBankMethodRow() {
+  bankSettings.deposit.push({ value:"", label:"" });
+  renderBankMethods();
+}
+
+function removeBankMethod(idx) {
+  bankSettings.deposit.splice(idx,1);
+  renderBankMethods();
+}
+
+function saveBankSettings() {
+  bankSettings.advanceAmount = parseInt(document.getElementById('bank-advance-amount').value) || bankSettings.advanceAmount;
+  bankSettings.whatsapp = document.getElementById('bank-whatsapp').value.trim() || bankSettings.whatsapp;
+  bankSettings.deposit = bankSettings.deposit.filter(m => m.label && m.label.trim());
+  persistBank();
+  toast('Bank details saved! This now reflects on every product page.','success');
+}
+
+// ===== NEW: SHIPPING SETTINGS (matches product.html structure: dn_shipping_settings) =====
+function renderShippingSettings() {
+  document.getElementById('ship-standard-fee').value = shippingSettings.standardFee;
+  document.getElementById('ship-express-fee').value = shippingSettings.expressFee;
+  document.getElementById('ship-free-threshold').value = shippingSettings.freeThreshold;
+}
+
+function saveShippingSettings() {
+  shippingSettings.standardFee = parseInt(document.getElementById('ship-standard-fee').value) || shippingSettings.standardFee;
+  shippingSettings.expressFee = parseInt(document.getElementById('ship-express-fee').value) || shippingSettings.expressFee;
+  shippingSettings.freeThreshold = parseInt(document.getElementById('ship-free-threshold').value) || shippingSettings.freeThreshold;
+  persistShipping();
+  toast('Shipping fees saved! This now reflects on every product page.','success');
+}
+
+function escapeAttr(str) {
+  return (str||'').replace(/"/g,'&quot;');
+}
+
+// ===== NEW: PRODUCT MODAL — MULTI-IMAGE GALLERY =====
+let currentGalleryImages = []; // array of image URLs (data URI or http URL) for the product being edited/added
+let currentColorVariants = []; // array of {name, hex}
+let currentProductReviews = []; // array of review objects for current product being edited
+
+function renderGalleryManager() {
+  const wrap = document.getElementById('gallery-manager');
+  let html = currentGalleryImages.map((img,i)=>`
+    <div class="gallery-thumb">
+      <img src="${img}"/>
+      <div class="rm" onclick="removeGalleryImage(${i})">✕</div>
+      ${i===0?'<div class="primary-tag">COVER</div>':''}
+    </div>`).join('');
+  html += `<div class="gallery-add-box" onclick="document.getElementById('gallery-file-input').click()"><i class="fas fa-cloud-arrow-up"></i></div>`;
+  wrap.innerHTML = html;
+}
+
+function addGalleryImageFromUrl() {
+  const input = document.getElementById('p-img-url-new');
+  const url = input.value.trim();
+  if(!url) { toast('Enter an image URL first','error'); return; }
+  currentGalleryImages.push(url);
+  input.value='';
+  renderGalleryManager();
+  toast('Image added to gallery','success');
+}
+
+function removeGalleryImage(idx) {
+  currentGalleryImages.splice(idx,1);
+  renderGalleryManager();
+}
+
+function handleGalleryUpload(input) {
+  Array.from(input.files).forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentGalleryImages.push(e.target.result);
+      renderGalleryManager();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+// ===== NEW: COLOR VARIANTS MANAGER (matches product.html: {name, label, inStock}) =====
+function renderColorVariantList() {
+  const wrap = document.getElementById('color-variant-list');
+  wrap.innerHTML = currentColorVariants.map((c,i)=>`
+    <div class="color-row">
+      <input type="text" placeholder="Color label shown to customer (e.g. Gold)" value="${escapeAttr(c.label)}" onchange="currentColorVariants[${i}].label=this.value; currentColorVariants[${i}].name=this.value.toLowerCase().replace(/\\s+/g,'-')"/>
+      <select onchange="currentColorVariants[${i}].inStock = (this.value==='true')">
+        <option value="true" ${c.inStock!==false?'selected':''}>In Stock</option>
+        <option value="false" ${c.inStock===false?'selected':''}>Sold Out</option>
+      </select>
+      <button class="icon-btn del" onclick="removeColorVariant(${i})"><i class="fas fa-trash"></i></button>
+    </div>`).join('');
+}
+
+function addColorVariantRow() {
+  currentColorVariants.push({ name:"", label:"", inStock:true });
+  renderColorVariantList();
+}
+
+function removeColorVariant(idx) {
+  currentColorVariants.splice(idx,1);
+  renderColorVariantList();
+}
+
+// ===== NEW: DETAIL TABS =====
+function switchDetailTab(tab, btn) {
+  document.querySelectorAll('.detail-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.detail-tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-'+tab).classList.add('active');
+}
+
+// ===== NEW: PER-PRODUCT REVIEWS IN MODAL =====
+function renderProductReviewsInModal() {
+  const wrap = document.getElementById('product-reviews-list');
+  if(currentProductReviews.length===0) {
+    wrap.innerHTML = `<p style="font-size:0.78rem;color:var(--muted);padding:8px 0">No reviews yet for this product.</p>`;
+    return;
+  }
+  wrap.innerHTML = currentProductReviews.map((r,i)=>`
+    <div class="mini-review">
+      <div class="mini-review-top">
+        <span class="mini-review-name">${r.name} ${r.verified?'<i class="fas fa-circle-check" style="color:var(--green);font-size:0.7rem"></i>':''}</span>
+        <span class="mini-review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
+        <button class="icon-btn del" style="width:24px;height:24px" onclick="removeProductReview(${i})"><i class="fas fa-trash" style="font-size:0.65rem"></i></button>
+      </div>
+      <div class="mini-review-text">${r.text}</div>
+    </div>`).join('');
+}
+
+function addProductReview() {
+  const name = document.getElementById('rev-add-name').value.trim();
+  const stars = parseInt(document.getElementById('rev-add-stars').value);
+  const verified = document.getElementById('rev-add-verified').value === 'true';
+  const text = document.getElementById('rev-add-text').value.trim();
+  if(!name || !text) { toast('Enter reviewer name and review text','error'); return; }
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'});
+  currentProductReviews.push({ id: Date.now(), name, date: dateStr, stars, text, verified });
+  renderProductReviewsInModal();
+  document.getElementById('rev-add-name').value='';
+  document.getElementById('rev-add-text').value='';
+  toast('Review added','success');
+}
+
+function removeProductReview(idx) {
+  currentProductReviews.splice(idx,1);
+  renderProductReviewsInModal();
+}
+
+// ===== PRODUCT CRUD (rewritten for multi-image / colors / details / reviews) =====
+function openAddProductModal() {
+  document.getElementById('product-modal-title').textContent = 'Add Product';
+  document.getElementById('p-edit-id').value = '';
+  document.getElementById('p-name').value = '';
+  document.getElementById('p-cat').value = 'tops';
+  document.getElementById('p-currency').value = 'PKR';
+  document.getElementById('p-price').value = '';
+  document.getElementById('p-old').value = '';
+  document.getElementById('p-badge').value = 'SALE';
+  document.getElementById('p-stock').value = 'true';
+  document.getElementById('p-img-url-new').value = '';
+  document.getElementById('p-detail-details').value = '';
+  document.getElementById('p-detail-care').value = '';
+  document.getElementById('p-detail-size').value = '';
+  document.getElementById('p-detail-shipping').value = '';
+  document.getElementById('p-sync-tiktok').checked = true;
+  document.getElementById('p-sync-fb').checked = true;
+  document.getElementById('p-sync-insta').checked = true;
+
+  currentGalleryImages = [];
+  currentColorVariants = [];
+  currentProductReviews = [];
+  renderGalleryManager();
+  renderColorVariantList();
+  renderProductReviewsInModal();
+  convertPriceCurrency();
+
+  openModal('product-modal');
+}
+
+function editProduct(id) {
+  const p = products.find(x=>x._id===id);
+  if(!p) return;
+
+  document.getElementById('product-modal-title').textContent = 'Edit Product';
+  document.getElementById('p-edit-id').value = p._id;
+  document.getElementById('p-name').value = p.name;
+  document.getElementById('p-cat').value = p.category;
+  document.getElementById('p-price').value = p.price;
+  document.getElementById('p-old').value = p.oldPrice;
+  document.getElementById('p-currency').value = p.currency || 'PKR';
+  document.getElementById('p-badge').value = p.badge;
+  document.getElementById('p-stock').value = String(p.inStock);
+  document.getElementById('p-detail-details').value = p.details || '';
+  document.getElementById('p-detail-care').value = p.care || '';
+  document.getElementById('p-detail-size').value = p.size || '';
+  document.getElementById('p-detail-shipping').value = p.shipping || '';
+
+  currentGalleryImages = (p.images && p.images.length) ? [...p.images] : (p.img ? [p.img] : []);
+  currentColorVariants = p.colors ? JSON.parse(JSON.stringify(p.colors)) : [];
+  currentProductReviews = getProductReviews(p.id).map(r=>({...r}));
+
+  renderGalleryManager();
+  renderColorVariantList();
+  renderProductReviewsInModal();
+  convertPriceCurrency();
+
+  openModal('product-modal');
+}
+
+async function saveProduct() {
+  const editId = document.getElementById('p-edit-id').value;
+  const name = document.getElementById('p-name').value.trim();
+  const cat = document.getElementById('p-cat').value;
+  const currency = document.getElementById('p-currency').value;
+  const price = parseFloat(document.getElementById('p-price').value) || 0;
+  const old = parseFloat(document.getElementById('p-old').value) || 0;
+  const badge = document.getElementById('p-badge').value;
+  const inStock = document.getElementById('p-stock').value === 'true';
+  const details = document.getElementById('p-detail-details').value.trim();
+  const care = document.getElementById('p-detail-care').value.trim();
+  const size = document.getElementById('p-detail-size').value.trim();
+  const shipping = document.getElementById('p-detail-shipping').value.trim();
+
+  const syncFlags = {
+    tiktok: document.getElementById('p-sync-tiktok').checked,
+    fb: document.getElementById('p-sync-fb').checked,
+    insta: document.getElementById('p-sync-insta').checked
+  };
+
+  if(!name || !price) { toast('Please fill in name and price','error'); return; }
+
+  const images = currentGalleryImages.length ? currentGalleryImages : ['https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=800'];
+  const colors = currentColorVariants.filter(c=>c.name && c.name.trim());
+
+  const payload = {
+    name, category:cat, price, oldPrice: old||price, currency, badge, inStock,
+    images, img: images[0], colors, details, care, size, shipping
+  };
+
+  try {
+    if(editId) {
+      // Editing existing product
+      const updated = await api.put(`/products/${editId}`, payload);
+      saveProductReviews(editId, currentProductReviews);
+      const idx = products.findIndex(x=>x._id===editId);
+      if(idx > -1) products[idx] = updated;
+      renderProducts();
+      renderAllReviewsTable();
+      closeModal('product-modal');
+      toast('Product updated successfully!','success');
+    } else {
+      // Adding new product
+      const newP = await api.post('/products', payload);
+      products.unshift(newP);
+      saveProductReviews(newP._id, currentProductReviews);
+      renderProducts();
+      renderAllReviewsTable();
+      closeModal('product-modal');
+      toast('Product saved successfully!','success');
+      syncProductToPixels(newP, syncFlags);
+    }
+  } catch (err) {
+    toast('Failed to save product: ' + err.message, 'error');
+  }
+}
+
+async function deleteProduct(id) {
+  try {
+    await api.del(`/products/${id}`);
+    products = products.filter(x=>x._id!==id);
+    localStorage.removeItem('dn_reviews_' + id);
+    renderProducts();
+    renderAllReviewsTable();
+    toast('Product deleted','error');
+  } catch (err) {
+    toast('Failed to delete product: ' + err.message, 'error');
+  }
+}
+
+// ===== ALL REVIEWS TABLE (Reviews nav page) =====
+function renderAllReviewsTable() {
+  const b = document.getElementById('all-reviews-body');
+  if(!b) return;
+  const allReviews = getAllReviewsFlat();
+  if(allReviews.length===0) {
+    b.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No reviews yet.</td></tr>`;
+    return;
+  }
+  b.innerHTML = allReviews.map((r,idx)=>{
+    const p = products.find(x=>x._id===r.productId);
+    const pname = p ? p.name : '(deleted product)';
+    return `
+    <tr>
+      <td>${r.name}</td>
+      <td>${pname}</td>
+      <td>${'⭐'.repeat(r.stars)}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.text}</td>
+      <td>${r.date}</td>
+      <td><span class="badge ${r.verified?'badge-active':'badge-pending'}">${r.verified?'Verified':'Unverified'}</span></td>
+      <td style="display:flex;gap:6px"><button class="icon-btn del" onclick="deleteReviewGlobal(${r.productId}, ${idx})"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+  }).join('');
+}
+
+function deleteReviewGlobal(productId, displayIdx) {
+  const reviews = getProductReviews(productId);
+  // find matching review by content since flat list index != per-product index; simplest: rebuild and remove first match
+  const flat = getAllReviewsFlat();
+  const target = flat[displayIdx];
+  if(!target) return;
+  const filtered = reviews.filter(r => !(r.name===target.name && r.date===target.date && r.text===target.text));
+  saveProductReviews(productId, filtered);
+  renderAllReviewsTable();
+  toast('Review deleted','error');
+}
+
+// ===== ORDER VIEW =====
+function viewOrder(id) {
+  const o=orders.find(x=>x.id===id);
+  if(!o) return;
+  document.getElementById('order-modal-title').textContent='Order '+o.id;
+  document.getElementById('order-modal-body').innerHTML=`
+    <div class="form-grid form-grid-2">
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">CUSTOMER</div><div style="font-weight:600">${o.customer}</div><div style="font-size:0.8rem;color:var(--muted)">${o.phone}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">TOTAL</div><div style="font-weight:700;color:var(--green);font-size:1.1rem">Rs. ${o.total.toLocaleString()}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">ITEMS</div><div>${o.items}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">PAYMENT</div><div>${o.payment}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">DATE</div><div>${o.date}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">STATUS</div>
+        <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;width:100%">
+          ${['pending','processing','shipped','delivered','cancelled'].map(s=>`<option ${o.status===s?'selected':''} value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:var(--bg3);border-radius:10px">
+      <div style="font-size:0.7rem;color:var(--muted);margin-bottom:6px">TRACKING ID</div>
+      <div style="display:flex;gap:8px"><input type="text" placeholder="Enter tracking ID..." style="flex:1;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:0.83rem;outline:none"/><button class="btn btn-primary btn-sm">Save</button></div>
+    </div>`;
+  openModal('order-modal');
+}
+
+// ===== MODALS =====
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); editingSlideRow = null;}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+// function openModal(id) {
+//   document.getElementById(id).classList.add('open');
+// }
+
+// function closeModal(id) {
+//   document.getElementById(id).classList.remove('open');
+
+//   if(id === 'slide-modal'){
+//     editingSlideRow = null;
+//   }
+// }
+
+// document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{
+//   if(e.target===m){
+//     m.classList.remove('open');
+//     editingSlideRow = null;
+//   }
+// }));
+
+function previewSlideImg() {
+  const url = document.getElementById('slide-img-url').value.trim();
+  if(!url){ toast('Pehle URL enter karein','error'); return; }
+  const prev = document.getElementById('slide-img-preview');
+  prev.src = url;
+  prev.style.display = 'block';
+  prev.onerror = () => { prev.style.display='none'; toast('Image load nahi hui URL se','error'); };
+  toast('Image preview ready!','success');
+}
+
+function handleSlideUpload(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('slide-img-url').value = e.target.result;
+    const prev = document.getElementById('slide-img-preview');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+    toast('Image upload ho gayi!','success');
+  };
+  reader.readAsDataURL(file);
+}
+let editingSlideRow = null; // tracks which row is being edited
+
+function editSlide(btn) {
+  editingSlideRow = btn.closest('div[style*="background:var(--bg3)"]');
+  const title = editingSlideRow.querySelector('div[style*="font-weight:600"]').textContent;
+  const linkText = editingSlideRow.querySelector('div[style*="color:var(--muted)"]').textContent;
+  const link = linkText.replace('Link: ', '').trim();
+  const img = editingSlideRow.querySelector('img').src;
+  const isActive = editingSlideRow.querySelector('.badge').textContent.trim() === 'Active';
+
+  document.getElementById('slide-title').value = title;
+  document.getElementById('slide-link').value = link === '—' ? '' : link;
+  document.getElementById('slide-img-url').value = img;
+  document.getElementById('slide-status').value = isActive ? 'Active' : 'Inactive';
+  document.getElementById('slide-img-preview').src = img;
+  document.getElementById('slide-img-preview').style.display = 'block';
+
+  openModal('slide-modal');
+}
+function saveSlide() {
+  const title = document.getElementById('slide-title').value.trim();
+  const link = document.getElementById('slide-link').value.trim();
+  const img = document.getElementById('slide-img-url').value.trim();
+  const status = document.getElementById('slide-status').value;
+  if(!title){ toast('Slide ka title enter karein','error'); return; }
+
+  const badgeClass = status === 'Active' ? 'badge-active' : 'badge-inactive';
+  const thumbSrc = img || 'https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=200';
+
+  if(editingSlideRow) {
+    editingSlideRow.querySelector('img').src = thumbSrc;
+    editingSlideRow.querySelector('div[style*="font-weight:600"]').textContent = title;
+    editingSlideRow.querySelector('div[style*="color:var(--muted)"]').textContent = 'Link: ' + (link || '—');
+    const badge = editingSlideRow.querySelector('.badge');
+    badge.className = 'badge ' + badgeClass;
+    badge.textContent = status;
+    editingSlideRow = null;
+    toast('Slide updated!','success');
+  } else {
+    const slidesContainer = document.querySelector('#page-cms .card-body > div');
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border-radius:10px;';
+    el.innerHTML = `
+      <div style="width:80px;height:50px;background:var(--bg);border-radius:6px;overflow:hidden">
+        <img src="${thumbSrc}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:0.85rem;font-weight:600">${title}</div>
+        <div style="font-size:0.72rem;color:var(--muted)">Link: ${link||'—'}</div>
+      </div>
+      <span class="badge ${badgeClass}">${status}</span>
+      <button class="icon-btn" onclick="editSlide(this)"><i class="fas fa-pen"></i></button>
+      <button class="icon-btn del" onclick="this.closest('div[style*=\\'background:var(--bg3)\\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>
+    `;
+    slidesContainer.appendChild(el);
+    toast('Slide added!','success');
+  }
+
+  closeModal('slide-modal');
+  document.getElementById('slide-title').value='';
+  document.getElementById('slide-link').value='';
+  document.getElementById('slide-img-url').value='';
+  document.getElementById('slide-img-preview').style.display='none';
+  document.getElementById('slide-file-input').value='';
+}
+// function saveSlide() {
+//   const title = document.getElementById('slide-title').value.trim();
+//   const link = document.getElementById('slide-link').value.trim();
+//   const img = document.getElementById('slide-img-url').value.trim();
+//   const status = document.getElementById('slide-status').value;
+//   if(!title){ toast('Slide ka title enter karein','error'); return; }
+//   const slidesContainer = document.querySelector('#page-cms .card-body > div');
+//   const badgeClass = status === 'Active' ? 'badge-active' : 'badge-inactive';
+//   const thumbSrc = img || 'https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=200';
+//   const el = document.createElement('div');
+//   el.style.cssText = 'display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border-radius:10px;';
+//   el.innerHTML = `
+//     <div style="width:80px;height:50px;background:var(--bg);border-radius:6px;overflow:hidden">
+//       <img src="${thumbSrc}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>
+//     </div>
+//     <div style="flex:1">
+//       <div style="font-size:0.85rem;font-weight:600">${title}</div>
+//       <div style="font-size:0.72rem;color:var(--muted)">Link: ${link||'—'}</div>
+//     </div>
+//     <span class="badge ${badgeClass}">${status}</span>
+//     <button class="icon-btn"><i class="fas fa-pen"></i></button>
+//     <button class="icon-btn del" onclick="this.closest('div[style]').remove();toast('Slide delete ho gayi','error')"><i class="fas fa-trash"></i></button>
+//   `;
+//  function saveSlide() {
+//   // ... existing title/link/img/status reading code same rahega ...
+
+//   if(editingSlideRow) {
+//     // UPDATE existing row instead of creating new
+//     editingSlideRow.querySelector('img').src = thumbSrc;
+//     editingSlideRow.querySelector('div[style*="font-weight:600"]').textContent = title;
+//     editingSlideRow.querySelector('div[style*="color:var(--muted)"]').textContent = 'Link: ' + (link || '—');
+//     const badge = editingSlideRow.querySelector('.badge');
+//     badge.className = 'badge ' + badgeClass;
+//     badge.textContent = status;
+//     editingSlideRow = null;
+//   } else {
+//     // existing "add new slide" code (slidesContainer.appendChild(el))
+//   }
+
+//   closeModal('slide-modal');
+//   toast('Slide save ho gayi!','success');
+//   // ... existing reset code ...
+// }
+
+// // slidesContainer.appendChild(el);
+//   slidesContainer.appendChild(el);
+//   closeModal('slide-modal');
+//   toast('Slide add ho gayi!','success');
+//   document.getElementById('slide-title').value='';
+//   document.getElementById('slide-link').value='';
+//   document.getElementById('slide-img-url').value='';
+//   document.getElementById('slide-img-preview').style.display='none';
+//   document.getElementById('slide-file-input').value='';
+// }
+
+// ===== TOAST =====
+function toast(msg, type='info') {
+  const icons = {success:'fa-check-circle',error:'fa-times-circle',info:'fa-info-circle'};
+  const t=document.getElementById('toast');
+  const el=document.createElement('div');
+  el.className=`toast-msg ${type}`;
+  el.innerHTML=`<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;
+  t.appendChild(el);
+  setTimeout(()=>el.remove(),3000);
+}
+// ===== NEW: CATEGORIES DATA + CRUD =====
+let categories = JSON.parse(localStorage.getItem('dn_categories') || 'null') || [
+  { name:"Tops", slug:"tops", img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=80", products:4, status:"Active" },
+  { name:"Bottoms", slug:"bottoms", img:"https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=80", products:2, status:"Active" },
+  { name:"Tracksuits", slug:"tracksuits", img:"https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=80", products:4, status:"Active" },
+  { name:"Footwear", slug:"footwear", img:"https://dnstore.pk/cdn/shop/collections/FullSizeRender.jpg?v=1777735717&width=80", products:2, status:"Active" },
+  { name:"Fragrances", slug:"fragrances", img:"", products:2, status:"Active" },
+  { name:"Accessories", slug:"accessories", img:"", products:3, status:"Active" },
+];
+function persistCategories() { localStorage.setItem('dn_categories', JSON.stringify(categories)); }
+let editingCategoryIdx = null;
+
+function renderCategories() {
+  const tbody = document.querySelector('#page-categories table tbody');
+  if(!tbody) return;
+  tbody.innerHTML = categories.map((c,idx)=>`
+    <tr>
+      <td>${c.img ? `<img class="td-img" src="${c.img}" onerror="this.style.display='none'"/>` : ''}</td>
+      <td>${c.name}</td>
+      <td>${c.slug}</td>
+      <td>${c.products}</td>
+      <td><span class="badge ${c.status==='Active'?'badge-active':'badge-inactive'}">${c.status}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="icon-btn" onclick="editCategory(${idx})"><i class="fas fa-pen"></i></button>
+        <button class="icon-btn del" onclick="deleteCategory(${idx})"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function editCategory(idx) {
+  const c = categories[idx];
+  editingCategoryIdx = idx;
+  const modal = document.getElementById('cat-modal');
+  modal.querySelector('.modal-title').textContent = 'Edit Category';
+  const inputs = modal.querySelectorAll('.field input[type="text"]');
+  inputs[0].value = c.name;
+  inputs[1].value = c.slug;
+  inputs[2].value = c.img || '';
+  modal.querySelector('.field select').value = c.status;
+  openModal('cat-modal');
+}
+
+function deleteCategory(idx) {
+  categories.splice(idx,1);
+  persistCategories();
+  renderCategories();
+  toast('Category deleted','error');
+}
+
+function saveCategory() {
+  const modal = document.getElementById('cat-modal');
+  const inputs = modal.querySelectorAll('.field input[type="text"]');
+  const name = inputs[0].value.trim();
+  const slug = inputs[1].value.trim();
+  const img = inputs[2].value.trim();
+  const status = modal.querySelector('.field select').value;
+  if(!name) { toast('Enter category name','error'); return; }
+  if(editingCategoryIdx !== null) {
+    categories[editingCategoryIdx] = { ...categories[editingCategoryIdx], name, slug, img, status };
+    editingCategoryIdx = null;
+    toast('Category updated!','success');
+  } else {
+    categories.push({ name, slug, img, products:0, status });
+    toast('Category added!','success');
+  }
+  persistCategories();
+  renderCategories();
+  closeModal('cat-modal');
+  modal.querySelector('.modal-title').textContent = 'Add Category';
+  inputs.forEach(i=>i.value='');
+  modal.querySelector('.field select').value = 'Active';
+}
+
+// ===== NEW: COUPONS DATA + CRUD =====
+let coupons = JSON.parse(localStorage.getItem('dn_coupons') || 'null') || [
+  { code:"SUMMER26", type:"Percentage", discount:"20%", minOrder:"Rs. 2,000", uses:"45 / 100", expiry:"Jun 30, 2026", status:"Active" },
+  { code:"DN250", type:"Flat", discount:"Rs. 250", minOrder:"Rs. 1,500", uses:"128 / 500", expiry:"Jul 15, 2026", status:"Active" },
+  { code:"ELITE10", type:"Percentage", discount:"10%", minOrder:"Rs. 5,000", uses:"22 / 50", expiry:"Jun 20, 2026", status:"Expired" },
+];
+function persistCoupons() { localStorage.setItem('dn_coupons', JSON.stringify(coupons)); }
+let editingCouponIdx = null;
+
+function renderCoupons() {
+  const tbody = document.querySelector('#page-coupons table tbody');
+  if(!tbody) return;
+  tbody.innerHTML = coupons.map((c,idx)=>`
+    <tr>
+      <td><strong>${c.code}</strong></td>
+      <td>${c.type}</td>
+      <td>${c.discount}</td>
+      <td>${c.minOrder}</td>
+      <td>${c.uses}</td>
+      <td>${c.expiry}</td>
+      <td><span class="badge ${c.status==='Active'?'badge-active':'badge-inactive'}">${c.status}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="icon-btn" onclick="editCoupon(${idx})"><i class="fas fa-pen"></i></button>
+        <button class="icon-btn del" onclick="deleteCoupon(${idx})"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function editCoupon(idx) {
+  const c = coupons[idx];
+  editingCouponIdx = idx;
+  const modal = document.getElementById('coupon-modal');
+  modal.querySelector('.modal-title').textContent = 'Edit Coupon';
+  const inputs = modal.querySelectorAll('.field input');
+  const select = modal.querySelector('.field select');
+  inputs[0].value = c.code;
+  select.value = c.type;
+  inputs[1].value = c.discount;
+  inputs[2].value = c.minOrder;
+  inputs[3].value = (c.uses.split('/')[1] || '').trim();
+  openModal('coupon-modal');
+}
+
+function deleteCoupon(idx) {
+  coupons.splice(idx,1);
+  persistCoupons();
+  renderCoupons();
+  toast('Coupon deleted','error');
+}
+
+function saveCoupon() {
+  const modal = document.getElementById('coupon-modal');
+  const inputs = modal.querySelectorAll('.field input');
+  const select = modal.querySelector('.field select');
+  const code = inputs[0].value.trim();
+  const type = select.value;
+  const discount = inputs[1].value.trim();
+  const minOrder = inputs[2].value.trim();
+  const limit = inputs[3].value.trim();
+  const expiry = inputs[4].value;
+  if(!code) { toast('Enter coupon code','error'); return; }
+  if(editingCouponIdx !== null) {
+    coupons[editingCouponIdx] = { ...coupons[editingCouponIdx], code, type, discount, minOrder, expiry: expiry || coupons[editingCouponIdx].expiry };
+    editingCouponIdx = null;
+    toast('Coupon updated!','success');
+  } else {
+    coupons.push({ code, type, discount, minOrder, uses:`0 / ${limit||100}`, expiry: expiry || '—', status:'Active' });
+    toast('Coupon created!','success');
+  }
+  persistCoupons();
+  renderCoupons();
+  closeModal('coupon-modal');
+  modal.querySelector('.modal-title').textContent = 'Create Coupon';
+  inputs.forEach(i=>i.value='');
+}
+
+// ===== NEW: REPORTS EXPORT =====
+function exportReportPDF() { toast('Report exported as PDF!','success'); }
+function exportReportExcel() { toast('Report exported as Excel!','success'); }
+
+// ===== NEW: ORDERS EXPORT + PRINT INVOICE =====
+function exportOrders() {
+  let csv = 'Order,Customer,Phone,Items,Total,Payment,Status,Date\n';
+  orders.forEach(o=>{ csv += `${o.id},${o.customer},${o.phone},"${o.items}",${o.total},${o.payment},${o.status},${o.date}\n`; });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'bin-saleh-orders.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Orders exported!','success');
+}
+
+function printInvoice(id) {
+  const o = orders.find(x=>x.id===id);
+  if(!o) return;
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>Invoice ${o.id}</title>
+      
+    <style>body{font-family:Arial,sans-serif;padding:40px;color:#222}h1{color:#b8860b}table{width:100%;border-collapse:collapse;margin-top:20px}td,th{padding:8px 12px;border:1px solid #ccc;text-align:left}</style>
+    </head><body>
+    <h1>BIN SALEH STORE</h1>
+    <h3>Invoice ${o.id}</h3>
+    <p><strong>Customer:</strong> ${o.customer}<br/><strong>Phone:</strong> ${o.phone}<br/><strong>Date:</strong> ${o.date}</p>
+    <table><tr><th>Items</th><th>Payment</th><th>Status</th><th>Total</th></tr>
+    <tr><td>${o.items}</td><td>${o.payment}</td><td>${o.status}</td><td>Rs. ${o.total.toLocaleString()}</td></tr></table>
+      <` + `/body> </` + `html>`);
+  win.document.close();
+  win.print();
+}
+</script>
+</body>
+</html>
