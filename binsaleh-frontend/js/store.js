@@ -178,11 +178,10 @@ function saveCollections(collections) {
 function checkoutFromCart() {
   const cart = loadCart();
   if (!cart.length) {
-    showToastFn && showToastFn('<i class="fas fa-exclamation-circle"></i> Cart is empty!');
+    if(typeof showToast === 'function') showToast('<i class="fas fa-exclamation-circle"></i> Cart is empty!');
     return;
   }
-  // If all items have the same product ID, go to that product
-  // Otherwise, go to the first item's product
+  // Redirect to the first cart item's product page for checkout
   const firstId = cart[0].id;
   window.location.href = 'addTocurt.html?id=' + firstId;
 }
@@ -190,9 +189,6 @@ function checkoutFromCart() {
 // ======================== UTILITY HELPERS ========================
 function safeVal(v, fallback) { return (v !== null && v !== undefined && v !== '') ? v : fallback; }
 function safeNum(v, fallback) { const n = Number(v); return isNaN(n) ? fallback : n; }
-
-// Fallback toast for checkout
-var showToastFn = null;
 
 // ======================== AUTO-INIT ON PAGE LOAD ========================
 document.addEventListener('DOMContentLoaded', function() {
