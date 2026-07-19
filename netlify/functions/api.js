@@ -64,10 +64,11 @@ app.use((err, req, res, next) => {
 });
 
 // ---------- Netlify Function Handler ----------
-// Explicit basePath tells serverless-http to strip the function mount point
-// from the request path before passing it to Express.
+// basePath strips /api from the public URL path since the Netlify redirect
+// already routed the request to this function. Express receives cleaner paths
+// like /auth/register-admin which match the routes below.
 const handler = serverless(app, {
-  basePath: '/.netlify/functions/api'
+  basePath: '/api'
 });
 
 exports.handler = async (event, context) => {
