@@ -2507,12 +2507,45 @@ function saveSlide() {
     toast('Slide added!','success');
   }
 
+  // Persist to localStorage so homepage reads it
+  persistSlidesToStorage();
+  
   closeModal('slide-modal');
   document.getElementById('slide-title').value='';
   document.getElementById('slide-link').value='';
   document.getElementById('slide-img-url').value='';
   document.getElementById('slide-img-preview').style.display='none';
   document.getElementById('slide-file-input').value='';
+}
+
+function persistSlidesToStorage() {
+  const rows = document.querySelectorAll('#page-cms .card-body > div > div');
+  const slides = [];
+  rows.forEach(row => {
+    const img = row.querySelector('img') ? row.querySelector('img').src : '';
+    const titleEl = row.querySelector('div[style*="font-weight:600"]');
+    const linkEl = row.querySelector('div[style*="color:var(--muted)"]');
+    const badge = row.querySelector('.badge');
+    const title = titleEl ? titleEl.textContent.trim() : '';
+    const link = linkEl ? linkEl.textContent.replace('Link: ','').trim() : '#';
+    const isActive = badge && badge.textContent.trim() === 'Active';
+    if(!title) return;
+    slides.push({
+      title: title,
+      tag: isActive ? 'Featured' : 'Inactive',
+      sub: '',
+      link: link === '—' ? '#' : link,
+      cta: 'Shop Now',
+      img: img
+    });
+  });
+  if(slides.length) {
+    if(typeof saveSliderSlides === 'function') {
+      saveSliderSlides(slides);
+    } else {
+      localStorage.setItem('bs_hero_slides', JSON.stringify(slides));
+    }
+  }
 }
 // function saveSlide() {
 //   const title = document.getElementById('slide-title').value.trim();

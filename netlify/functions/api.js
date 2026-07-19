@@ -52,6 +52,10 @@ app.use('/products', require('./routes/products'));
 app.use('/auth', require('./routes/auth'));
 app.use('/orders', require('./routes/orders'));
 
+// Newsletter route — mounted directly at /newsletter (not under /auth)
+const { subscribeNewsletter } = require('./controllers/authController');
+app.post('/newsletter/subscribe', subscribeNewsletter);
+
 // ---------- 404 Handler ----------
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found. Path: ' + req.originalUrl });

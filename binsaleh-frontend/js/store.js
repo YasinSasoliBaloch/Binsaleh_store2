@@ -173,9 +173,26 @@ function saveCollections(collections) {
   localStorage.setItem(COLLECTIONS_KEY, JSON.stringify(collections));
 }
 
+// ======================== CHECKOUT NAVIGATION ========================
+/** Redirect to addTocurt.html with the first cart item */
+function checkoutFromCart() {
+  const cart = loadCart();
+  if (!cart.length) {
+    showToastFn && showToastFn('<i class="fas fa-exclamation-circle"></i> Cart is empty!');
+    return;
+  }
+  // If all items have the same product ID, go to that product
+  // Otherwise, go to the first item's product
+  const firstId = cart[0].id;
+  window.location.href = 'addTocurt.html?id=' + firstId;
+}
+
 // ======================== UTILITY HELPERS ========================
 function safeVal(v, fallback) { return (v !== null && v !== undefined && v !== '') ? v : fallback; }
 function safeNum(v, fallback) { const n = Number(v); return isNaN(n) ? fallback : n; }
+
+// Fallback toast for checkout
+var showToastFn = null;
 
 // ======================== AUTO-INIT ON PAGE LOAD ========================
 document.addEventListener('DOMContentLoaded', function() {
