@@ -26,13 +26,13 @@ const API_BASE = (function() {
   var protocol = window.location.protocol;
   
   // Local development (localhost, 127.0.0.1, or file:// protocol)
+  // Points to your deployed Netlify Functions API so you can test locally
   if (host === 'localhost' || host === '127.0.0.1' || protocol === 'file:') {
-    return 'http://localhost:5000/api';
+    return 'https://heroic-fox-4d9754.netlify.app/api';
   }
   
   // Production (Netlify, custom domain, etc.)
-  // Use relative path — Netlify proxies /api/* to Render via _redirects file
-  // This avoids CORS entirely since requests go to the same origin
+  // Use relative path — Netlify Functions handle /api/* requests
   return '/api';
 })();
 
