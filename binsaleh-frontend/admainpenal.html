@@ -385,7 +385,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <div class="form-group">
         <label>Admin Setup Key</label>
         <input type="password" id="reg-key" placeholder="Enter the admin setup key"/>
-        <p style="font-size:0.68rem;color:var(--muted);margin-top:6px">Setup key: <strong>Binsaleh_products_services</strong></p>
+        <p style="font-size:0.68rem;color:var(--muted);margin-top:6px" id="reg-key-hint">Setup key: <strong>Binsaleh_products_services</strong></p>
       </div>
       <button class="login-btn" onclick="doRegister()"><i class="fas fa-user-plus" style="margin-right:8px"></i>Register as Admin</button>
     </div>
@@ -655,6 +655,16 @@ tr:hover td{background:rgba(255,255,255,0.02);}
           <div class="field"><label>Free Shipping Threshold (Rs.)</label><input type="number" id="ship-free-threshold" placeholder="10000"/></div>
         </div>
         <button class="btn btn-primary" style="margin-top:16px" onclick="saveShippingSettings()"><i class="fas fa-floppy-disk"></i> Save Shipping Fees</button>
+      </div>
+    </div>
+
+    <!-- ====== ADMIN SETUP KEY OVERRIDE ====== -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title"><i class="fas fa-key" style="margin-right:8px;color:var(--accent)"></i> Admin Setup Key Override</div></div>
+      <div class="card-body">
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:16px">Override the default admin setup key stored in Netlify environment variables. This key is used when registering new admin accounts. Leave empty to use the default key from Netlify.</p>
+        <div class="field"><label>Custom Admin Setup Key</label><input type="password" id="admin-setup-key-input" placeholder="Enter new setup key or leave empty for default"/></div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="saveAdminSetupKey()"><i class="fas fa-floppy-disk"></i> Save Setup Key</button>
       </div>
     </div>
 
@@ -2647,7 +2657,7 @@ function syncCategoriesToHomepage() {
   const collections = categories.filter(c => c.status === 'Active').map(c => ({
     slug: c.slug || c.name.toLowerCase(),
     name: c.name,
-    desc: c.products + ' products',
+    desc: 'Browse our ' + c.name.toLowerCase() + ' collection',
     link: (c.slug || c.name.toLowerCase()) + '.html',
     img: c.img || 'https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=800'
   }));
@@ -2683,6 +2693,12 @@ function loadAdminSetupKey() {
   const saved = localStorage.getItem('bs_admin_setup_key');
   const el = document.getElementById('admin-setup-key-input');
   if(el && saved) el.value = saved;
+  // Update register form hint to show the overridden key if available
+  const hintEl = document.getElementById('reg-key-hint');
+  if(hintEl) {
+    const displayKey = saved || 'Binsaleh_products_services';
+    hintEl.innerHTML = 'Setup key: <strong>' + displayKey + '</strong>' + (saved ? ' <span style="color:var(--accent)">(overridden)</span>' : '');
+  }
 }
 function saveAdminSetupKey() {
   const el = document.getElementById('admin-setup-key-input');
