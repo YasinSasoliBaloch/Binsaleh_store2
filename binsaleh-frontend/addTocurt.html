@@ -814,6 +814,7 @@
   </div>
 </footer>
 
+<script src="./js/store.js"></script>
 <script>
 /* ============================================================================
    DYNAMIC DATA LAYER
@@ -1149,60 +1150,24 @@ function changeQty(d){ qty = Math.max(1, qty + d); document.getElementById('qty-
 function addToCartAction(){
   if(!product.inStock){ showToast('<i class="fas fa-ban" style="margin-right:8px"></i>This product is out of stock.'); return; }
   const activeImg = product.images[activeImgIndex] || product.images[0];
-  const existing = cartItems.find(x => x.id === product.id && x.color === selectedColor);
-  if(existing){
-    existing.qty += qty;
-    existing.img = activeImg;
-  } else {
-    cartItems.push({
-      id: product.id, name: product.name, color: selectedColor, qty, price: product.price,
-      currency: product.currency, img: activeImg, imgs: product.images, activeIdx: activeImgIndex
-    });
-  }
-  updateCartUI();
+  // Save to shared localStorage cart
+  cartAddItem({ id: product.id, name: product.name, color: selectedColor, qty, price: product.price, currency: product.currency||'Rs.', img: activeImg });
+  cartRenderDrawer();
   toggleCart();
   showToast('<i class="fas fa-check" style="margin-right:8px"></i>Added to cart!');
   fireEvent('AddToCart');
 }
-function removeCartItem(i){ cartItems.splice(i,1); updateCartUI(); }
-function switchCartImg(itemIdx, imgIdx){
-  cartItems[itemIdx].img = cartItems[itemIdx].imgs[imgIdx];
-  cartItems[itemIdx].activeIdx = imgIdx;
-  updateCartUI();
-}
-function updateCartUI(){
-  const total = cartItems.reduce((s,x)=>s + x.price*x.qty, 0);
-  const count = cartItems.reduce((s,x)=>s + x.qty, 0);
-  document.getElementById('cart-count').textContent = count;
-  document.getElementById('cart-total').textContent = 'Rs. ' + total.toLocaleString();
-  const body = document.getElementById('cart-body');
-  if(!cartItems.length){
-    body.innerHTML = '<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>Your cart is empty</p></div>';
-    return;
-  }
-  body.innerHTML = cartItems.map((x,i)=>`
-    <div class="cart-item">
-      <div class="cart-item-img-wrap">
-        <img src="${x.img}" alt="${x.name}" id="cart-main-img-${i}"/>
-        <div class="cart-item-thumbs">
-          ${(x.imgs||[]).slice(0,6).map((im,j)=>`
-            <div class="cart-thumb-dot${j===x.activeIdx?' active':''}" onclick="switchCartImg(${i},${j})">
-              <img src="${im}" alt="view ${j+1}" loading="lazy"/>
-            </div>`).join('')}
-        </div>
-      </div>
-      <div class="cart-item-info">
-        <div class="cart-item-name">${x.name}</div>
-        <div class="cart-item-meta">Color: ${x.color} · Qty: ${x.qty}</div>
-        <div class="cart-item-price">Rs. ${(x.price*x.qty).toLocaleString()}</div>
-      </div>
-      <button class="cart-item-remove" onclick="removeCartItem(${i})"><i class="fas fa-times"></i></button>
-    </div>`).join('');
+function removeCartItem(i){
+  const cart = loadCart();
+  if(cart[i]) { cartRemoveItem(cart[i].id, cart[i].color); }
+  cartRenderDrawer();
 }
 function toggleCart(){
+  cartRenderDrawer();
   document.getElementById('cart-overlay').classList.toggle('open');
   document.getElementById('cart-drawer').classList.toggle('open');
 }
+function updateCartUI(){ cartRenderDrawer(); }
 
 // ============================================================================
 // CHECKOUT

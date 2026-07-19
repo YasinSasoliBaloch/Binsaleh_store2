@@ -408,170 +408,174 @@
   </div>
 </div>
 
-<script > // ===== LANGUAGE =====
-  function setLang(lang) {
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    if(lang === 'ur') {
-      document.body.classList.add('urdu-mode');
-    } else {
-      document.body.classList.remove('urdu-mode');
-    }
-    setTimeout(() => {
-      document.getElementById('lang-alert').style.display = 'none';
-    }, 400);
-  }
-
-  // ===== HERO SLIDER =====
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.hero-slide');
+<script src="./js/store.js"></script>
+<script src="./js/api.js"></script>
+<script>
+// ===== BUILD DYNAMIC SLIDER FROM localStorage =====
+function buildHeroSlider() {
+  const slidesData = getSliderSlides();
+  const container = document.getElementById('hero-slides');
   const dotsContainer = document.getElementById('hero-dots');
+  if (!container || !slidesData.length) return;
 
-  // Build dots
-  slides.forEach((_, i) => {
+  container.innerHTML = slidesData.map((s, i) => `
+    <div class="hero-slide${i === 0 ? ' active' : ''}">
+      <img src="${s.img || 'https://dnstore.pk/cdn/shop/files/IMG_7830.jpg?v=1774721492&width=1920'}" alt="${s.tag || ''}" onerror="this.src='https://dnstore.pk/cdn/shop/files/IMG_7830.jpg?v=1774721492&width=1920'"/>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">${s.tag || 'New Arrival'}</span>
+        <h1 class="hero-title">${s.title || 'New<br/>Collection'}</h1>
+        <p class="hero-sub">${s.sub || ''}</p>
+        <a href="${s.link || '#'}" class="hero-cta">${s.cta || 'Shop Now'} <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>`).join('');
+
+  dotsContainer.innerHTML = '';
+  slidesData.forEach((_, i) => {
     const dot = document.createElement('div');
     dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
     dot.onclick = () => goToSlide(i);
     dotsContainer.appendChild(dot);
   });
+}
 
-  function goToSlide(n) {
-    slides[currentSlide].classList.remove('active');
-    dotsContainer.children[currentSlide].classList.remove('active');
-    currentSlide = (n + slides.length) % slides.length;
-    slides[currentSlide].classList.add('active');
-    dotsContainer.children[currentSlide].classList.add('active');
-  }
+// ===== HERO SLIDER =====
+let currentSlide = 0;
+function getSlides() { return document.querySelectorAll('.hero-slide'); }
+function goToSlide(n) {
+  const slides = getSlides();
+  if (!slides.length) return;
+  const dots = document.getElementById('hero-dots');
+  slides[currentSlide].classList.remove('active');
+  if (dots && dots.children[currentSlide]) dots.children[currentSlide].classList.remove('active');
+  currentSlide = (n + slides.length) % slides.length;
+  slides[currentSlide].classList.add('active');
+  if (dots && dots.children[currentSlide]) dots.children[currentSlide].classList.add('active');
+}
+function slideHero(dir) { goToSlide(currentSlide + dir); }
 
-  function slideHero(dir) { goToSlide(currentSlide + dir); }
-  setInterval(() => slideHero(1), 5000);
+// ===== BUILD COLLECTIONS FROM localStorage =====
+function buildCollections() {
+  const cols = getCollections();
+  const grid = document.querySelector('.collections-grid');
+  if (!grid || !cols.length) return;
+  grid.innerHTML = cols.map(c => `
+    <div class="coll-card" onclick="location.href='${c.link || '#'}'">
+      <img src="${c.img || 'https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=1200'}" alt="${c.name}" onerror="this.style.display='none'"/>
+      <div class="coll-overlay"></div>
+      <div class="coll-info">
+        <div class="coll-name">${c.name}</div>
+        <div class="coll-count">${c.desc || ''}</div>
+        <a href="${c.link || '#'}" class="coll-btn">Explore <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>`).join('');
+}
 
-  // ===== CART =====
-  function toggleCart() {
-    document.getElementById('cart-overlay').classList.toggle('open');
-    document.getElementById('cart-drawer').classList.toggle('open');
-  }
+// ===== CART =====
+function toggleCart() {
+  cartRenderDrawer();
+  document.getElementById('cart-overlay').classList.toggle('open');
+  document.getElementById('cart-drawer').classList.toggle('open');
+}
 
-  // ===== SEARCH =====
-  function toggleSearch() {
-    document.getElementById('search-bar').classList.toggle('open');
-    if(document.getElementById('search-bar').classList.contains('open')) {
-      document.getElementById('search-input').focus();
-    }
-  }
+// ===== SEARCH =====
+function toggleSearch() {
+  document.getElementById('search-bar').classList.toggle('open');
+  if(document.getElementById('search-bar').classList.contains('open')) document.getElementById('search-input').focus();
+}
 
-  // ===== MOBILE MENU =====
-  function toggleMobileMenu() {
-    const m = document.getElementById('mobile-menu');
-    const icon = document.getElementById('menu-icon');
-    m.classList.toggle('open');
-    icon.className = m.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
-  }
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-menu');
+  const icon = document.getElementById('menu-icon');
+  m.classList.toggle('open');
+  icon.className = m.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+}
 
-  // ===== COUNTDOWN TIMER =====
-  const endTime = new Date();
-  endTime.setHours(endTime.getHours() + 11, endTime.getMinutes() + 30, 0, 0);
-  function updateTimer() {
-    const now = new Date();
-    let diff = Math.max(0, Math.floor((endTime - now) / 1000));
-    const h = Math.floor(diff / 3600); diff %= 3600;
-    const m = Math.floor(diff / 60); diff %= 60;
-    const s = diff;
-    document.getElementById('t-h').textContent = String(h).padStart(2,'0');
-    document.getElementById('t-m').textContent = String(m).padStart(2,'0');
-    document.getElementById('t-s').textContent = String(s).padStart(2,'0');
-  }
-  updateTimer();
-  setInterval(updateTimer, 1000);
+// ===== COUNTDOWN TIMER =====
+const endTime = new Date();
+endTime.setHours(endTime.getHours() + 11, endTime.getMinutes() + 30, 0, 0);
+function updateTimer() {
+  const now = new Date();
+  let diff = Math.max(0, Math.floor((endTime - now) / 1000));
+  const h = Math.floor(diff / 3600); diff %= 3600;
+  const m = Math.floor(diff / 60); diff %= 60;
+  const s = diff;
+  document.getElementById('t-h').textContent = String(h).padStart(2,'0');
+  document.getElementById('t-m').textContent = String(m).padStart(2,'0');
+  document.getElementById('t-s').textContent = String(s).padStart(2,'0');
+}
+updateTimer();
+setInterval(updateTimer, 1000);
 
-  // ===== PRODUCTS (ab backend se aate hain) =====
-  function renderStars(n) {
-    return Array.from({length:5}, (_,i) => `<i class="fas fa-star" style="opacity:${i<n?1:0.25}"></i>`).join('');
-  }
+// ===== PRODUCTS =====
+function formatPrice(n, currency) { return (currency||'Rs.') + ' ' + Number(n).toLocaleString(); }
 
-  function formatPrice(n, currency) {
-    return `${currency || 'Rs.'} ${Number(n).toLocaleString()}`;
-  }
+const grid = document.getElementById('products-grid');
 
-  const grid = document.getElementById('products-grid');
-
-  async function loadProducts() {
-    try {
-      const products = await api.get('/products');
-
-      if (!products.length) {
-        grid.innerHTML = `<p style="padding:20px">No products available yet.</p>`;
-        return;
-      }
-
-      grid.innerHTML = products.map(p => `
-        <div class="prod-card">
-          <div class="prod-img-wrap">
-            <img src="${p.img || (p.images && p.images[0]) || ''}" alt="${p.name}" loading="lazy"/>
-            ${p.badge ? `<span class="prod-badge ${p.badge==='New'?'new':''}">${p.badge}</span>` : ''}
+async function loadProducts() {
+  try {
+    const products = await api.get('/products');
+    if (!products.length) { grid.innerHTML = '<p style="padding:20px">No products available yet.</p>'; return; }
+    grid.innerHTML = products.slice(0,8).map(p => {
+      const imgSrc = p.img || (p.images && p.images[0]) || '';
+      return `<div class="prod-card" onclick="window.location.href='addTocurt.html?id=${p._id||p.id}'">
+        <div class="prod-img-wrap">
+          <img src="${imgSrc}" alt="${p.name}" loading="lazy" onerror="this.src='https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500'"/>
+          ${p.badge ? `<span class="prod-badge ${(p.badge||'').toUpperCase()==='NEW'?'new':''}">${p.badge}</span>` : ''}
+        </div>
+        <div class="prod-body">
+          <div class="prod-name">${p.name}</div>
+          <div class="prod-prices">
+            <span class="prod-price">${formatPrice(p.price, p.currency)}</span>
+            ${p.oldPrice ? `<span class="prod-old">${formatPrice(p.oldPrice, p.currency)}</span>` : ''}
           </div>
-          <div class="prod-body">
-            <div class="prod-name">${p.name}</div>
-            <div class="prod-prices">
-              <span class="prod-price">${formatPrice(p.price, p.currency)}</span>
-              ${p.oldPrice ? `<span class="prod-old">${formatPrice(p.oldPrice, p.currency)}</span>` : ''}
-            </div>
-            <button class="prod-add" onclick="addToCart('${p.name.replace(/'/g,"\\'")}', '${formatPrice(p.price, p.currency)}')">
-              <i class="fas fa-shopping-bag" style="margin-right:6px"></i>Add to Cart
-            </button>
-          </div>
-        </div>`).join('');
-    } catch (err) {
-      console.error('Failed to load products:', err);
-      grid.innerHTML = `<p style="padding:20px;color:red">Could not load products. Is the backend running?</p>`;
-    }
+          <button class="prod-add" onclick="event.stopPropagation();addToCartHome('${p._id||p.id}','${p.name.replace(/'/g,"\\'")}','${p.price}','${p.currency||'Rs.'}','${imgSrc.replace(/'/g,"\\'")}')">
+            <i class="fas fa-shopping-bag" style="margin-right:6px"></i>Add to Cart
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    console.error('Failed to load products:', err);
+    grid.innerHTML = '<p style="padding:20px;color:red">Could not load products.</p>';
   }
+}
 
-  function addToCart(name, price) {
-    let count = parseInt(document.getElementById('cart-count').textContent) + 1;
-    document.getElementById('cart-count').textContent = count;
-    const toast = document.createElement('div');
-    toast.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:12px 24px;border-radius:8px;font-weight:700;font-size:0.85rem;z-index:9999;animation:slideIn 0.3s ease;box-shadow:0 4px 16px rgba(0,0,0,0.15)`;
-    toast.innerHTML = `<i class="fas fa-check" style="margin-right:8px"></i>${name} added to cart!`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
+function addToCartHome(id, name, price, currency, img) {
+  cartAddItem({ id, name, price: Number(price), currency: currency || 'Rs.', img });
+  cartRenderDrawer();
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:12px 24px;border-radius:8px;font-weight:700;font-size:0.85rem;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15)';
+  toast.innerHTML = '<i class="fas fa-check" style="margin-right:8px"></i>' + name + ' added to cart!';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+// ===== NEWSLETTER =====
+async function subscribeNewsletter() {
+  const email = document.getElementById('newsletter-email').value.trim();
+  const msgEl = document.getElementById('newsletter-msg');
+  if (!email) { msgEl.textContent = '⚠️ Please enter your email address'; msgEl.style.color = '#ff6b6b'; return; }
+  if (!email.includes('@') || !email.includes('.')) { msgEl.textContent = '⚠️ Please enter a valid email address'; msgEl.style.color = '#ff6b6b'; return; }
+  msgEl.textContent = '⏳ Subscribing...';
+  msgEl.style.color = '#d4af37';
+  try {
+    const data = await api.post('/newsletter/subscribe', { email: email.toLowerCase() });
+    msgEl.textContent = '✅ Subscribed successfully! Welcome to BIN SALEH 🎉';
+    msgEl.style.color = '#4ade80';
+    document.getElementById('newsletter-email').value = '';
+  } catch (err) {
+    msgEl.textContent = '❌ ' + (err.message || 'Subscription failed. Try again.');
+    msgEl.style.color = '#ff6b6b';
   }
+}
 
-  // ===== NEWSLETTER SUBSCRIPTION =====
-  async function subscribeNewsletter() {
-    const email = document.getElementById('newsletter-email').value.trim();
-    const msgEl = document.getElementById('newsletter-msg');
-    
-    if (!email) {
-      msgEl.textContent = '⚠️ Please enter your email address';
-      msgEl.style.color = '#ff6b6b';
-      return;
-    }
-    if (!email.includes('@') || !email.includes('.')) {
-      msgEl.textContent = '⚠️ Please enter a valid email address';
-      msgEl.style.color = '#ff6b6b';
-      return;
-    }
-    
-    msgEl.textContent = '⏳ Subscribing...';
-    msgEl.style.color = '#d4af37';
-    
-    try {
-      const data = await api.post('/newsletter/subscribe', { email: email.toLowerCase() });
-      msgEl.textContent = '✅ Subscribed successfully! Welcome to BIN SALEH 🎉';
-      msgEl.style.color = '#4ade80';
-      document.getElementById('newsletter-email').value = '';
-    } catch (err) {
-      msgEl.textContent = '❌ ' + (err.message || 'Subscription failed. Try again.');
-      msgEl.style.color = '#ff6b6b';
-    }
-  }
-
-</script>
-<script src="./js/api.js"></script>
-<script>
-  // Reload products after api.js is loaded
-  if (typeof loadProducts === 'function') loadProducts();
+// ===== INIT =====
+buildHeroSlider();
+buildCollections();
+setInterval(() => slideHero(1), 5000);
+loadProducts();
 </script>
 </body>
 </html>

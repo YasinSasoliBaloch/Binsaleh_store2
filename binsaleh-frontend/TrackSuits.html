@@ -299,56 +299,35 @@
   </div>
 </footer>
 
+<script src="./js/store.js"></script>
 <script>
 // ===================== DATA =====================
-// const allProducts = [
-//   { id:1, name:"Linen Co-ord Set – Beige", category:"tracksuits", price:5450, oldPrice:8999, badge:"SALE", inStock:true, stars:5, reviews:128, img:"https://dnstore.pk/cdn/shop/files/IMG_7830.jpg?v=1774721492&width=500", bestSelling:true },
-//   { id:2, name:"DN Baggy Tracksuit – Olive", category:"tracksuits", price:6500, oldPrice:9999, badge:"SALE", inStock:true, stars:5, reviews:94, img:"https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=500" },
-//   { id:3, name:"Adidas Samba – White", category:"footwear", price:3550, oldPrice:12000, badge:"SALE", inStock:true, stars:4, reviews:76, img:"https://dnstore.pk/cdn/shop/files/CE97B476-E5CA-4C66-B89B-6E3631B5E368.jpg?v=1767185810&width=500", bestSelling:true },
-//   { id:4, name:"212 MEN NYC Fragrance", category:"fragrances", price:3250, oldPrice:7000, badge:"SALE", inStock:true, stars:5, reviews:212, img:"https://dnstore.pk/cdn/shop/files/B0D9EFD9-DFAD-45BE-AE7D-E622AC0BBD51.jpg?v=1748380643&width=500", bestSelling:true },
-//   { id:5, name:"Arabic AURA Watch", category:"accessories", price:1799, oldPrice:4799, badge:"NEW", inStock:true, stars:4, reviews:58, img:"https://dnstore.pk/cdn/shop/files/00257696-1891-4E6D-8F1B-FE61EC13F218.jpg?v=1752099973&width=500" },
-//   { id:6, name:"Korean Pants – Black", category:"bottoms", price:2200, oldPrice:5500, badge:"SALE", inStock:true, stars:5, reviews:143, img:"https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=500", bestSelling:true },
-//   { id:7, name:"Accessories Bundle Set", category:"accessories", price:2850, oldPrice:6100, badge:"SALE", inStock:false, stars:4, reviews:45, img:"https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=500" },
-//   { id:8, name:"Summer Premium Top", category:"tops", price:1899, oldPrice:3999, badge:"NEW", inStock:true, stars:5, reviews:89, img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500" },
-//   { id:9, name:"Cartier Tank Watch", category:"accessories", price:4500, oldPrice:9999, badge:"NEW", inStock:true, stars:5, reviews:32, img:"https://dnstore.pk/cdn/shop/files/763F2324-5CD9-4056-9009-8878540EFC7E.png?v=1777300230&width=500" },
-//   { id:10, name:"Perception Fragrance by DN", category:"fragrances", price:2800, oldPrice:5500, badge:"SALE", inStock:true, stars:4, reviews:67, img:"https://dnstore.pk/cdn/shop/files/FE0E7953-EE9B-4D22-90AE-692071EBA76A.png?v=1772557488&width=500" },
-//   { id:11, name:"Oversized Box-Fit Tee", category:"tops", price:1499, oldPrice:2999, badge:"SALE", inStock:true, stars:4, reviews:115, img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500", bestSelling:true },
-//   { id:12, name:"Cargo Pants – Khaki", category:"bottoms", price:2600, oldPrice:5200, badge:"SALE", inStock:false, stars:3, reviews:28, img:"https://dnstore.pk/cdn/shop/collections/DE08A2DA-3732-4893-B320-98C24C91F24F.jpg?v=1777718865&width=500" },
-//   { id:13, name:"Sneaker Trainer – Black", category:"footwear", price:4200, oldPrice:8500, badge:"SALE", inStock:true, stars:4, reviews:53, img:"https://dnstore.pk/cdn/shop/collections/FullSizeRender.jpg?v=1777735717&width=500" },
-//   { id:14, name:"Summer Co-Ord Set – Blue", category:"tracksuits", price:7200, oldPrice:12000, badge:"NEW", inStock:true, stars:5, reviews:41, img:"https://dnstore.pk/cdn/shop/collections/26993920-13C0-4CA5-92E5-94F20642AFBD.jpg?v=1777718722&width=500" },
-//   { id:15, name:"Bracelet & Sunglasses Pack", category:"accessories", price:1200, oldPrice:2800, badge:"SALE", inStock:true, stars:4, reviews:76, img:"https://dnstore.pk/cdn/shop/collections/IMG-8713.png?v=1777736201&width=500" },
-//   { id:16, name:"Premium Polo Shirt", category:"tops", price:2100, oldPrice:4200, badge:"NEW", inStock:true, stars:5, reviews:92, img:"https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500" },
-// ];
 let allProducts = [];
 let filteredProducts = [];
-let cart = [];
+let cart = loadCart();
 let currentView = "grid";
 let visibleCount = 12;
 
 async function loadProducts() {
   try {
-    allProducts = await api.get("/products");
+    allProducts = await api.get("/products?category=tracksuits");
     filteredProducts = [...allProducts];
-
     updateStockCounts();
     applyFilters();
-
   } catch (err) {
     console.error(err);
-    alert("Products load nahi hue.");
+    document.getElementById('products-grid').innerHTML = '<p style="padding:20px;color:var(--red)">⚠️ Products load nahi hue. Backend se connect nahi ho para.</p>';
   }
 }
-// let cart = [];
-// let currentView = 'grid';
-// let visibleCount = 12;
-// let filteredProducts = [...allProducts];
 
 // ===================== RENDER =====================
 function renderStars(n) {
-  return Array.from({length:5}, (_,i) => `<i class="fas fa-star" style="opacity:${i<n?1:0.3}"></i>`).join('');
+  const stars = safeNum(n, 4); // fallback to 4 stars if missing
+  return Array.from({length:5}, (_,i) => `<i class="fas fa-star" style="opacity:${i<stars?1:0.3}"></i>`).join('');
 }
 
 function getDiscount(price, old) {
+  if (!old || old <= price) return 0;
   return Math.round(((old - price) / old) * 100);
 }
 
@@ -370,28 +349,32 @@ function renderProducts(products) {
   lmw.style.display = products.length > visibleCount ? 'block' : 'none';
 
   grid.innerHTML = showing.map(p => {
-    const disc = getDiscount(p.price, p.oldPrice);
+    const id = p._id || p.id;
+    const imgSrc = p.img || (p.images && p.images[0]) || 'https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500';
+    const oldP = p.oldPrice || 0;
+    const disc = getDiscount(p.price, oldP);
+    const isNew = (p.badge||'').toUpperCase() === 'NEW';
     return `
-    <div class="prod-card" onclick="openProduct(${p.id})">
+    <div class="prod-card" onclick="openProduct('${id}')">
       <div class="prod-img-wrap">
-        <img src="${p.img}" alt="${p.name}" loading="lazy"/>
-        ${p.badge ? `<span class="prod-badge ${p.badge==='NEW'?'new':''}${!p.inStock?'out':''}">${p.inStock ? p.badge : 'SOLD OUT'}</span>` : ''}
+        <img src="${imgSrc}" alt="${p.name}" loading="lazy" onerror="this.src='https://dnstore.pk/cdn/shop/collections/A6F9D276-DD01-4A48-A90F-4C075B4DE837.jpg?v=1777718686&width=500'"/>
+        ${p.badge ? `<span class="prod-badge ${isNew ? 'new' : ''}${!p.inStock ? ' out' : ''}">${p.inStock ? p.badge : 'SOLD OUT'}</span>` : ''}
         <button class="prod-wishlist" onclick="event.stopPropagation();this.classList.toggle('liked')"><i class="fas fa-heart"></i></button>
       </div>
       <div class="prod-body">
-        <div class="prod-category">${p.category}</div>
+        <div class="prod-category">${p.category || ''}</div>
         <div class="prod-name">${p.name}</div>
         <div class="prod-prices">
-          <span class="prod-price">Rs. ${p.price.toLocaleString()}</span>
-          <span class="prod-old">Rs. ${p.oldPrice.toLocaleString()}</span>
-          <span class="prod-discount">-${disc}%</span>
+          <span class="prod-price">${p.currency || 'Rs.'} ${Number(p.price).toLocaleString()}</span>
+          ${oldP > p.price ? `<span class="prod-old">${p.currency || 'Rs.'} ${Number(oldP).toLocaleString()}</span>` : ''}
+          ${disc > 0 ? `<span class="prod-discount">-${disc}%</span>` : ''}
         </div>
-        <div class="prod-stars">${renderStars(p.stars)}<span>(${p.reviews})</span></div>
+        <div class="prod-stars">${renderStars(p.stars)}<span>(${safeNum(p.reviews, 0)})</span></div>
         <div class="prod-actions">
-          <button class="prod-add" onclick="event.stopPropagation();addToCart(${p.id})">
+          <button class="prod-add" onclick="event.stopPropagation();addToCart('${id}')">
             <i class="fas fa-shopping-bag" style="margin-right:5px"></i>Add to Cart
           </button>
-          <button class="prod-buy" onclick="event.stopPropagation();buyNow(${p.id})">Buy Now</button>
+          <button class="prod-buy" onclick="event.stopPropagation();buyNow('${id}')">Buy Now</button>
         </div>
       </div>
     </div>`;
@@ -410,18 +393,14 @@ function applyFilters() {
   const activeCats = catChecks.filter(c => document.getElementById('cat-' + c).checked);
 
   let filtered = allProducts.filter(p => {
-    // availability
     if (inStockChecked && !outStockChecked && !p.inStock) return false;
     if (!inStockChecked && outStockChecked && p.inStock) return false;
     if (!inStockChecked && !outStockChecked) return false;
-    // price
     if (p.price < priceMin || p.price > priceMax) return false;
-    // category
     if (activeCats.length > 0 && !activeCats.includes(p.category)) return false;
     return true;
   });
 
-  // sort
   filtered = sortProducts(filtered, sortVal);
   filteredProducts = filtered;
   visibleCount = 12;
@@ -429,7 +408,7 @@ function applyFilters() {
   updateStockCounts();
   renderProducts(filteredProducts);
 }
-loadProducts();
+
 function sortProducts(arr, method) {
   const copy = [...arr];
   switch(method) {
@@ -437,9 +416,9 @@ function sortProducts(arr, method) {
     case 'za': return copy.sort((a,b) => b.name.localeCompare(a.name));
     case 'low-high': return copy.sort((a,b) => a.price - b.price);
     case 'high-low': return copy.sort((a,b) => b.price - a.price);
-    case 'best-selling': return copy.sort((a,b) => (b.bestSelling?1:0) - (a.bestSelling?1:0) || b.reviews - a.reviews);
-    case 'most-relevant': return copy.sort((a,b) => b.reviews - a.reviews);
-    default: return copy; // featured
+    case 'best-selling': return copy.sort((a,b) => (b.soldCount||0) - (a.soldCount||0));
+    case 'most-relevant': return copy.sort((a,b) => (b.reviews||0) - (a.reviews||0));
+    default: return copy;
   }
 }
 
@@ -490,42 +469,29 @@ function setView(v) {
   event.currentTarget.classList.add('active');
 }
 
-// ===================== CART =====================
+// ===================== CART (shared via store.js) =====================
 function addToCart(id) {
-  const p = allProducts.find(x => x.id === id);
-  const existing = cart.find(x => x.id === id);
-  if (existing) { existing.qty++; } else { cart.push({...p, qty:1}); }
-  updateCartUI();
+  const p = allProducts.find(x => (x._id || x.id) == id);
+  if (!p) return;
+  const imgSrc = p.img || (p.images && p.images[0]) || '';
+  cartAddItem({ id: p._id || p.id, name: p.name, price: p.price, currency: p.currency || 'Rs.', img: imgSrc });
+  cart = loadCart();
+  cartRenderDrawer();
   showToast(`<i class="fas fa-check" style="margin-right:8px"></i>${p.name} added!`);
 }
 
 function buyNow(id) { addToCart(id); toggleCart(); }
 
-function openProduct(id) { const p = allProducts.find(x=>x.id===id); showToast(`Opening ${p.name}...`); }
-
-function removeFromCart(id) { cart = cart.filter(x=>x.id!==id); updateCartUI(); }
-
-function updateCartUI() {
-  const count = cart.reduce((s,x)=>s+x.qty,0);
-  document.getElementById('cart-count').textContent = count;
-  const total = cart.reduce((s,x)=>s+x.price*x.qty,0);
-  document.getElementById('cart-total').textContent = 'Rs. ' + total.toLocaleString();
-  const body = document.getElementById('cart-body');
-  const empty = document.getElementById('cart-empty');
-  if (cart.length === 0) { empty.style.display = 'block'; body.innerHTML = ''; body.appendChild(empty); return; }
-  empty.style.display = 'none';
-  body.innerHTML = cart.map(x => `
-    <div class="cart-item">
-      <img src="${x.img}" alt="${x.name}"/>
-      <div class="cart-item-info">
-        <div class="cart-item-name">${x.name} ${x.qty>1?'×'+x.qty:''}</div>
-        <div class="cart-item-price">Rs. ${(x.price*x.qty).toLocaleString()}</div>
-      </div>
-      <button class="cart-item-remove" onclick="removeFromCart(${x.id})"><i class="fas fa-times"></i></button>
-    </div>`).join('');
+function openProduct(id) {
+  const p = allProducts.find(x => (x._id || x.id) == id);
+  if (p) window.location.href = 'addTocurt.html?id=' + (p._id || p.id);
 }
 
+function removeFromCart(id) { cartRemoveItem(id); cart = loadCart(); cartRenderDrawer(); }
+
 function toggleCart() {
+  cart = loadCart();
+  cartRenderDrawer();
   document.getElementById('cart-overlay').classList.toggle('open');
   document.getElementById('cart-drawer').classList.toggle('open');
 }
@@ -538,7 +504,7 @@ function toggleSearch() {
 document.getElementById('search-input').addEventListener('input', function() {
   const q = this.value.toLowerCase().trim();
   if (!q) { filteredProducts = sortProducts(allProducts, document.getElementById('sort-select').value); }
-  else { filteredProducts = allProducts.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)); }
+  else { filteredProducts = allProducts.filter(p => (p.name||'').toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q)); }
   visibleCount = 12;
   renderProducts(filteredProducts);
 });
@@ -561,9 +527,8 @@ function showToast(html) {
 }
 
 // ===================== INIT =====================
-// updateStockCounts();
-// applyFilters();
 loadProducts();
-</script> <script src="./trackin.js"></script>
+</script>
+<script src="./js/trackin.js"></script>
 </body>
 </html>
