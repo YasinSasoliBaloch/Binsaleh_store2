@@ -85,6 +85,15 @@ exports.subscribeNewsletter = async (req, res) => {
   }
 };
 
+exports.getSubscribers = async (req, res) => {
+  try {
+    const subscribers = await User.find({ newsletter: true }).select('name email createdAt').sort({ createdAt: -1 });
+    res.json(subscribers);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.registerAdmin = async (req, res) => {
   try {
     const { name, email, password, setupKey } = req.body;

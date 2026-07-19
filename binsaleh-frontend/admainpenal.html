@@ -1881,7 +1881,21 @@ function renderActivity() {
 }
 
 // ===== EMAIL MARKETING =====
-function renderSubscribers() {
+async function renderSubscribers() {
+  // Try to fetch real subscribers from API
+  try {
+    const apiSubs = await api.get('/auth/subscribers');
+    if(apiSubs && apiSubs.length) {
+      const b=document.getElementById('subscribers-body');
+      b.innerHTML=apiSubs.map(s=>`<tr><td>${s.email}</td><td>${s.name||'Newsletter'}</td><td style="color:var(--muted)">${new Date(s.createdAt).toLocaleDateString()}</td><td><span class="badge badge-active">subscribed</span></td></tr>`).join('');
+      document.getElementById('subs-total').textContent = apiSubs.length;
+      document.getElementById('subs-badge').textContent = apiSubs.length;
+      subscribers = apiSubs.map(s => ({ email: s.email, source: 'Newsletter', date: new Date(s.createdAt).toLocaleDateString(), status: 'subscribed' }));
+      return;
+    }
+  } catch(e) { /* API unavailable, use fallback */ }
+  
+  // Fallback to localStorage demo data
   const b=document.getElementById('subscribers-body');
   b.innerHTML=subscribers.map(s=>`
     <tr>
@@ -2676,10 +2690,10 @@ function saveCategory() {
   } else {
     categories.push({ name, slug, img, products:0, status });
     toast('Category added!','success');
-  }
-  persistCategories();
-  renderCategories();
-  closeModal('cat-modal');
+  }    persistCategories();
+    syncCategoriesToHomepage();
+    renderCategories();
+    closeModal('cat-modal');
   modal.querySelector('.modal-title').textContent = 'Add Category';
   inputs.forEach(i=>i.value='');
   modal.querySelector('.field select').value = 'Active';

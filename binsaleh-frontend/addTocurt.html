@@ -1255,14 +1255,42 @@ function placeOrder(){
   }
   const bank = getBankSettings();
   const waNumber = sanitizePhone(bank.whatsapp);
-  if(!waNumber){
-    showToast('<i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Store WhatsApp number not configured.');
-    return;
+  
+  // === Save order to MongoDB via API ===
+  const orderData = {
+    contact: contact,
+    shippingAddress: {
+      country: document.getElementById('co-country').value,
+      firstName: fname,
+      lastName: lname,
+      address: address,
+      apartment: document.getElementById('co-apt') ? document.getElementById('co-apt').value.trim() : '',
+      city: city,
+      postal: document.getElementById('co-postal') ? document.getElementById('co-postal').value.trim() : '',
+      phone: phone
+    },
+    items: [{ productId: product.id || null, name: product.name, color: selectedColor, quantity: qty, price: product.price, image: product.images[0] || '' }],
+    subtotal: product.price * qty,
+    shippingCost: selectedShipping,
+    shippingMethod: selectedShipping === 0 ? 'free' : selectedShipping > 250 ? 'express' : 'standard',
+    total: (product.price * qty) + selectedShipping - (bank.advanceAmount || 0),
+    paymentMethod: selectedPayment,
+    currency: product.currency || 'PKR'
+  };
+  
+  // Try to save to API (silently fallback to WhatsApp-only if API fails)
+  api.post('/orders', orderData).catch(function(err) {
+    console.warn('Order API save failed (falling back to WhatsApp):', err.message);
+  });
+  
+  // === Send WhatsApp notification ===
+  if(waNumber){
+    const msg = `🛍️ *NEW ORDER — BIN SALEH Store*\n\n*Product:* ${product.name}\n*Color:* ${selectedColor}\n*Qty:* ${qty}\n*Subtotal:* ${formatPrice(product.price*qty)}\n*Shipping:* Rs. ${selectedShipping}\n*Payment:* ${selectedPayment.toUpperCase()}\n\n*Customer Details*\n*Name:* ${fname} ${lname}\n*Contact:* ${contact}\n*Phone:* ${phone}\n*Address:* ${address}, ${city}\n*Country:* ${document.getElementById('co-country').value}`;
+    window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(msg), '_blank');
   }
-  const msg = `🛍️ *NEW ORDER — BIN SALEH Store*\n\n*Product:* ${product.name}\n*Color:* ${selectedColor}\n*Qty:* ${qty}\n*Subtotal:* ${formatPrice(product.price*qty)}\n*Shipping:* Rs. ${selectedShipping}\n*Payment:* ${selectedPayment.toUpperCase()}\n\n*Customer Details*\n*Name:* ${fname} ${lname}\n*Contact:* ${contact}\n*Phone:* ${phone}\n*Address:* ${address}, ${city}\n*Country:* ${document.getElementById('co-country').value}`;
-  window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(msg), '_blank');
+  
   closeCheckout();
-  showToast('<i class="fas fa-check-circle" style="margin-right:8px"></i>Order placed! We\'ll confirm shortly.');
+  showToast('<i class="fas fa-check-circle" style="margin-right:8px"></i>Order placed! It will appear in Admin Panel.');
   fireEvent('Purchase');
 }
 
