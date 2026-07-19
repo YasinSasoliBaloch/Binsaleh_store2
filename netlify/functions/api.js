@@ -21,13 +21,12 @@ async function connectDB() {
   }
   try {
     cachedDb = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000, // 5s timeout so function doesn't exceed 10s limit
+      serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 5000
     });
     console.log('✅ MongoDB connected');
   } catch (err) {
     console.error('❌ MongoDB connection failed:', err.message);
-    // Don't throw — let the function continue so it can return a meaningful error
     cachedDb = null;
   }
   return cachedDb;
@@ -38,21 +37,24 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ---------- Health Check ----------
-app.get('/', (req, res) => {
-  res.json({ message: 'BIN SALEH Store API is running 🚀' });
+// Debug: echo the request path for troubleshooting
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.path} (original: ${req.originalUrl})`);
+  next();
 });
 
 // ---------- Routes ----------
-// NOTE: serverless-http strips the function base path (/.netlify/functions/api),
-// so Express routes should NOT include /api prefix — Netlify redirect already adds it.
+// serverless-http strips the basePath from event.path before passing to Express.
+// Since Netlify proxy redirect maps /api/* → /.netlify/functions/api/:splat,
+// and event.path starts with /.netlify/functions/api, we set basePath to that
+// so Express receives paths like /auth/register-admin (without /api prefix).
 app.use('/products', require('./routes/products'));
 app.use('/auth', require('./routes/auth'));
 app.use('/orders', require('./routes/orders'));
 
 // ---------- 404 Handler ----------
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  res.status(404).json({ message: 'Route not found. Path: ' + req.originalUrl });
 });
 
 // ---------- Global Error Handler ----------
@@ -62,7 +64,11 @@ app.use((err, req, res, next) => {
 });
 
 // ---------- Netlify Function Handler ----------
-const handler = serverless(app);
+// Explicit basePath tells serverless-http to strip the function mount point
+// from the request path before passing it to Express.
+const handler = serverless(app, {
+  basePath: '/.netlify/functions/api'
+});
 
 exports.handler = async (event, context) => {
   try {
