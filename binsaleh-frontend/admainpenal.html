@@ -1563,7 +1563,9 @@ async function doRegister() {
   const name = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pass = document.getElementById('reg-pass').value;
-  const setupKey = document.getElementById('reg-key').value;
+  // Check for localStorage setup key override (set in admin settings)
+  const localKey = localStorage.getItem('bs_admin_setup_key');
+  const setupKey = localKey || document.getElementById('reg-key').value;
   const hint = document.getElementById('login-hint-text');
 
   if (!name || !email || !pass || !setupKey) {
@@ -1681,6 +1683,8 @@ function initDashboard() {
   renderCategories();
   renderCoupons();
   renderShippingSettings();
+  loadSliderFromStorage(); // pre-load CMS slider from localStorage
+  loadAdminSetupKey();
   document.getElementById('dash-product-count').textContent = products.length;
 }
 
@@ -2672,6 +2676,21 @@ function loadSliderFromStorage() {
       <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>
     </div>`;
   }).join('');
+}
+
+// ===== ADMIN SETUP KEY OVERRIDE =====
+function loadAdminSetupKey() {
+  const saved = localStorage.getItem('bs_admin_setup_key');
+  const el = document.getElementById('admin-setup-key-input');
+  if(el && saved) el.value = saved;
+}
+function saveAdminSetupKey() {
+  const el = document.getElementById('admin-setup-key-input');
+  if(!el) return;
+  const key = el.value.trim();
+  if(!key) { localStorage.removeItem('bs_admin_setup_key'); toast('Setup key cleared — using default.','info'); return; }
+  localStorage.setItem('bs_admin_setup_key', key);
+  toast('Admin setup key saved! Use this key for new registrations.','success');
 }
 
 function renderCategories() {
