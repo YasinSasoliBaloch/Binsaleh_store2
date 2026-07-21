@@ -668,6 +668,20 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       </div>
     </div>
 
+    <!-- ====== CHANGE ADMIN PASSWORD ====== -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title"><i class="fas fa-lock" style="margin-right:8px;color:var(--accent)"></i> Change Password</div></div>
+      <div class="card-body">
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:16px">Update your admin account password. You'll need to enter your current password first.</p>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label>Current Password</label><input type="password" id="admin-current-pass" placeholder="Enter current password"/></div>
+          <div class="field"><label>New Password</label><input type="password" id="admin-new-pass" placeholder="Min 6 characters"/></div>
+          <div class="field"><label>Confirm New Password</label><input type="password" id="admin-confirm-pass" placeholder="Confirm new password"/></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="changeAdminPassword()"><i class="fas fa-floppy-disk"></i> Change Password</button>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header"><div class="card-title">Transaction History</div></div>
       <div class="card-body" style="padding:0">
@@ -824,6 +838,17 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     </div>
 
     <div class="grid-2">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><div class="card-title"><i class="fas fa-bullhorn" style="margin-right:8px;color:var(--accent)"></i> Announcement Bar Text</div></div>
+        <div class="card-body">
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px">This text appears on the scrolling announcement bar at the top of every page. Change it anytime — no redeploy needed.</p>
+          <div class="field"><label>Announcement Text</label>
+            <input type="text" id="cms-announce-text" placeholder="e.g. 🚚 Free Shipping on Orders Above Rs. 10,000 | 🎉 Summer Sale Live!" style="width:100%"/>
+          </div>
+          <button class="btn btn-primary" style="margin-top:12px" onclick="saveAnnouncementText()"><i class="fas fa-floppy-disk"></i> Save Announcement</button>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header"><div class="card-title">Send Announcement Email</div></div>
         <div class="card-body">
@@ -1518,19 +1543,31 @@ function persistProducts() {}
 function persistBank()     { localStorage.setItem(LS_BANK, JSON.stringify(bankSettings)); }
 function persistShipping() { localStorage.setItem(LS_SHIPPING, JSON.stringify(shippingSettings)); }
 
-// ===== OTHER DEMO DATA (unchanged) =====
-const orders = [
-  { id:"#238", customer:"Ahmed K.", phone:"+92 311 0000001", items:"Linen Co-ord Set", total:5450, payment:"JazzCash", status:"pending", date:"Jun 8, 2026" },
-  { id:"#237", customer:"Sara H.", phone:"+92 333 0000002", items:"Adidas Samba", total:3550, payment:"COD", status:"shipped", date:"Jun 7, 2026" },
-  { id:"#236", customer:"Mohsin F.", phone:"+92 300 0000003", items:"212 MEN Fragrance", total:3250, payment:"EasyPaisa", status:"delivered", date:"Jun 7, 2026" },
-  { id:"#235", customer:"Zara M.", phone:"+92 322 0000004", items:"Korean Pants", total:2200, payment:"Bank", status:"processing", date:"Jun 6, 2026" },
-  { id:"#234", customer:"Ali R.", phone:"+92 344 0000005", items:"Arabic Watch", total:1799, payment:"COD", status:"cancelled", date:"Jun 5, 2026" },
-  { id:"#233", customer:"Hamza K.", phone:"+92 311 0000006", items:"Premium Polo Shirt", total:2100, payment:"JazzCash", status:"delivered", date:"Jun 4, 2026" },
-  { id:"#232", customer:"Nida S.", phone:"+92 300 0000007", items:"Cargo Pants", total:2600, payment:"COD", status:"pending", date:"Jun 4, 2026" },
-  { id:"#231", customer:"Usman A.", phone:"+92 333 0000008", items:"Summer Co-Ord Set", total:7200, payment:"Bank", status:"shipped", date:"Jun 3, 2026" },
-  { id:"#230", customer:"Fatima B.", phone:"+92 322 0000009", items:"Bracelet Pack", total:1200, payment:"EasyPaisa", status:"delivered", date:"Jun 2, 2026" },
-  { id:"#229", customer:"Omer J.", phone:"+92 344 0000010", items:"Oversized Tee", total:1499, payment:"COD", status:"processing", date:"Jun 1, 2026" },
-];
+// ===== OTHER DEMO DATA (orders are now fetched from API) =====
+let orders = [];
+
+async function loadOrdersFromAPI() {
+  try {
+    const apiOrders = await api.get('/orders');
+    if (apiOrders && apiOrders.length) {
+      orders = apiOrders.map(o => ({
+        id: '#' + (o._id ? o._id.toString().slice(-5).toUpperCase() : 'NEW'),
+        _id: o._id,
+        customer: (o.shippingAddress?.firstName || o.name || 'Customer') + ' ' + (o.shippingAddress?.lastName || ''),
+        phone: o.shippingAddress?.phone || o.contact || '',
+        items: Array.isArray(o.items) ? o.items.map(i => i.name || '').join(', ') : 'Order',
+        total: o.total || 0,
+        payment: o.paymentMethod ? o.paymentMethod.charAt(0).toUpperCase() + o.paymentMethod.slice(1) : 'COD',
+        status: o.status || 'pending',
+        date: o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'Recently'
+      }));
+    }
+  } catch (err) {
+    console.warn('Order API load failed:', err.message);
+  }
+  renderOrders('all');
+  renderDashOrders();
+}
 
 const customers = [
   { id:1, name:"Ahmed K.", email:"ahmed.k@gmail.com", phone:"+92 311 0000001", orders:5, spent:18450, status:"active" },
@@ -1680,7 +1717,7 @@ function initDashboard() {
   renderChart();
   renderDashOrders();
   loadProductsFromAPI(); // products + reviews table render khud hi ho jayenge
-  renderOrders('all');
+  await loadOrdersFromAPI(); // async — fetches real orders from backend
   renderCustomers();
   renderActivity();
   renderSubscribers();
@@ -1694,6 +1731,7 @@ function initDashboard() {
   renderCoupons();
   renderShippingSettings();
   loadSliderFromStorage(); // pre-load CMS slider from localStorage
+  loadAnnouncementText(); // load announcement bar text from localStorage
   loadAdminSetupKey();
   document.getElementById('dash-product-count').textContent = products.length;
 }
@@ -1708,12 +1746,13 @@ function renderChart() {
 
 function renderDashOrders() {
   const b=document.getElementById('dash-orders-body');
+  if(!orders.length) { b.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No orders yet</td></tr>'; return; }
   b.innerHTML=orders.slice(0,5).map(o=>`
     <tr>
       <td style="font-weight:700;color:var(--accent)">${o.id}</td>
       <td>${o.customer}</td>
       <td>${o.items}</td>
-      <td style="color:var(--green)">Rs. ${o.total.toLocaleString()}</td>
+      <td style="color:var(--green)">Rs. ${(o.total||0).toLocaleString()}</td>
       <td><span class="badge badge-${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
       <td style="color:var(--muted)">${o.date}</td>
       <td><button class="icon-btn" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i></button></td>
@@ -1845,13 +1884,19 @@ function filterOrders(filter, btn) {
   renderOrders(filter);
 }
 
-function updateOrderStatus(id, status) {
+async function updateOrderStatus(id, status) {
   const o=orders.find(x=>x.id===id);
-  if(o) {
-    o.status=status;
-    toast(`Order ${id} → ${status}`,'info');
-    if(status==='delivered' || status==='shipped') {
-      firePixelPurchaseEvent(o);
+  if(!o) return;
+  o.status=status;
+  toast(`Order ${id} → ${status}`,'info');
+  if(status==='delivered' || status==='shipped') {
+    firePixelPurchaseEvent(o);
+  }
+  if(o._id) {
+    try {
+      await api.put('/orders/'+o._id+'/status', { status });
+    } catch(err) {
+      console.warn('Failed to sync status to API:', err.message);
     }
   }
 }
@@ -2410,13 +2455,13 @@ function viewOrder(id) {
   document.getElementById('order-modal-title').textContent='Order '+o.id;
   document.getElementById('order-modal-body').innerHTML=`
     <div class="form-grid form-grid-2">
-      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">CUSTOMER</div><div style="font-weight:600">${o.customer}</div><div style="font-size:0.8rem;color:var(--muted)">${o.phone}</div></div>
-      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">TOTAL</div><div style="font-weight:700;color:var(--green);font-size:1.1rem">Rs. ${o.total.toLocaleString()}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">CUSTOMER</div><div style="font-weight:600">${o.customer}</div><div style="font-size:0.8rem;color:var(--muted)">${o.phone||'—'}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">TOTAL</div><div style="font-weight:700;color:var(--green);font-size:1.1rem">Rs. ${(o.total||0).toLocaleString()}</div></div>
       <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">ITEMS</div><div>${o.items}</div></div>
       <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">PAYMENT</div><div>${o.payment}</div></div>
       <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">DATE</div><div>${o.date}</div></div>
       <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px">STATUS</div>
-        <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;width:100%">
+        <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;width:100%" onchange="updateOrderStatus('${o.id}',this.value)">
           ${['pending','processing','shipped','delivered','cancelled'].map(s=>`<option ${o.status===s?'selected':''} value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
         </select>
       </div>
@@ -2689,6 +2734,24 @@ function loadSliderFromStorage() {
 }
 
 // ===== ADMIN SETUP KEY OVERRIDE =====
+// ===== ANNOUNCEMENT BAR TEXT =====
+function loadAnnouncementText() {
+  const input = document.getElementById('cms-announce-text');
+  if(!input) return;
+  try {
+    const saved = localStorage.getItem('bs_announcement_text');
+    if(saved) input.value = saved;
+  } catch(e) {}
+}
+function saveAnnouncementText() {
+  const input = document.getElementById('cms-announce-text');
+  if(!input) return;
+  const text = input.value.trim();
+  if(!text) { toast('Enter announcement text','error'); return; }
+  localStorage.setItem('bs_announcement_text', text);
+  toast('Announcement bar updated! It reflects on every page immediately.','success');
+}
+
 function loadAdminSetupKey() {
   const saved = localStorage.getItem('bs_admin_setup_key');
   const el = document.getElementById('admin-setup-key-input');
@@ -2707,6 +2770,25 @@ function saveAdminSetupKey() {
   if(!key) { localStorage.removeItem('bs_admin_setup_key'); toast('Setup key cleared — using default.','info'); return; }
   localStorage.setItem('bs_admin_setup_key', key);
   toast('Admin setup key saved! Use this key for new registrations.','success');
+}
+
+// ===== PASSWORD CHANGE =====
+async function changeAdminPassword() {
+  const current = document.getElementById('admin-current-pass').value;
+  const newPass = document.getElementById('admin-new-pass').value;
+  const confirm = document.getElementById('admin-confirm-pass').value;
+  if(!current) { toast('Enter current password','error'); return; }
+  if(!newPass || newPass.length < 6) { toast('New password must be at least 6 characters','error'); return; }
+  if(newPass !== confirm) { toast('Passwords do not match','error'); return; }
+  try {
+    await api.post('/auth/change-password', { currentPassword: current, newPassword: newPass });
+    document.getElementById('admin-current-pass').value = '';
+    document.getElementById('admin-new-pass').value = '';
+    document.getElementById('admin-confirm-pass').value = '';
+    toast('Password changed successfully!','success');
+  } catch(err) {
+    toast('Failed: ' + err.message, 'error');
+  }
 }
 
 function renderCategories() {
