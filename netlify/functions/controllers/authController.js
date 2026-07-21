@@ -116,6 +116,15 @@ exports.changePassword = async (req, res) => {
   }
 };
 
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.registerAdmin = async (req, res) => {
   try {
     const { name, email, password, setupKey } = req.body;

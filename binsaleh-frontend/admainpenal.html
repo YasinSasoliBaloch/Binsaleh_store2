@@ -1566,13 +1566,27 @@ async function loadOrdersFromAPI() {
   renderDashOrders();
 }
 
-const customers = [
-  { id:1, name:"Ahmed K.", email:"ahmed.k@gmail.com", phone:"+92 311 0000001", orders:5, spent:18450, status:"active" },
-  { id:2, name:"Sara H.", email:"sara.h@gmail.com", phone:"+92 333 0000002", orders:3, spent:9800, status:"active" },
-  { id:3, name:"Mohsin F.", email:"mohsin.f@gmail.com", phone:"+92 300 0000003", orders:8, spent:24100, status:"active" },
-  { id:4, name:"Zara M.", email:"zara.m@gmail.com", phone:"+92 322 0000004", orders:2, spent:4400, status:"active" },
-  { id:5, name:"Ali R.", email:"ali.r@gmail.com", phone:"+92 344 0000005", orders:1, spent:1799, status:"blocked" },
-];
+let customers = []; // Will be loaded from API
+
+async function loadCustomersFromAPI() {
+  try {
+    const users = await api.get('/auth/users');
+    if (Array.isArray(users) && users.length) {
+      customers = users.map(u => ({
+        id: u._id.slice(-6),
+        name: u.name || 'Unknown',
+        email: u.email || '',
+        phone: u.phone || '',
+        orders: 0,
+        spent: 0,
+        status: u.role === 'blocked' ? 'blocked' : 'active'
+      }));
+    }
+  } catch(e) {
+    console.warn('Could not load customers from API:', e.message);
+  }
+  renderCustomers();
+}
 
 let subscribers = JSON.parse(localStorage.getItem('dn_subscribers') || 'null') || [
   { email:"ahmed.k@gmail.com", source:"Signup", date:"Jun 1, 2026", status:"subscribed" },
@@ -1715,7 +1729,9 @@ async function initDashboard() {
   renderDashOrders();
   loadProductsFromAPI(); // products + reviews table render khud hi ho jayenge
   await loadOrdersFromAPI(); // async — fetches real orders from backend
-  renderCustomers();
+  loadCategoriesFromDB(); // load categories from DB, then render
+  loadCouponsFromDB(); // load coupons from DB, then render
+  loadCustomersFromAPI(); // load customers from user API
   renderActivity();
   renderSubscribers();
   renderCampaignHistory();
@@ -2195,14 +2211,64 @@ function removeGalleryImage(idx) {
   renderGalleryManager();
 }
 
+let galleryUploadPending = 0;
+
 function handleGalleryUpload(input) {
-  Array.from(input.files).forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = e => {
-      currentGalleryImages.push(e.target.result);
-      renderGalleryManager();
-    };
-    reader.readAsDataURL(file);
+  const MAX_FILE_SIZE = 500 * 1024; // 500KB per image — compress larger ones
+  const files = Array.from(input.files);
+  galleryUploadPending += files.length;
+  if (galleryUploadPending > 0) {
+    const btn = document.querySelector('#product-modal .btn-primary');
+    if (btn) { btn.textContent = '⏳ Processing images...'; btn.disabled = true; }
+  }
+  function onImageDone() {
+    galleryUploadPending--;
+    if (galleryUploadPending <= 0) {
+      galleryUploadPending = 0;
+      const btn = document.querySelector('#product-modal .btn-primary');
+      if (btn) { btn.textContent = 'Save Product'; btn.disabled = false; }
+    }
+  }
+  files.forEach(file=>{
+    if (file.size > MAX_FILE_SIZE) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          let w = img.width, h = img.height;
+          const MAX_W = 1200, MAX_H = 1200;
+          if (w > MAX_W || h > MAX_H) {
+            const ratio = Math.min(MAX_W / w, MAX_H / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressed = canvas.toDataURL('image/jpeg', 0.7);
+          currentGalleryImages.push(compressed);
+          renderGalleryManager();
+          onImageDone();
+        };
+        img.onerror = function() {
+          // Fallback: add original data URL if canvas fails
+          currentGalleryImages.push(ev.target.result);
+          renderGalleryManager();
+          onImageDone();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = e => {
+        currentGalleryImages.push(e.target.result);
+        renderGalleryManager();
+        onImageDone();
+      };
+      reader.readAsDataURL(file);
+    }
   });
   input.value = '';
 }
@@ -2697,7 +2763,25 @@ let categories = JSON.parse(localStorage.getItem('dn_categories') || 'null') || 
   { name:"Fragrances", slug:"fragrances", img:"", products:2, status:"Active" },
   { name:"Accessories", slug:"accessories", img:"", products:3, status:"Active" },
 ];
-function persistCategories() { localStorage.setItem('dn_categories', JSON.stringify(categories)); }
+async function persistCategories() { 
+  localStorage.setItem('dn_categories', JSON.stringify(categories)); 
+  try { await api.put('/settings/categories', { value: JSON.stringify(categories) }); } catch(e) { console.warn('Categories DB save failed:', e.message); }
+}
+
+async function loadCategoriesFromDB() {
+  try {
+    const result = await api.get('/settings/categories');
+    if (result && result.value) {
+      const parsed = typeof result.value === 'string' ? JSON.parse(result.value) : result.value;
+      if (Array.isArray(parsed) && parsed.length) {
+        categories = parsed;
+        localStorage.setItem('dn_categories', JSON.stringify(categories));
+      }
+    }
+  } catch(e) { /* silent */ }
+  renderCategories();
+}
+
 let editingCategoryIdx = null;
 
 function syncCategoriesToHomepage() {
@@ -2919,7 +3003,25 @@ let coupons = JSON.parse(localStorage.getItem('dn_coupons') || 'null') || [
   { code:"DN250", type:"Flat", discount:"Rs. 250", minOrder:"Rs. 1,500", uses:"128 / 500", expiry:"Jul 15, 2026", status:"Active" },
   { code:"ELITE10", type:"Percentage", discount:"10%", minOrder:"Rs. 5,000", uses:"22 / 50", expiry:"Jun 20, 2026", status:"Expired" },
 ];
-function persistCoupons() { localStorage.setItem('dn_coupons', JSON.stringify(coupons)); }
+async function persistCoupons() { 
+  localStorage.setItem('dn_coupons', JSON.stringify(coupons)); 
+  try { await api.put('/settings/coupons', { value: JSON.stringify(coupons) }); } catch(e) { console.warn('Coupons DB save failed:', e.message); }
+}
+
+async function loadCouponsFromDB() {
+  try {
+    const result = await api.get('/settings/coupons');
+    if (result && result.value) {
+      const parsed = typeof result.value === 'string' ? JSON.parse(result.value) : result.value;
+      if (Array.isArray(parsed) && parsed.length) {
+        coupons = parsed;
+        localStorage.setItem('dn_coupons', JSON.stringify(coupons));
+      }
+    }
+  } catch(e) { /* silent */ }
+  renderCoupons();
+}
+
 let editingCouponIdx = null;
 
 function renderCoupons() {
