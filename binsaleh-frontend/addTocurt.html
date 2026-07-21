@@ -1267,9 +1267,8 @@ function placeOrder(){
     return;
   }
   const bank = getBankSettings();
-  const waNumber = sanitizePhone(bank.whatsapp);
   
-  // === Save order to MongoDB via API ===
+  // === Save order to MongoDB via API (primary behavior) ===
   const orderData = {
     contact: contact,
     shippingAddress: {
@@ -1291,19 +1290,17 @@ function placeOrder(){
     currency: product.currency || 'PKR'
   };
   
-  // Try to save to API (silently fallback to WhatsApp-only if API fails)
-  api.post('/orders', orderData).catch(function(err) {
-    console.warn('Order API save failed (falling back to WhatsApp):', err.message);
+  // Save to API and show feedback
+  api.post('/orders', orderData).then(function(savedOrder) {
+    console.log('Order saved to database:', savedOrder._id || savedOrder.id);
+  }).catch(function(err) {
+    console.error('Order save failed:', err.message);
+    showToast('<i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Order failed to save. Please try again.');
+    return;
   });
   
-  // === Send WhatsApp notification ===
-  if(waNumber){
-    const msg = `🛍️ *NEW ORDER — BIN SALEH Store*\n\n*Product:* ${product.name}\n*Color:* ${selectedColor}\n*Qty:* ${qty}\n*Subtotal:* ${formatPrice(product.price*qty)}\n*Shipping:* Rs. ${selectedShipping}\n*Payment:* ${selectedPayment.toUpperCase()}\n\n*Customer Details*\n*Name:* ${fname} ${lname}\n*Contact:* ${contact}\n*Phone:* ${phone}\n*Address:* ${address}, ${city}\n*Country:* ${document.getElementById('co-country').value}`;
-    window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(msg), '_blank');
-  }
-  
   closeCheckout();
-  showToast('<i class="fas fa-check-circle" style="margin-right:8px"></i>Order placed! It will appear in Admin Panel.');
+  showToast('<i class="fas fa-check-circle" style="margin-right:8px"></i>Order placed successfully! It will appear in Admin Panel.');
   fireEvent('Purchase');
 }
 

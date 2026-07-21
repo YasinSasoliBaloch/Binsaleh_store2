@@ -1525,6 +1525,20 @@ if(!bankSettings) {
   bankSettings = defaultBankSettings;
   localStorage.setItem(LS_BANK, JSON.stringify(bankSettings));
 }
+// Load bank settings from DB on next tick (async)
+setTimeout(async () => {
+  try {
+    const dbVal = await loadSettingFromDB('bank_settings');
+    if (dbVal) {
+      const parsed = typeof dbVal === 'string' ? JSON.parse(dbVal) : dbVal;
+      if (parsed && parsed.deposit) {
+        bankSettings = parsed;
+        localStorage.setItem(LS_BANK, JSON.stringify(bankSettings));
+      }
+    }
+  } catch(e) {}
+  renderBankMethods();
+}, 100);
 
 const LS_SHIPPING = 'dn_shipping_settings';
 let shippingSettings = JSON.parse(localStorage.getItem(LS_SHIPPING) || 'null');
@@ -1532,13 +1546,33 @@ if(!shippingSettings) {
   shippingSettings = defaultShippingSettings;
   localStorage.setItem(LS_SHIPPING, JSON.stringify(shippingSettings));
 }
+// Load shipping settings from DB on next tick
+setTimeout(async () => {
+  try {
+    const dbVal = await loadSettingFromDB('shipping_settings');
+    if (dbVal) {
+      const parsed = typeof dbVal === 'string' ? JSON.parse(dbVal) : dbVal;
+      if (parsed && parsed.standardFee) {
+        shippingSettings = parsed;
+        localStorage.setItem(LS_SHIPPING, JSON.stringify(shippingSettings));
+      }
+    }
+  } catch(e) {}
+  renderShippingSettings();
+}, 200);
 
 seedDemoReviewsIfEmpty();
 
 // persistProducts ab zaroori nahi — har product change seedhe backend API se hota hai
 function persistProducts() {}
-function persistBank()     { localStorage.setItem(LS_BANK, JSON.stringify(bankSettings)); }
-function persistShipping() { localStorage.setItem(LS_SHIPPING, JSON.stringify(shippingSettings)); }
+function persistBank()     { 
+  localStorage.setItem(LS_BANK, JSON.stringify(bankSettings)); 
+  saveSettingToDB('bank_settings', JSON.stringify(bankSettings));
+}
+function persistShipping() { 
+  localStorage.setItem(LS_SHIPPING, JSON.stringify(shippingSettings)); 
+  saveSettingToDB('shipping_settings', JSON.stringify(shippingSettings));
+}
 
 // ===== OTHER DEMO DATA (orders are now fetched from API) =====
 let orders = [];
@@ -2035,7 +2069,18 @@ function exportSubscribers() {
 }
 
 // ===== PIXELS & ADS =====
-function loadPixelSettings() {
+async function loadPixelSettings() {
+  // Try DB first, then localStorage
+  try {
+    const dbVal = await loadSettingFromDB('pixel_settings');
+    if (dbVal) {
+      const parsed = typeof dbVal === 'string' ? JSON.parse(dbVal) : dbVal;
+      if (parsed && parsed.tiktok && parsed.fb) {
+        pixelSettings = parsed;
+        localStorage.setItem('dn_pixel_settings', JSON.stringify(pixelSettings));
+      }
+    }
+  } catch(e) {}
   document.getElementById('tiktok-pixel-id').value = pixelSettings.tiktok.pixelId;
   document.getElementById('tiktok-token').value = pixelSettings.tiktok.token;
   document.getElementById('tiktok-catalog-id').value = pixelSettings.tiktok.catalogId;
@@ -2071,8 +2116,9 @@ function savePixelSettings(platform) {
     toast('Meta (Facebook & Instagram) settings saved!','success');
   }
   localStorage.setItem('dn_pixel_settings', JSON.stringify(pixelSettings));
+  saveSettingToDB('pixel_settings', JSON.stringify(pixelSettings));
   updatePixelStatus();
-}
+
 
 function updatePixelStatus() {
   const tiktokOn = document.getElementById('tiktok-enabled').checked;
