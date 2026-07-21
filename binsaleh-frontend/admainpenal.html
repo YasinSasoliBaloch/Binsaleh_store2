@@ -1713,7 +1713,7 @@ function showPage(id, el) {
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
 // ===== DASHBOARD INIT =====
-function initDashboard() {
+async function initDashboard() {
   renderChart();
   renderDashOrders();
   loadProductsFromAPI(); // products + reviews table render khud hi ho jayenge
