@@ -814,6 +814,7 @@
   </div>
 </footer>
 
+<script src="./js/api.js"></script>
 <script src="./js/store.js"></script>
 <script>
 /* ============================================================================
@@ -1279,9 +1280,13 @@ function placeOrder(){
   };
   
   // Try to save to API (silently fallback to WhatsApp-only if API fails)
-  api.post('/orders', orderData).catch(function(err) {
-    console.warn('Order API save failed (falling back to WhatsApp):', err.message);
-  });
+  (async function() {
+    try {
+      await api.post('/orders', orderData);
+    } catch(err) {
+      console.warn('Order API save failed (falling back to WhatsApp):', err.message);
+    }
+  })();
   
   // === Send WhatsApp notification ===
   if(waNumber){
