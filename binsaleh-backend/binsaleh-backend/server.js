@@ -14,8 +14,8 @@ app.use(cors({
   origin: true,
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static('uploads'));
 
 // ---------- Test Route ----------
@@ -23,11 +23,11 @@ app.get('/', (req, res) => {
   res.json({ message: 'BIN SALEH Store API is running 🚀' });
 });
 
-// ---------- Routes (aage steps mein add karenge) ----------
+// ---------- Routes ----------
 app.use('/api/products', require('./routes/products'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/orders', require('./routes/orders'));
-// app.use('/api/products', require('./routes/products'));
+app.use('/api/settings', require('./routes/settings'));
 
 // ---------- 404 Handler ----------
 app.use((req, res) => {
