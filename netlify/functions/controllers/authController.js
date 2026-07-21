@@ -119,7 +119,16 @@ exports.changePassword = async (req, res) => {
 exports.registerAdmin = async (req, res) => {
   try {
     const { name, email, password, setupKey } = req.body;
-    if (!setupKey || setupKey !== ADMIN_SETUP_KEY) return res.status(403).json({ message: 'Invalid admin setup key.' });
+    // Check for overridden setup key in database (set via Admin Panel → Settings)
+    let effectiveKey = ADMIN_SETUP_KEY;
+    try {
+      const Settings = require('../models/Settings');
+      const dbKey = await Settings.findOne({ key: 'admin_setup_key' });
+      if (dbKey && dbKey.value && dbKey.value.trim()) {
+        effectiveKey = dbKey.value;
+      }
+    } catch(e) { /* DB not available, use env/default */ }
+    if (!setupKey || setupKey !== effectiveKey) return res.status(403).json({ message: 'Invalid admin setup key.' });
     if (!name || !email || !password) return res.status(400).json({ message: 'Please fill in all fields.' });
     if (password.length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters.' });
 

@@ -784,7 +784,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div style="flex:1"><div style="font-size:0.85rem;font-weight:600">Summer Élite '26</div><div style="font-size:0.72rem;color:var(--muted)">Link: ./view.html</div></div>
     <span class="badge badge-active">Active</span>
    <button class="icon-btn" onclick="editSlide(this)"><i class="fas fa-pen"></i></button>   <!-- ❌ no onclick -->
-    <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>  <!-- ❌ no onclick -->
+    <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();persistSlidesToStorage();toast('Slide deleted','info')"><i class="fas fa-trash"></i></button>
   </div>
   ...
           <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border-radius:10px;">
@@ -792,24 +792,21 @@ tr:hover td{background:rgba(255,255,255,0.02);}
             <div style="flex:1"><div style="font-size:0.85rem;font-weight:600">Tracksuits Collection</div><div style="font-size:0.72rem;color:var(--muted)">Link: ./TrackSuits.html</div></div>
             <span class="badge badge-active">Active</span>
             <button class="icon-btn" onclick="editSlide(this)"><i class="fas fa-pen"></i></button>
-          <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>
+          <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();persistSlidesToStorage();toast('Slide deleted','info')"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-header"><div class="card-title">Announcement Bar Text</div></div>
+      <div class="card-header"><div class="card-title"><i class="fas fa-bullhorn" style="margin-right:8px;color:var(--accent)"></i> Announcement Bar Text</div></div>
       <div class="card-body">
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px">This text appears on the scrolling announcement bar at the top of every page. Change it anytime — no redeploy needed.</p>
         <div class="field" style="margin-bottom:14px">
           <label>Announcement Text</label>
-          <textarea>🚚 Free Shipping on Orders Above Rs. 10,000 | 💰 COD Available Nationwide | 🔄 Easy Exchange Policy | ✅ Rs. 250 Advance Required to Confirm Order | ⭐ Summer Élite '26 Collection is Live!</textarea>
+          <input type="text" id="cms-announce-text" placeholder="e.g. 🚚 Free Shipping on Orders Above Rs. 10,000 | 🎉 Summer Sale Live!" style="width:100%"/>
         </div>
-        <div class="field" style="margin-bottom:14px">
-          <label>Store Name (Logo Text)</label>
-          <input type="text" value="IK STORE"/>
-        </div>
-        <button class="btn btn-primary" onclick="toast('Changes saved!','success')"><i class="fas fa-floppy-disk"></i> Save Changes</button>
+        <button class="btn btn-primary" onclick="saveAnnouncementText()"><i class="fas fa-floppy-disk"></i> Save Announcement</button>
       </div>
     </div>
   </div>
@@ -1730,9 +1727,9 @@ async function initDashboard() {
   renderCategories();
   renderCoupons();
   renderShippingSettings();
-  loadSliderFromStorage(); // pre-load CMS slider from localStorage
-  loadAnnouncementText(); // load announcement bar text from localStorage
-  loadAdminSetupKey();
+  await loadSliderFromStorage(); // pre-load CMS slider (from DB + localStorage)
+  await loadAnnouncementText(); // load announcement bar text (from DB + localStorage)
+  await loadAdminSetupKey();
   document.getElementById('dash-product-count').textContent = products.length;
 }
 
@@ -2574,7 +2571,7 @@ function saveSlide() {
       </div>
       <span class="badge ${badgeClass}">${status}</span>
       <button class="icon-btn" onclick="editSlide(this)"><i class="fas fa-pen"></i></button>
-      <button class="icon-btn del" onclick="this.closest('div[style*=\\'background:var(--bg3)\\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>
+      <button class="icon-btn del" onclick="this.closest('div[style*=\\'background:var(--bg3)\\']').remove();persistSlidesToStorage();toast("Slide deleted","info")"><i class="fas fa-trash"></i></button>
     `;
     slidesContainer.appendChild(el);
     toast('Slide added!','success');
@@ -2591,7 +2588,7 @@ function saveSlide() {
   document.getElementById('slide-file-input').value='';
 }
 
-function persistSlidesToStorage() {
+async function persistSlidesToStorage() {
   const rows = document.querySelectorAll('#page-cms .card-body > div > div');
   const slides = [];
   rows.forEach(row => {
@@ -2617,6 +2614,12 @@ function persistSlidesToStorage() {
       saveSliderSlides(slides);
     } else {
       localStorage.setItem('bs_hero_slides', JSON.stringify(slides));
+    }
+    // Sync to database
+    try {
+      await api.put('/settings/hero_slides', { value: JSON.stringify(slides) });
+    } catch(e) {
+      console.warn('Slider DB sync failed:', e.message);
     }
   }
 }
@@ -2709,7 +2712,18 @@ function syncCategoriesToHomepage() {
   localStorage.setItem('bs_collections', JSON.stringify(collections));
 }
 
-function loadSliderFromStorage() {
+async function loadSliderFromStorage() {
+  // Try to load slides from database first (if logged in), then fall back to localStorage
+  try {
+    const dbSlidesRaw = await api.get('/settings/hero_slides');
+    if (dbSlidesRaw && dbSlidesRaw.value) {
+      const parsed = typeof dbSlidesRaw.value === 'string' ? JSON.parse(dbSlidesRaw.value) : dbSlidesRaw.value;
+      if (Array.isArray(parsed) && parsed.length) {
+        localStorage.setItem('bs_hero_slides', JSON.stringify(parsed));
+      }
+    }
+  } catch(e) { /* DB not available, use localStorage */ }
+
   // Load existing slides from localStorage into the CMS table
   const slides = getSliderSlides();
   const container = document.querySelector('#page-cms .card-body > div');
@@ -2728,34 +2742,75 @@ function loadSliderFromStorage() {
       </div>
       <span class="badge ${badgeClass}">${isActive ? 'Active' : 'Inactive'}</span>
       <button class="icon-btn" onclick="editSlide(this)"><i class="fas fa-pen"></i></button>
-      <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();toast('Slide deleted','error')"><i class="fas fa-trash"></i></button>
+      <button class="icon-btn del" onclick="this.closest('div[style*=\'background:var(--bg3)\']').remove();persistSlidesToStorage();toast("Slide deleted","info")"><i class="fas fa-trash"></i></button>
     </div>`;
   }).join('');
 }
 
 // ===== ADMIN SETUP KEY OVERRIDE =====
+// ===== DATABASE-BACKED SETTINGS HELPER =====
+// Attempts to save a CMS setting to the backend API;
+// always saves to localStorage as a fast local cache.
+// Swallows API errors silently so the app still works offline.
+
+async function saveSettingToDB(key, value) {
+  try {
+    await api.put('/settings/' + encodeURIComponent(key), { value });
+  } catch(e) {
+    console.warn('Settings DB save failed (' + key + '):', e.message);
+  }
+}
+
+async function loadSettingFromDB(key) {
+  try {
+    const result = await api.get('/settings/' + encodeURIComponent(key));
+    return result && result.value !== undefined ? result.value : null;
+  } catch(e) {
+    // Not found or API error — silent
+    return null;
+  }
+}
+
 // ===== ANNOUNCEMENT BAR TEXT =====
-function loadAnnouncementText() {
+async function loadAnnouncementText() {
   const input = document.getElementById('cms-announce-text');
   if(!input) return;
+  // Try DB first, then localStorage
+  try {
+    const dbVal = await loadSettingFromDB('announcement_text');
+    if (dbVal) {
+      input.value = dbVal;
+      localStorage.setItem('bs_announcement_text', dbVal);
+      return;
+    }
+  } catch(e) {}
   try {
     const saved = localStorage.getItem('bs_announcement_text');
     if(saved) input.value = saved;
   } catch(e) {}
 }
-function saveAnnouncementText() {
+async function saveAnnouncementText() {
   const input = document.getElementById('cms-announce-text');
   if(!input) return;
   const text = input.value.trim();
   if(!text) { toast('Enter announcement text','error'); return; }
   localStorage.setItem('bs_announcement_text', text);
+  await saveSettingToDB('announcement_text', text);
   toast('Announcement bar updated! It reflects on every page immediately.','success');
 }
 
-function loadAdminSetupKey() {
-  const saved = localStorage.getItem('bs_admin_setup_key');
+async function loadAdminSetupKey() {
   const el = document.getElementById('admin-setup-key-input');
-  if(el && saved) el.value = saved;
+  // Try DB first
+  try {
+    const dbVal = await loadSettingFromDB('admin_setup_key');
+    if (dbVal) {
+      localStorage.setItem('bs_admin_setup_key', dbVal);
+      if(el) el.value = dbVal;
+    }
+  } catch(e) {}
+  const saved = localStorage.getItem('bs_admin_setup_key');
+  if(el && saved && !el.value) el.value = saved;
   // Update register form hint to show the overridden key if available
   const hintEl = document.getElementById('reg-key-hint');
   if(hintEl) {
@@ -2763,12 +2818,18 @@ function loadAdminSetupKey() {
     hintEl.innerHTML = 'Setup key: <strong>' + displayKey + '</strong>' + (saved ? ' <span style="color:var(--accent)">(overridden)</span>' : '');
   }
 }
-function saveAdminSetupKey() {
+async function saveAdminSetupKey() {
   const el = document.getElementById('admin-setup-key-input');
   if(!el) return;
   const key = el.value.trim();
-  if(!key) { localStorage.removeItem('bs_admin_setup_key'); toast('Setup key cleared — using default.','info'); return; }
+  if(!key) { 
+    localStorage.removeItem('bs_admin_setup_key'); 
+    await saveSettingToDB('admin_setup_key', '');
+    toast('Setup key cleared — using default.','info'); 
+    return; 
+  }
   localStorage.setItem('bs_admin_setup_key', key);
+  await saveSettingToDB('admin_setup_key', key);
   toast('Admin setup key saved! Use this key for new registrations.','success');
 }
 

@@ -51,6 +51,7 @@ app.use((req, res, next) => {
 app.use('/products', require('./routes/products'));
 app.use('/auth', require('./routes/auth'));
 app.use('/orders', require('./routes/orders'));
+app.use('/settings', require('./routes/settings'));
 
 // Newsletter route — mounted directly at /newsletter (not under /auth)
 const { subscribeNewsletter } = require('./controllers/authController');

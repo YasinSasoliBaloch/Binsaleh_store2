@@ -104,6 +104,19 @@ function cartRenderDrawer() {
 // ======================== ANNOUNCEMENT BAR ========================
 const ANN_KEY = 'bs_announcement_text';
 
+async function fetchAnnouncementFromAPI() {
+  // Try to load the announcement text from the backend Settings API
+  if (typeof api === 'undefined') return;
+  try {
+    const result = await api.get('/settings/announcement_text');
+    if (result && result.value) {
+      localStorage.setItem(ANN_KEY, result.value);
+    }
+  } catch(e) {
+    // API not available — use localStorage
+  }
+}
+
 function getAnnouncementText() {
   try {
     const saved = localStorage.getItem(ANN_KEY);
@@ -120,7 +133,7 @@ function applyAnnouncement() {
   });
 }
 
-// ======================== HERO SLIDER (localStorage) ========================
+// ======================== HERO SLIDER (localStorage + DB) ========================
 const SLIDER_KEY = 'bs_hero_slides';
 
 const DEFAULT_SLIDES = [
@@ -130,6 +143,22 @@ const DEFAULT_SLIDES = [
   { title: 'Scent That<br/><span>Speaks</span>', tag: 'Fragrances', sub: 'Exclusive fragrances that leave a lasting impression.', link: 'fragrances.html', cta: 'Discover Now', img: 'https://dnstore.pk/cdn/shop/files/FE0E7953-EE9B-4D22-90AE-692071EBA76A.png?v=1772557488&width=1920' },
   { title: 'Step In<br/><span>Style</span>', tag: 'Footwear', sub: 'Premium footwear collection — from Adidas Samba to exclusive sneakers.', link: 'footwear.html', cta: 'View Shoes', img: 'https://dnstore.pk/cdn/shop/collections/FullSizeRender.jpg?v=1777735717&width=1920' }
 ];
+
+async function fetchSliderFromAPI() {
+  // Try to load the slider slides from the backend Settings API
+  if (typeof api === 'undefined') return;
+  try {
+    const result = await api.get('/settings/hero_slides');
+    if (result && result.value) {
+      const parsed = typeof result.value === 'string' ? JSON.parse(result.value) : result.value;
+      if (Array.isArray(parsed) && parsed.length) {
+        localStorage.setItem(SLIDER_KEY, JSON.stringify(parsed));
+      }
+    }
+  } catch(e) {
+    // API not available — use localStorage
+  }
+}
 
 function getSliderSlides() {
   try {
@@ -192,6 +221,11 @@ function safeNum(v, fallback) { const n = Number(v); return isNaN(n) ? fallback 
 
 // ======================== AUTO-INIT ON PAGE LOAD ========================
 document.addEventListener('DOMContentLoaded', function() {
+  // Fetch CMS data from database in the background
+  // applyAnnouncement runs after API fetch so the freshest data is displayed
+  fetchAnnouncementFromAPI().then(applyAnnouncement);
+  fetchSliderFromAPI();
+  // Also apply immediately from localStorage cache for instant display
   applyAnnouncement();
   cartUpdateBadge();
   cartRenderDrawer();

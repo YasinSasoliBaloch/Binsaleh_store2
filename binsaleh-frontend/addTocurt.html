@@ -442,12 +442,15 @@
 </div>
 <script>
 // Load dynamic announcement text from localStorage (set in Admin Panel → CMS)
-try {
-  const saved = localStorage.getItem('bs_announcement_text');
-  if (saved && saved.trim()) {
-    document.getElementById('announce-text').textContent = saved;
-  }
-} catch(e) {}
+// Also fetch from database via store.js functions
+fetchAnnouncementFromAPI().then(function() {
+  try {
+    const saved = localStorage.getItem('bs_announcement_text');
+    if (saved && saved.trim()) {
+      document.getElementById('announce-text').textContent = saved;
+    }
+  } catch(e) {}
+});
 </script>
 
 <!-- NAVBAR -->
