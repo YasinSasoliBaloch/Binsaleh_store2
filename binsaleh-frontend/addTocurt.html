@@ -1280,13 +1280,9 @@ function placeOrder(){
   };
   
   // Try to save to API (silently fallback to WhatsApp-only if API fails)
-  (async function() {
-    try {
-      await api.post('/orders', orderData);
-    } catch(err) {
-      console.warn('Order API save failed (falling back to WhatsApp):', err.message);
-    }
-  })();
+  api.post('/orders', orderData).catch(function(err) {
+    console.warn('Order API save failed (falling back to WhatsApp):', err.message);
+  });
   
   // === Send WhatsApp notification ===
   if(waNumber){
