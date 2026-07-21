@@ -440,6 +440,15 @@
 <div class="announce">
   <span class="announce-scroll" id="announce-text">🚚 Free Shipping Above Rs. 10,000 &nbsp;|&nbsp; 💰 COD Available Nationwide &nbsp;|&nbsp; 🔄 Easy 30-Day Exchange</span>
 </div>
+<script>
+// Load dynamic announcement text from localStorage (set in Admin Panel → CMS)
+try {
+  const saved = localStorage.getItem('bs_announcement_text');
+  if (saved && saved.trim()) {
+    document.getElementById('announce-text').textContent = saved;
+  }
+} catch(e) {}
+</script>
 
 <!-- NAVBAR -->
 <nav>
