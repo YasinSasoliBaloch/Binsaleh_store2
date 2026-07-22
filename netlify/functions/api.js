@@ -57,6 +57,9 @@ app.use('/settings', require('./routes/settings'));
 const { subscribeNewsletter } = require('./controllers/authController');
 app.post('/newsletter/subscribe', subscribeNewsletter);
 
+// Upload route — Cloudinary image upload
+app.use('/upload', require('./routes/upload'));
+
 // ---------- 404 Handler ----------
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found. Path: ' + req.originalUrl });

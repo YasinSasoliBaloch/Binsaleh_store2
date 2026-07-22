@@ -21,19 +21,30 @@
 const API_BASE = (function() {
   // Allow manual override via window variable
   if (window.BACKEND_URL) return window.BACKEND_URL;
-  
+
   var host = window.location.hostname;
   var protocol = window.location.protocol;
-  
+
+  // ----------------------------------------------------------------
+  // RENDER BACKEND — production Express + MongoDB API
+  // Deploy your Express backend to Render: https://binsaleh-api.onrender.com
+  // Get the actual URL from Render dashboard after deployment.
+  // Override via window.BACKEND_URL if needed.
+  // ----------------------------------------------------------------
+  var RENDER_API = 'https://binsaleh-api.onrender.com/api';
+
   // Local development (localhost, 127.0.0.1, or file:// protocol)
-  // Points to your deployed Netlify Functions API so you can test locally
+  // Use the Render API by default (it's already deployed and working),
+  // or switch to a local backend if you're running one.
   if (host === 'localhost' || host === '127.0.0.1' || protocol === 'file:') {
-    return 'https://heroic-fox-4d9754.netlify.app/api';
+    // Uncomment the line below to use a local backend (Express running on port 5000):
+    // return 'http://localhost:5000/api';
+    return RENDER_API;
   }
-  
+
   // Production (Netlify, custom domain, etc.)
-  // Use relative path — Netlify Functions handle /api/* requests
-  return '/api';
+  // Use the Render backend — this is our primary API
+  return RENDER_API;
 })();
 
 /* -----------------------------------------------------------------
@@ -112,5 +123,23 @@ const api = {
   get: (endpoint) => apiRequest(endpoint, { method: 'GET' }),
   post: (endpoint, body) => apiRequest(endpoint, { method: 'POST', body: JSON.stringify(body) }),
   put: (endpoint, body) => apiRequest(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
-  del: (endpoint) => apiRequest(endpoint, { method: 'DELETE' })
+  del: (endpoint) => apiRequest(endpoint, { method: 'DELETE' }),
+  // Upload a file (multipart/form-data) — returns { url, public_id }
+  uploadFile: async (file) => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch(API_BASE + '/upload', {
+      method: 'POST',
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Upload failed');
+    return data;
+  },
+  // Upload an image from URL
+  uploadFromUrl: async (url) => {
+    return api.post('/upload/url', { url });
+  }
 };

@@ -8,7 +8,8 @@ const {
   getOrders,
   getMyOrders,
   getOrderById,
-  updateOrderStatus
+  updateOrderStatus,
+  deleteOrder
 } = require('../controllers/orderController');
 
 // Order place karna — login zaroori nahi (guest checkout allowed),
@@ -26,5 +27,8 @@ router.get('/:id', protect, getOrderById);
 
 // Admin: order status update karna
 router.put('/:id/status', protect, isAdmin, updateOrderStatus);
+
+// Admin: order delete karna
+router.delete('/:id', protect, isAdmin, deleteOrder);
 
 module.exports = router;
